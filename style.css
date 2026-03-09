@@ -21,7 +21,7 @@ body {
 
 /* Hero Section */
 .hero {
-    background: linear-gradient(135deg, #007bff, #0056b3);
+    background: linear-gradient(135deg, #f8c786, #0056b3);
     color: white;
     padding: 100px 0;
     text-align: center;
@@ -105,10 +105,10 @@ body {
 }
 
 .intro-item {
-    background: #f8f9fa;
+    background: #5da4ea5c;
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(232, 229, 229, 0.253);
 }
 
 .intro-item h3 {
@@ -127,7 +127,7 @@ body {
     background: white;
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 15px 20px rgba(0,0,0,0.1);
     text-align: center;
     transition: transform 0.3s ease;
 }
@@ -143,7 +143,7 @@ body {
 
 .feature-card h3 {
     color: #007bff;
-    margin-bottom: 15px;
+    margin-bottom: 25px;
 }
 
 /* Thành viên */
@@ -175,7 +175,7 @@ body {
 
 .team-card h3 {
     color: #007bff;
-    margin-bottom: 10px;
+    margin-bottom: 25px;
 }
 
 .team-card h3 a {
