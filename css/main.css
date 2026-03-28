@@ -26,6 +26,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .brand {
@@ -113,6 +114,46 @@ body {
   background: rgba(255,255,255,0.16);
   color: #ffffff;
   border-color: rgba(255,255,255,0.38);
+}
+
+.site-header {
+  background: linear-gradient(90deg, #0054a6 0%, #1570d3 100%);
+  color: #ffffff;
+  border-bottom: 4px solid #004b8a;
+  padding: 12px 16px;
+  position: relative;
+  z-index: 10;
+}
+
+.site-nav {
+  max-width: 1200px;
+  margin: 0.2rem auto 0.7rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  background: rgba(30, 125, 233, 0.5);
+  border: 1px solid rgba(39, 129, 233, 0.45);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  padding: 0.35rem 0.45rem;
+}
+.site-nav a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.42rem 0.8rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.site-nav a:hover {
+  background: rgba(255, 255, 255, 0.35);
+  color: #003c75;
+}
+.site-nav a.active {
+  background: #003c75;
+  color: #ffffff;
+  font-weight: 700;
 }
 
 .site-footer {

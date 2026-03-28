@@ -15,3 +15,26 @@
     </div>
   </div>
 </header>
+
+<nav class="site-nav">
+  <a href="index.html">Trang chủ</a>
+  <a href="page/kho.html">Kho thiết bị</a>
+  <a href="page/dang-ky.html">Đăng ký phòng học</a>
+  <a href="page/kho-ca-nhan.html">Kho cá nhân</a>
+  <a href="page/tin-tuc.html">Tin tức</a>
+  <a href="page/lien-he.html">Liên hệ</a>
+</nav>
+<script>
+  const currentPath = window.location.pathname.toLowerCase();
+  const currentPage = (currentPath === '/' || currentPath === '' || currentPath.endsWith('/'))
+    ? 'index.html'
+    : currentPath.split('/').pop();
+
+  document.querySelectorAll('.site-nav a').forEach(link => {
+    const href = link.getAttribute('href').toLowerCase();
+    const hrefPage = href === '/' || href === '' || href.endsWith('/') ? 'index.html' : href.split('/').pop();
+    if (hrefPage === currentPage || (currentPage === 'index.html' && hrefPage === 'index.html')) {
+      link.classList.add('active');
+    }
+  });
+</script>
