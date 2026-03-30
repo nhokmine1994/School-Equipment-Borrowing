@@ -203,3 +203,101 @@ body {
     font-size: 14px;
   }
 }
+
+
+
+/* ====== CSS riêng cho trang Giới thiệu (giữ tông màu của main.css) ====== */      
+    .page-hero {
+      background: linear-gradient(90deg, rgba(0,84,166,0.08) 0%, rgba(21,112,211,0.08) 100%);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .page-hero h1 {
+      font-size: 28px;
+      color: #003c75;
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+    .page-hero p {
+      color: #44576b;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+    @media (max-width: 1024px) {
+      .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 600px) {
+      .team-grid { grid-template-columns: 1fr; }
+    }
+
+    .member-card {
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      padding: 18px 16px;
+      text-align: center;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .member-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+    }
+
+    .member-avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 9999px;
+      margin: 0 auto 12px;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #e6f3ff 0%, #cfe6ff 100%);
+      border: 3px solid #d9ecff;
+    }
+    .member-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .member-avatar .initials {
+      font-weight: 800;
+      font-size: 28px;
+      color: #003c75;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .member-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #003c75;
+      margin-bottom: 4px;
+    }
+    .member-meta {
+      color: #4a4a4a;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .badge {
+      display: inline-block;
+      background: #003c75;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 999px;
+      letter-spacing: 0.3px;
+    }
+    .member-desc {
+      margin-top: 10px;
+      color: #455a64;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  
+

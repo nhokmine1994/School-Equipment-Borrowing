@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Giới thiệu | Hệ thống mượn/trả thiết bị (SEB)</title>
+  <link rel="stylesheet" href="/css/main.css" />
+  
+</head>
+<body>
+  <!-- Header -->
+  <div id="header-placeholder">Đang tải header...</div>
+
+  <main>
+    <!-- Hero -->
+    <section class="page-hero" style="padding: 1.6rem 1rem;">
+      <div style="max-width:1200px; margin:0 auto;">
+        <h1>Giới thiệu nhóm SEB</h1>
+        <p>Nhóm gồm sinh viên <strong>CNTT</strong> thuộc các lớp <strong>25CT401</strong> và <strong>25CT501</strong>.</p>
+      </div>
+    </section>
+
+    <!-- Team -->
+    <section style="padding: 1.4rem 1rem 2rem;">
+      <div style="max-width:1200px; margin:0 auto;">
+        <div class="team-grid">
+          <!-- Hậu -->
+          <article class="member-card" aria-label="Thành viên Hậu">
+            <div class="member-avatar" aria-hidden="true">
+              <img src="../images/Hau_avatar.png" alt="Avatar Hậu" loading="lazy" />
+            </div>
+            <h2 class="member-name">Hậu</h2>
+            <div class="member-meta">Sinh viên Công nghệ Thông tin</div>
+            <span class="badge">SEB Team</span>
+            <p class="member-desc">Trưởng nhóm phát triển hệ thống mượn/trả thiết bị.</p>
+          </article>
+
+          <!-- Hằng -->
+          <article class="member-card" aria-label="Thành viên Hằng">
+            <div class="member-avatar" aria-hidden="true">
+              <img src="../images/Hang_avatar.png" alt="Avatar Hằng" loading="lazy" />
+            </div>
+            <h2 class="member-name">Hằng</h2>
+            <div class="member-meta">Sinh viên Công nghệ Thông tin</div>
+            <span class="badge">SEB Team</span>
+            <p class="member-desc">Thành viên nhóm phụ trách nội dung và kiểm thử giao diện.</p>
+          </article>
+
+          <!-- Duẩn -->
+          <article class="member-card" aria-label="Thành viên Duẩn">
+            <div class="member-avatar" aria-hidden="true">
+              <img src="../images/Duan_avatar.png" alt="Avatar Duẩn" loading="lazy" />
+            </div>
+            <h2 class="member-name">Duẩn</h2>
+            <div class="member-meta">Sinh viên Công nghệ Thông tin</div>
+            <span class="badge">SEB Team</span>
+            <p class="member-desc">Thành viên nhóm phụ trách tài liệu kỹ thuật và cấu trúc trang.</p>
+          </article>
+
+          <!-- Nam -->
+          <article class="member-card" aria-label="Thành viên Nam">
+            <div class="member-avatar" aria-hidden="true">
+              <img src="../images/Nam_avatar.png" alt="Avatar Nam" loading="lazy" />
+            </div>
+            <h2 class="member-name">Nam</h2>
+            <div class="member-meta">Sinh viên Công nghệ Thông tin</div>
+            <span class="badge">SEB Team</span>
+            <p class="member-desc">Thành viên nhóm tham gia tối ưu trải nghiệm người dùng.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <div id="footer-placeholder">Đang tải footer...</div>
+
+  <!-- Nạp header/footer rồi đánh dấu active nếu có mục 'Giới thiệu' -->
+  <script>
+    async function loadFragment(selector, url, errorMsg) {
+      const host = document.querySelector(selector);
+      try {
+        const res = await fetch(url, { cache: 'no-cache' });
+        if (!res.ok) throw new Error(`${errorMsg} (HTTP ${res.status})`);
+        const html = await res.text();
+        host.innerHTML = html;
+      } catch (err) {
+        console.error(err);
+        host.innerHTML = `<p style="color:red;">${errorMsg}. Kiểm tra đường dẫn: ${url}</p>`;
+      }
+    }
+
+    function highlightActiveNavIfExists() {
+      // Trang hiện tại
+      const currentPage = 'about.html';
+      let matched = false;
+      document.querySelectorAll('.site-nav a').forEach((link) => {
+        const href = (link.getAttribute('href') || '').toLowerCase();
+        const hrefPage = href.split('/').pop();
+        if (hrefPage === currentPage) {
+          link.classList.add('active');
+          link.setAttribute('aria-current', 'page');
+          matched = true;
+        }
+      });
+      // Không bắt buộc: nếu header chưa có mục 'Giới thiệu', matched sẽ là false.
+    }
+
+    (async function init() {
+      await Promise.all([
+        loadFragment('#header-placeholder', '../components/header.html', 'Không thể tải header'),
+        loadFragment('#footer-placeholder', '../components/footer.html', 'Không thể tải footer')
+      ]);
+      highlightActiveNavIfExists();
+    })();
+  </script>
+</body>
+</html>
