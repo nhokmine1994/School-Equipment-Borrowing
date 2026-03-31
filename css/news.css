@@ -1,0 +1,150 @@
+/* news.css - style rieng cho trang tin tuc */
+
+.news-title-bar {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #9fc6e6;
+  border: 2px solid #2f8dd8;
+  margin: 0.5rem 0.5rem 0.4rem;
+  border-radius: 4px;
+}
+
+.news-title-bar h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0b56bd;
+  line-height: 1.2;
+}
+
+.news-main {
+  background: #dce9ef;
+  padding: 0.9rem 1rem 1.2rem;
+}
+
+.news-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.news-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.news-thumb {
+  flex: 0 0 42%;
+  width: 42%;
+  height: auto;
+  aspect-ratio: 16 / 10; /* Common news aspect ratio to keep rows even */
+  object-fit: cover;
+  object-position: center;
+  background: #e6eef4;
+}
+
+.news-content {
+  flex: 1;
+  padding: 12px 12px 14px;
+}
+
+.news-title {
+  color: #111111;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.news-time {
+  font-size: 13px;
+  color: #6b6b6b;
+  margin-bottom: 4px;
+}
+
+.news-source {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2f2f2f;
+  margin-bottom: 6px;
+}
+
+.news-desc {
+  color: #4f4f4f;
+  font-size: 14px;
+  line-height: 1.5;
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 1280px) {
+  .news-title {
+    font-size: 19px;
+  }
+}
+
+@media (max-width: 980px) {
+  .news-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .news-title {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .news-title-bar {
+    min-height: 56px;
+  }
+
+  .news-title-bar h1 {
+    font-size: 1.5rem;
+  }
+
+  .news-main {
+    padding: 0.8rem 0.7rem 1rem;
+  }
+
+  .news-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .news-card {
+    flex-direction: column;
+  }
+
+  .news-thumb {
+    width: 100%;
+    flex-basis: auto;
+    height: 180px;
+  }
+
+  .news-title {
+    font-size: 17px;
+  }
+
+  .news-time,
+  .news-source,
+  .news-desc {
+    font-size: 13px;
+  }
+}
