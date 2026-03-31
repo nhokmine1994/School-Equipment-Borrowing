@@ -1,0 +1,152 @@
+/* css/body.css */
+
+/* Vùng chính của trang chia layout bằng CSS Grid */
+#app {
+    display: grid;
+    grid-template-columns: 250px 1fr; /* Sidebar 250px, Content phần còn lại */
+    gap: 20px;
+    padding: 20px;
+    min-height: 80vh;
+    max-width: 1200px;
+    margin: 0 auto; /* Căn giữa trang */
+}
+
+/* Các trường hợp màn hình nhỏ, chuyển về 1 cột */
+@media (max-width: 768px) {
+    #app {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Sidebar bên trái */
+.sidebar {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    color: #333;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li {
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f3f5;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.2s;
+}
+
+.sidebar li:hover {
+    color: #4CAF50;
+}
+
+/* Nội dung bên phải */
+.content {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.content h1 {
+    margin-top: 0;
+    color: #2c3e50;
+    margin-bottom: 25px;
+}
+
+/* CSS Grid cho thẻ thiết bị (Cards) */
+.equipment-grid {
+    display: grid;
+    /* Mặc định hiển thị 4 cột, có thể đổi thành 3 nếu muốn to hơn */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+/* Responsive cho Tablet */
+@media (max-width: 992px) {
+    .equipment-grid {
+        /* Tablet sẽ tự xuống 2 cột */
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Responsive cho Mobile */
+@media (max-width: 576px) {
+    .equipment-grid {
+        /* Điện thoại sẽ tự chỉnh về 1 cột */
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Styling cho từng 1 Card thiết bị */
+.equipment-card {
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.equipment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+/* Vùng hiển thị ảnh (giả sử có thể dùng placeholder) */
+.equipment-image {
+    width: 100%;
+    height: 150px;
+    background-color: #f1f5f9;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.equipment-card h3 {
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin: 0 0 10px 0;
+}
+
+.equipment-card p {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin: 0 0 15px 0;
+    flex-grow: 1; /* Đẩy button xuống cuối */
+}
+
+.equipment-card button {
+    background-color: #10b981;
+    color: #ffffff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    width: 100%;
+    transition: background-color 0.2s ease;
+}
+
+.equipment-card button:hover {
+    background-color: #059669;
+}
