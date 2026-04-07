@@ -1,36 +1,61 @@
-// ============================================
-//  Hamburger Menu Toggle (dùng chung mọi trang)
-// ============================================
+document.addEventListener("DOMContentLoaded", () => {
+    const loginBtn = document.getElementById("loginBtn");
+    const registerBtn = document.getElementById("registerBtn");
+    
+    const authModal = document.getElementById("authModal");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    
+    const loginFormContainer = document.getElementById("loginFormContainer");
+    const registerFormContainer = document.getElementById("registerFormContainer");
+    
+    const switchToRegister = document.getElementById("switchToRegister");
+    const switchToLogin = document.getElementById("switchToLogin");
 
-const hamburgerBtn = document.getElementById('hamburgerBtn');
-const navLinks     = document.getElementById('navLinks');
-const navTabs      = document.querySelectorAll('.nav-tab');
-
-if (hamburgerBtn && navLinks) {
-
-  hamburgerBtn.addEventListener('click', function () {
-    const isOpen = navLinks.classList.toggle('open');
-    hamburgerBtn.classList.toggle('open', isOpen);
-    hamburgerBtn.setAttribute('aria-expanded', isOpen);
-  });
-
-  navTabs.forEach(function (tab) {
-    tab.addEventListener('click', function () {
-      navTabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      navLinks.classList.remove('open');
-      hamburgerBtn.classList.remove('open');
-      hamburgerBtn.setAttribute('aria-expanded', false);
-    });
-  });
-
-  document.addEventListener('click', function (e) {
-    const nav = document.getElementById('mainNav');
-    if (nav && !nav.contains(e.target)) {
-      navLinks.classList.remove('open');
-      hamburgerBtn.classList.remove('open');
-      hamburgerBtn.setAttribute('aria-expanded', false);
+    function openModal(type) {
+        authModal.style.display = "flex";
+        if (type === "login") {
+            loginFormContainer.style.display = "block";
+            registerFormContainer.style.display = "none";
+        } else {
+            loginFormContainer.style.display = "none";
+            registerFormContainer.style.display = "block";
+        }
     }
-  });
 
-}
+    function closeModal() {
+        authModal.style.display = "none";
+    }
+
+    if (loginBtn) {
+        loginBtn.addEventListener("click", () => openModal("login"));
+    }
+
+    if (registerBtn) {
+        registerBtn.addEventListener("click", () => openModal("register"));
+    }
+
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener("click", closeModal);
+    }
+
+    // click outside to close
+    window.addEventListener("click", (e) => {
+        if (e.target === authModal) {
+            closeModal();
+        }
+    });
+
+    if (switchToRegister) {
+        switchToRegister.addEventListener("click", (e) => {
+            e.preventDefault();
+            openModal("register");
+        });
+    }
+
+    if (switchToLogin) {
+        switchToLogin.addEventListener("click", (e) => {
+            e.preventDefault();
+            openModal("login");
+        });
+    }
+});
