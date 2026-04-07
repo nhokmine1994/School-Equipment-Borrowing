@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEB - Hệ thống mượn/trả thiết bị Lộc An</title>
+  <link rel="stylesheet" href="CSS/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+  <div class="system-container">
+
+    <!-- 1. Header Elements -->
+    <header class="header-banner">
+      <div class="header-logo-box">
+        <img src="Images/logo.png" alt="Logo Lộc An">
+      </div>
+      <div class="header-title-group">
+        <h2>TRƯỜNG TRUNG HỌC CƠ SỞ LỘC AN</h2>
+        <h1>HỆ THỐNG MƯỢN/TRẢ THIẾT BỊ ( SEB )</h1>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn"><i class="far fa-user"></i></button>
+        <button class="icon-btn"><i class="fas fa-pencil-alt"></i></button>
+      </div>
+    </header>
+
+    <!-- 2. Navigation -->
+    <nav class="nav-bar">
+      <a href="#" class="nav-tab active">Trang chủ</a>
+      <a href="#" class="nav-tab">Kho thiết bị</a>
+      <a href="#" class="nav-tab">Đăng ký phòng học</a>
+      <a href="#" class="nav-tab">Kho cá nhân</a>
+      <a href="#" class="nav-tab">Tin tức</a>
+      <a href="#" class="nav-tab">Liên hệ</a>
+    </nav>
+
+    <!-- 3. Search Bar -->
+    <div class="search-container">
+      <div class="search-pill">
+        <i class="fas fa-search search-icon-left"></i>
+        <input type="text" placeholder="Tìm kiếm thiết bị">
+        <i class="fas fa-camera search-icon-right"></i>
+        <i class="fas fa-microphone search-icon-right"></i>
+      </div>
+    </div>
+
+    <!-- 4. Hero / Summary Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-title">THIẾT BỊ HIỆN CÓ</div>
+        <div class="stat-value">2,580</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">BẢO TRÌ</div>
+        <div class="stat-value">3</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">ĐÃ MƯỢN</div>
+        <div class="stat-value">18</div>
+      </div>
+    </div>
+
+    <!-- 5. Main Equipment Grid ("Thiết bị mượn gần đây") -->
+    <section class="section-wrapper">
+      <div class="section-heading">
+        <i class="far fa-clock"></i>
+        Thiết bị mượn gần đây
+      </div>
+
+      <div class="equipment-container">
+        <div class="equipment-grid">
+          <!-- Card 1 -->
+          <div class="equipment-card">
+            <div class="equipment-img-box">
+              <img src="Images/cân.jpg" alt="Cân" onerror="this.src='https://via.placeholder.com/80';">
+            </div>
+            <div class="equipment-info">
+              <div class="equipment-name">CÂN SHIMADZU<br>B322</div>
+              <div class="equipment-time">1 giờ trước</div>
+            </div>
+          </div>
+          <!-- Card 2 -->
+          <div class="equipment-card">
+            <div class="equipment-img-box">
+              <img src="Images/nhiet ke.jpg" alt="Nhiệt kế" onerror="this.src='https://via.placeholder.com/80';">
+            </div>
+            <div class="equipment-info">
+              <div class="equipment-name">NHIỆT KẾ 100 ĐỘ</div>
+              <div class="equipment-time">1 giờ trước</div>
+            </div>
+          </div>
+          <!-- Card 3 -->
+          <div class="equipment-card">
+            <div class="equipment-img-box">
+              <img src="Images/thước đo độ.jpg" alt="Thước đo độ" onerror="this.src='https://via.placeholder.com/80';">
+            </div>
+            <div class="equipment-info">
+              <div class="equipment-name">THƯỚC ĐO ĐỘ</div>
+              <div class="equipment-time">2 giờ trước</div>
+            </div>
+          </div>
+          <!-- Card 4 -->
+          <div class="equipment-card">
+            <div class="equipment-img-box">
+              <img src="Images/Laptop.jpg" alt="Laptop" onerror="this.src='https://via.placeholder.com/80';">
+            </div>
+            <div class="equipment-info">
+              <div class="equipment-name">LAPTOP DELL<br>XPS 2021</div>
+              <div class="equipment-time">2 giờ trước</div>
+            </div>
+          </div>
+          <!-- Card 5 -->
+          <div class="equipment-card">
+            <div class="equipment-img-box">
+              <img src="Images/màn hình dell.png" alt="Màn hình" onerror="this.src='https://via.placeholder.com/80';">
+            </div>
+            <div class="equipment-info">
+              <div class="equipment-name">MÀN HÌNH DELL<br>S2423</div>
+              <div class="equipment-time">3 giờ trước</div>
+            </div>
+          </div>
+          <!-- Card 6 -->
+          <div class="equipment-card">
+            <div class="equipment-img-box">
+              <img src="Images/bộ lực kế.png" alt="Bộ lực kế" onerror="this.src='https://via.placeholder.com/80';">
+            </div>
+            <div class="equipment-info">
+              <div class="equipment-name">BỘ LỰC KẾ</div>
+              <div class="equipment-time">5 giờ trước</div>
+            </div>
+          </div>
+          <!-- Card 7 -->
+          <div class="equipment-card">
+            <div class="equipment-img-box">
+              <img src="Images/bảng mẫu vật kim loại.jpg" alt="Bảng mẫu vật kim loại"
+                onerror="this.src='https://via.placeholder.com/80';">
+            </div>
+            <div class="equipment-info">
+              <div class="equipment-name">BẢNG DEMO<br>MẪU KIM LOẠI</div>
+              <div class="equipment-time">1 ngày trước</div>
+            </div>
+          </div>
+          <!-- Card 8 -->
+          <div class="equipment-card">
+            <div class="equipment-img-box">
+              <img src="Images/địa cầu để bàn.jpg" alt="Địa cầu để bàn"
+                onerror="this.src='https://via.placeholder.com/80';">
+            </div>
+            <div class="equipment-info">
+              <div class="equipment-name">ĐỊA CẦU ĐỂ BÀN</div>
+              <div class="equipment-time">1 ngày trước</div>
+            </div>
+          </div>
+          <!-- Card 9 -->
+          <div class="equipment-card">
+            <div class="equipment-img-box">
+              <img src="Images/mô hình arn.jpg" alt="Mô hình ARN" onerror="this.src='https://via.placeholder.com/80';">
+            </div>
+            <div class="equipment-info">
+              <div class="equipment-name">MÔ PHỎNG RNA</div>
+              <div class="equipment-time">1 ngày trước</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- See More Button -->
+        <div class="see-more-container">
+          <button class="btn-see-more">Xem thêm <i class="fas fa-chevron-down"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Maintenance / Updates Section -->
+    <section class="section-wrapper">
+      <div class="section-heading">
+        <i class="fas fa-tools"></i>
+        Thông tin bảo trì/cập nhật
+      </div>
+      <div class="maintenance-content">
+        <div class="maintenance-item">
+          <i class="fas fa-paperclip"></i>
+          <span>Phòng máy PM102 bảo trì định kỳ 20/12/2025</span>
+        </div>
+        <div class="maintenance-item">
+          <i class="fas fa-paperclip"></i>
+          <span>Bổ sung máy chiếu cho phòng hội nghị HN108</span>
+        </div>
+        <div class="maintenance-item">
+          <i class="fas fa-paperclip"></i>
+          <span>Hoàn thành sửa chữa tivi phòng học PH305</span>
+        </div>
+
+        <!-- See More Button cho Bảo trì -->
+        <div class="see-more-container">
+          <button class="btn-see-more">Xem thêm <i class="fas fa-chevron-down"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        Copyright 2025<br>
+        Website này là tài sản thuộc quyền sở hữu hợp pháp của OFM.<br>
+        Nội dung, hình ảnh và mã nguồn được bảo hộ theo quy định pháp luật hiện hành.<br>
+        Mọi thông tin chi tiết xin liên hệ<br>
+        Hotline: 0344655621
+      </div>
+      <div class="footer-tip">
+        <i class="far fa-lightbulb"></i>
+        Bạn có thể quét mã QR để mượn, trả và báo hỏng thiết bị nhanh chóng !
+      </div>
+    </footer>
+
+  </div>
+
+</body>
+
+</html>
