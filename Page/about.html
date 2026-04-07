@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEB - Liên hệ</title>
+  <link rel="stylesheet" href="../CSS/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* 2 thành viên mỗi dòng cho phần đội ngũ */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 25px;
+    }
+
+    /* Căn layout: nhiệm vụ trên, hình giữa, tên dưới */
+    .team-card .equipment-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .team-card {
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .team-card .equipment-time {
+      width: 100%;
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background-color: var(--primary-blue);
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      border-radius: 10px;
+    }
+
+    .team-card .equipment-img-box {
+      margin: 10px 0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .team-card .equipment-name {
+      margin-top: 10px;
+    }
+
+    .team-contact {
+      width: 100%;
+      margin-top: 8px;
+      padding: 8px 10px;
+      border: 1px dashed var(--container-border);
+      border-radius: 8px;
+      font-size: 13px;
+      text-align: center;
+      line-height: 1.5;
+      color: var(--text-dark);
+      background: #f8fcff;
+    }
+
+    @media (max-width: 768px) {
+      .team-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="system-container">
+
+    <!-- Header -->
+    <header class="header-banner">
+      <div class="header-logo-box">
+        <img src="../Images/logo.png" alt="Logo Lộc An">
+      </div>
+      <div class="header-title-group">
+        <h2>TRƯỜNG TRUNG HỌC CƠ SỞ LỘC AN</h2>
+        <h1>HỆ THỐNG MƯỢN/TRẢ THIẾT BỊ ( SEB )</h1>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn"><i class="far fa-user"></i></button>
+        <button class="icon-btn"><i class="fas fa-pencil-alt"></i></button>
+      </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-bar">
+      <a href="../index.html" class="nav-tab">Trang chủ</a>
+      <a href="kho_thiet_bi.html" class="nav-tab">Kho thiết bị</a>
+      <a href="#" class="nav-tab">Đăng ký phòng học</a>
+      <a href="kho-ca-nhan.html" class="nav-tab">Kho cá nhân</a>
+      <a href="#" class="nav-tab">Tin tức</a>
+      <a href="about.html" class="nav-tab active">Liên hệ</a>
+    </nav>
+
+    <!-- Giới thiệu liên hệ -->
+    <section class="section-wrapper">
+      <div class="section-heading">
+        <i class="fas fa-address-book"></i>
+        Liên hệ
+      </div>
+      <div class="maintenance-content">
+        <p>
+          Đây là trang liên hệ của dự án SEB. Bạn có thể liên hệ trực tiếp từng thành viên phụ trách bên dưới
+          để trao đổi công việc, hỗ trợ kỹ thuật và phối hợp triển khai.
+        </p>
+        <p>
+          Thông tin SĐT và Email đang để sẵn vị trí để cập nhật thêm sau.
+        </p>
+      </div>
+    </section>
+
+    <!-- Đội ngũ phát triển -->
+    <section class="section-wrapper">
+      <div class="section-heading">
+        <i class="far fa-id-badge"></i>
+        Đội ngũ phát triển
+      </div>
+
+      <div class="equipment-container">
+        <div class="equipment-grid team-grid">
+          <!-- Phạm Công Hậu -->
+          <div class="equipment-card team-card">
+            <div class="equipment-info">
+              <div class="equipment-time">
+                Project Manager
+              </div>
+              <div class="equipment-img-box">
+                <img src="https://via.placeholder.com/80" alt="Phạm Công Hậu">
+              </div>
+              <div class="equipment-name">PHẠM CÔNG HẬU</div>
+              <div class="team-contact">
+                SĐT: cập nhật sau<br>
+                Email: cập nhật sau
+              </div>
+            </div>
+          </div>
+
+          <!-- Đặng Bắc Nam -->
+          <div class="equipment-card team-card">
+            <div class="equipment-info">
+              <div class="equipment-time">
+                Business Analyst
+              </div>
+              <div class="equipment-img-box">
+                <img src="https://via.placeholder.com/80" alt="Đặng Bắc Nam">
+              </div>
+              <div class="equipment-name">ĐẶNG BẮC NAM</div>
+              <div class="team-contact">
+                SĐT: cập nhật sau<br>
+                Email: cập nhật sau
+              </div>
+            </div>
+          </div>
+
+          <!-- Lò Văn Duẫn -->
+          <div class="equipment-card team-card">
+            <div class="equipment-info">
+              <div class="equipment-time">
+                Software Developer
+              </div>
+              <div class="equipment-img-box">
+                <img src="https://via.placeholder.com/80" alt="Lò Văn Duẫn">
+              </div>
+              <div class="equipment-name">LÒ VĂN DUẪN</div>
+              <div class="team-contact">
+                SĐT: cập nhật sau<br>
+                Email: cập nhật sau
+              </div>
+            </div>
+          </div>
+
+          <!-- Nguyễn Thị Bích Hằng -->
+          <div class="equipment-card team-card">
+            <div class="equipment-info">
+              <div class="equipment-time">
+                UI/UX Designer
+              </div>
+              <div class="equipment-img-box">
+                <img src="https://via.placeholder.com/80" alt="Nguyễn Thị Bích Hằng">
+              </div>
+              <div class="equipment-name">NGUYỄN THỊ BÍCH HẰNG</div>
+              <div class="team-contact">
+                SĐT: cập nhật sau<br>
+                Email: cập nhật sau
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Ghi chú liên hệ -->
+    <section class="section-wrapper">
+      <div class="section-heading">
+        <i class="fas fa-circle-info"></i>
+        Ghi chú liên hệ
+      </div>
+      <div class="maintenance-content">
+        <p>
+          Bạn có thể bổ sung SĐT, Email hoặc các kênh liên hệ khác (Zalo, Facebook, GitHub) cho từng thành viên.
+        </p>
+        <p>
+          Khi cần, mình có thể giúp bạn thêm nút gọi nhanh hoặc mailto để bấm là liên hệ trực tiếp.
+        </p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        Copyright 2026<br>
+        Website này là tài sản thuộc quyền sở hữu hợp pháp của SEB.<br>
+        Nội dung, hình ảnh và mã nguồn được bảo hộ theo quy định pháp luật hiện hành.<br>
+        Mọi thông tin chi tiết xin liên hệ<br>
+        Hotline: 0344655621
+      </div>
+      <div class="footer-tip">
+        <i class="far fa-lightbulb"></i>
+        Bạn có thể quét mã QR để mượn, trả và báo hỏng thiết bị nhanh chóng !
+      </div>
+    </footer>
+
+  </div>
+
+</body>
+
+</html>
+
