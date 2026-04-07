@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kho Cá Nhân</title>
+    <!-- Chèn main.css trong thẻ head -->
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/body.css">
+    <link rel="stylesheet" href="../css/card.css">
+    <link rel="stylesheet" href="../css/modal.css">
+</head>
+
+<body>
+    <!-- Header component -->
+    <div id="header-placeholder">Đang tải header...</div>
+
+    <script>
+        async function loadHeader() {
+            try {
+                const res = await fetch('../components/header.html');
+                if (!res.ok) throw new Error('Không thể tải header');
+                const html = await res.text();
+                document.getElementById('header-placeholder').innerHTML = html;
+            } catch (err) {
+                console.error(err);
+                document.getElementById('header-placeholder').innerHTML = '<p style="color:red;">Không tải được header. Kiểm tra đường dẫn components/header.html.</p>';
+            }
+        }
+        loadHeader();
+    </script>
+
+    <div id="app">
+        <aside class="sidebar">
+            <h3 style="margin-bottom: 15px;">Lịch sử mượn gần đây</h3>
+            <ul id="borrow-history-list" style="list-style: none; padding: 0; margin: 0;">
+                <!-- Dữ liệu borrowHistory render ở đây -->
+                <li style="color: #64748b; font-size: 0.9rem;">Chưa có lịch sử mượn.</li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <h1>Kho Cá Nhân</h1>
+            <div class="search-bar" style="margin-bottom: 25px; display: flex; gap: 15px;">
+                <select id="filter-category"
+                    style="flex: 1; padding: 12px 15px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1.05rem; outline: none; transition: border-color 0.2s; cursor: pointer;">
+                    <option value="">Tất cả danh mục</option>
+                    <option value="CNTT">CNTT</option>
+                    <option value="Âm thanh">Âm thanh</option>
+                    <option value="Trình chiếu">Trình chiếu</option>
+                    <option value="Phòng lab">Phòng lab</option>
+                    <option value="Dụng cụ thực hành">Dụng cụ thực hành</option>
+                    <option value="Hóa chất">Hóa chất</option>
+                    <option value="Khác">Khác</option>
+                </select>
+                <select id="filter-subject"
+                    style="flex: 1; padding: 12px 15px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1.05rem; outline: none; transition: border-color 0.2s; cursor: pointer;">
+                    <option value="">Tất cả môn học</option>
+                    <option value="Vật lý">Vật lý</option>
+                    <option value="Hóa học">Hóa học</option>
+                    <option value="Sinh học">Sinh học</option>
+                    <option value="Tin học">Tin học</option>
+                    <option value="Chung">Khác / Dùng chung</option>
+                </select>
+            </div>
+            <div class="equipment-grid" id="equipment-grid">
+                <!-- Data will be rendered here by ../javascript/kho_thiet_bi.js -->
+            </div>
+
+            <!-- Phân Trang (Pagination) -->
+            <div id="pagination-container" class="pagination"></div>
+        </main>
+    </div>
+
+    <div id="footer-placeholder">Đang tải footer...</div>
+
+    <script>
+        async function loadFooter() {
+            try {
+                const res = await fetch('../components/footer.html');
+                if (!res.ok) throw new Error('Không thể tải footer');
+                const html = await res.text();
+                document.getElementById('footer-placeholder').innerHTML = html;
+            } catch (err) {
+                console.error(err);
+                document.getElementById('footer-placeholder').innerHTML = '<p style="color:red;">Không tải được footer. Kiểm tra đường dẫn components/footer.html.</p>';
+            }
+        }
+        loadFooter();
+    </script>
+    <script src="../javascript/device_modal.js"></script>
+    <script src="../javascript/kho_thiet_bi.js"></script>
+
+</body>
+
+</html>

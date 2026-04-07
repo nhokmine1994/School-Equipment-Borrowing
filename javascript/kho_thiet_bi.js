@@ -14,6 +14,18 @@ function renderCard(device) {
     const btnState = isUnavailable ? 'disabled' : '';
     const btnText = isUnavailable ? 'Chờ nhập kho' : 'Mượn';
 
+    const isPersonalPage = window.location.pathname.includes('kho-ca-nhan.html');
+    let actionsHtml = '';
+    
+    if (isPersonalPage) {
+        actionsHtml = `<button class="btn-borrow" style="width: 100%; margin: 0; display: block;" ${btnState} onclick="handleBorrow('${device.id}')">${btnText}</button>`;
+    } else {
+        actionsHtml = `
+            <button class="btn-borrow" ${btnState} onclick="handleBorrow('${device.id}')">${btnText}</button>
+            <button class="btn-add" onclick="handleAdd('${device.id}')">Thêm</button>
+        `;
+    }
+
     return `
         <div class="device-card" 
              data-name="${device.name}" 
@@ -28,19 +40,53 @@ function renderCard(device) {
                 <p><strong>Trạng thái:</strong> <span class="status ${statusClass}">${statusText}</span></p>
             </div>
             <div class="device-actions">
-                <button class="btn-borrow" ${btnState} onclick="handleBorrow('${device.id}')">${btnText}</button>
-                <button class="btn-add" onclick="handleAdd('${device.id}')">Thêm</button>
+                ${actionsHtml}
             </div>
         </div>
     `;
 }
 
 function handleBorrow(id) {
-    alert('Thao tác mượn thiết bị: ' + id);
+    const device = allDevices.find(d => d.id === id);
+    if (!device) return;
+    
+    let borrowHistory = JSON.parse(localStorage.getItem('borrowHistory')) || [];
+    const borrowRecord = {
+        ...device,
+        borrowDate: new Date().toISOString(),
+    };
+    borrowHistory.push(borrowRecord);
+    localStorage.setItem('borrowHistory', JSON.stringify(borrowHistory));
+    
+    alert('Đã ghi nhận mượn thiết bị: ' + device.name);
+    
+    const isPersonalPage = window.location.pathname.includes('kho-ca-nhan.html');
+    if (isPersonalPage) {
+        let myDevices = JSON.parse(localStorage.getItem('myDevices')) || [];
+        myDevices = myDevices.filter(d => d.id !== id);
+        localStorage.setItem('myDevices', JSON.stringify(myDevices));
+        
+        allDevices = myDevices;
+        applyFilters();
+    }
+    
+    if (typeof window.renderBorrowHistorySidebar === 'function') {
+        window.renderBorrowHistorySidebar();
+    }
 }
 
 function handleAdd(id) {
-    alert('Thao tác thêm thiết bị vào phiếu báo: ' + id);
+    const device = allDevices.find(d => d.id === id);
+    if (!device) return;
+    
+    let myDevices = JSON.parse(localStorage.getItem('myDevices')) || [];
+    if (!myDevices.find(d => d.id === id)) {
+        myDevices.push(device);
+        localStorage.setItem('myDevices', JSON.stringify(myDevices));
+        alert('Đã thêm thiết bị vào kho cá nhân: ' + device.name);
+    } else {
+        alert('Thiết bị này đã có trong kho cá nhân!');
+    }
 }
 
 function renderPage(page) {
@@ -137,15 +183,31 @@ function setupFilters() {
             applyFilters();
         }, 300));
     }
+    
+    const filterCategory = document.getElementById('filter-category');
+    if (filterCategory) filterCategory.addEventListener('change', applyFilters);
+    
+    const filterSubject = document.getElementById('filter-subject');
+    if (filterSubject) filterSubject.addEventListener('change', applyFilters);
 }
 
 function applyFilters() {
     const checkedBoxes = Array.from(document.querySelectorAll('.filter-checkbox:checked'));
-    const selectedCategories = checkedBoxes.filter(cb => cb.dataset.type === 'category').map(cb => cb.value);
-    const selectedSubjects = checkedBoxes.filter(cb => cb.dataset.type === 'subject').map(cb => cb.value);
+    let selectedCategories = checkedBoxes.filter(cb => cb.dataset.type === 'category').map(cb => cb.value);
+    let selectedSubjects = checkedBoxes.filter(cb => cb.dataset.type === 'subject').map(cb => cb.value);
 
     const searchInput = document.getElementById('search-input');
     const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+    const filterCategory = document.getElementById('filter-category');
+    if (filterCategory && filterCategory.value) {
+        selectedCategories.push(filterCategory.value);
+    }
+
+    const filterSubject = document.getElementById('filter-subject');
+    if (filterSubject && filterSubject.value) {
+        selectedSubjects.push(filterSubject.value);
+    }
 
     filteredDevices = allDevices.filter(device => {
         const matchCategory = selectedCategories.length === 0 || selectedCategories.includes(device.category);
@@ -181,19 +243,62 @@ function renderSkeleton() {
     grid.innerHTML = skeletonHTML;
 }
 
+window.renderBorrowHistorySidebar = function() {
+    const listEl = document.getElementById('borrow-history-list');
+    if (!listEl) return;
+    
+    const borrowHistory = JSON.parse(localStorage.getItem('borrowHistory')) || [];
+    if (borrowHistory.length === 0) {
+        listEl.innerHTML = '<li style="color: #64748b; font-size: 0.9rem;">Chưa có lịch sử mượn.</li>';
+        return;
+    }
+    
+    const recent = [...borrowHistory].reverse().slice(0, 5);
+    listEl.innerHTML = recent.map(item => {
+        const dateObj = new Date(item.borrowDate);
+        const date = dateObj.toLocaleDateString('vi-VN');
+        const time = dateObj.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        
+        return `
+            <li style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; display: flex; gap: 12px; align-items: flex-start;">
+                <div style="width: 44px; height: 44px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center;">
+                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; transform: scale(0.65);">
+                        ${item.image}
+                    </div>
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; color: #1e293b; font-size: 0.95rem; line-height: 1.3; margin-bottom: 4px;">${item.name}</div>
+                    <div style="font-size: 0.8rem; color: #64748b; display: flex; align-items: center; gap: 4px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        ${time} - ${date}
+                    </div>
+                </div>
+            </li>
+        `;
+    }).join('');
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
     const grid = document.getElementById('equipment-grid');
     if (grid) {
-        // Chủ động render Skeleton skeleton giả lập Loading... ngay khi page mở
         renderSkeleton();
         
         try {
-            // Giả lập đường truyền mạng delay nhẹ (600ms) để Admin có thể xem được hiệu ứng Skeleton skeleton
             await new Promise(resolve => setTimeout(resolve, 600));
 
-            const res = await fetch('../data/devices.json');
-            if (!res.ok) throw new Error('Mã lỗi HTTP: ' + res.status);
-            allDevices = await res.json();
+            const isPersonalPage = window.location.pathname.includes('kho-ca-nhan.html');
+            
+            if (isPersonalPage) {
+                const stored = localStorage.getItem('myDevices');
+                allDevices = stored ? JSON.parse(stored) : [];
+                if (typeof window.renderBorrowHistorySidebar === 'function') {
+                    window.renderBorrowHistorySidebar();
+                }
+            } else {
+                const res = await fetch('../data/devices.json');
+                if (!res.ok) throw new Error('Mã lỗi HTTP: ' + res.status);
+                allDevices = await res.json();
+            }
             
             applyFilters();
             setupFilters();
