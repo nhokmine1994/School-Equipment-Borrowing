@@ -4,143 +4,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kho Thiết Bị</title>
-    <!-- Chèn main.css trong thẻ head -->
-    <link rel="stylesheet" href="../css/main.css">
+    <title>SEB - Kho thiết bị</title>
+    <link rel="stylesheet" href="../../../CSS/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/body.css">
     <link rel="stylesheet" href="../css/card.css">
     <link rel="stylesheet" href="../css/modal.css">
+    <style>
+        #app {
+            padding-top: 25px;
+            padding-bottom: 25px;
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Header component -->
-    <div id="header-placeholder">Đang tải header...</div>
+    <div class="system-container">
+        <header class="header-banner">
+            <div class="header-logo-box">
+                <img src="../../../Images/logo.png" alt="Logo Lộc An">
+            </div>
+            <div class="header-title-group">
+                <h2>TRƯỜNG TRUNG HỌC CƠ SỞ LỘC AN</h2>
+                <h1>HỆ THỐNG MƯỢN/TRẢ THIẾT BỊ ( SEB )</h1>
+            </div>
+            <div class="header-right">
+                <button class="icon-btn"><i class="far fa-user"></i></button>
+                <button class="icon-btn"><i class="fas fa-pencil-alt"></i></button>
+            </div>
+        </header>
 
-    <script>
-        async function loadHeader() {
-            try {
-                const res = await fetch('../components/header.html');
-                if (!res.ok) throw new Error('Không thể tải header');
-                const html = await res.text();
-                document.getElementById('header-placeholder').innerHTML = html;
-            } catch (err) {
-                console.error(err);
-                document.getElementById('header-placeholder').innerHTML = '<p style="color:red;">Không tải được header. Kiểm tra đường dẫn components/header.html.</p>';
-            }
-        }
-        loadHeader();
-    </script>
+        <nav class="nav-bar">
+            <a href="../../../index.html" class="nav-tab">Trang chủ</a>
+            <a href="kho_thiet_bi.html" class="nav-tab active">Kho thiết bị</a>
+            <a href="#" class="nav-tab">Đăng ký phòng học</a>
+            <a href="kho-ca-nhan.html" class="nav-tab">Kho cá nhân</a>
+            <a href="#" class="nav-tab">Tin tức</a>
+            <a href="../../../Page/about.html" class="nav-tab">Liên hệ</a>
+        </nav>
 
-    <div id="app">
-        <aside class="sidebar">
-            <h3>Danh mục</h3>
-            <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" class="filter-checkbox" value="CNTT" data-type="category"
-                        style="width: 1rem; height: 1rem;"> CNTT
-                </label>
-            </div>
-            <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" class="filter-checkbox" value="Âm thanh" data-type="category"
-                        style="width: 1rem; height: 1rem;"> Âm thanh
-                </label>
-            </div>
-            <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" class="filter-checkbox" value="Trình chiếu" data-type="category"
-                        style="width: 1rem; height: 1rem;"> Trình chiếu
-                </label>
-            </div>
-            <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" class="filter-checkbox" value="Phòng lab" data-type="category"
-                        style="width: 1rem; height: 1rem;"> Phòng lab
-                </label>
-            </div>
-            <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" class="filter-checkbox" value="Dụng cụ thực hành" data-type="category"
-                        style="width: 1rem; height: 1rem;"> Dụng cụ thực hành
-                </label>
-            </div>
-            <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" class="filter-checkbox" value="Hóa chất" data-type="category"
-                        style="width: 1rem; height: 1rem;"> Hóa chất
-                </label>
-            </div>
-            <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" class="filter-checkbox" value="Khác" data-type="category"
-                        style="width: 1rem; height: 1rem;"> Khác
-                </label>
+        <section class="section-wrapper">
+            <div class="section-heading">
+                <i class="fas fa-boxes-stacked"></i>
+                Kho thiết bị
             </div>
 
-            <h3 style="margin-top: 25px;">Môn học</h3>
-            <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" class="filter-checkbox" value="Vật lý" data-type="subject"
-                        style="width: 1rem; height: 1rem;"> Vật lý
-                </label>
-            </div>
-            <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" class="filter-checkbox" value="Hóa học" data-type="subject"
-                        style="width: 1rem; height: 1rem;"> Hóa học
-                </label>
-            </div>
-            <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" class="filter-checkbox" value="Sinh học" data-type="subject"
-                        style="width: 1rem; height: 1rem;"> Sinh học
-                </label>
-            </div>
-            <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" class="filter-checkbox" value="Tin học" data-type="subject"
-                        style="width: 1rem; height: 1rem;"> Tin học
-                </label>
-            </div>
-            <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" class="filter-checkbox" value="Chung" data-type="subject"
-                        style="width: 1rem; height: 1rem;"> Khác / Dùng chung
-                </label>
-            </div>
-        </aside>
+            <div id="app">
+                <aside class="sidebar">
+                    <h3>Danh mục</h3>
+                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" class="filter-checkbox" value="CNTT" data-type="category"
+                                style="width: 1rem; height: 1rem;"> CNTT
+                        </label>
+                    </div>
+                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" class="filter-checkbox" value="Âm thanh" data-type="category"
+                                style="width: 1rem; height: 1rem;"> Âm thanh
+                        </label>
+                    </div>
+                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" class="filter-checkbox" value="Trình chiếu" data-type="category"
+                                style="width: 1rem; height: 1rem;"> Trình chiếu
+                        </label>
+                    </div>
+                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" class="filter-checkbox" value="Phòng lab" data-type="category"
+                                style="width: 1rem; height: 1rem;"> Phòng lab
+                        </label>
+                    </div>
+                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" class="filter-checkbox" value="Dụng cụ thực hành" data-type="category"
+                                style="width: 1rem; height: 1rem;"> Dụng cụ thực hành
+                        </label>
+                    </div>
+                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" class="filter-checkbox" value="Hóa chất" data-type="category"
+                                style="width: 1rem; height: 1rem;"> Hóa chất
+                        </label>
+                    </div>
+                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" class="filter-checkbox" value="Khác" data-type="category"
+                                style="width: 1rem; height: 1rem;"> Khác
+                        </label>
+                    </div>
 
-        <main class="content">
-            <h1>Kho Thiết Bị</h1>
-            <div class="search-bar" style="margin-bottom: 25px;">
-                <input type="text" id="search-input" placeholder="Nhập tên thiết bị để tìm kiếm..."
-                    style="width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1.05rem; outline: none; box-sizing: border-box; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); transition: border-color 0.2s;">
-            </div>
-            <div class="equipment-grid" id="equipment-grid">
-                <!-- Data will be rendered here by ../javascript/kho_thiet_bi.js -->
-            </div>
+                    <h3 style="margin-top: 25px;">Môn học</h3>
+                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" class="filter-checkbox" value="Vật lý" data-type="subject"
+                                style="width: 1rem; height: 1rem;"> Vật lý
+                        </label>
+                    </div>
+                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" class="filter-checkbox" value="Hóa học" data-type="subject"
+                                style="width: 1rem; height: 1rem;"> Hóa học
+                        </label>
+                    </div>
+                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" class="filter-checkbox" value="Sinh học" data-type="subject"
+                                style="width: 1rem; height: 1rem;"> Sinh học
+                        </label>
+                    </div>
+                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" class="filter-checkbox" value="Tin học" data-type="subject"
+                                style="width: 1rem; height: 1rem;"> Tin học
+                        </label>
+                    </div>
+                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" class="filter-checkbox" value="Chung" data-type="subject"
+                                style="width: 1rem; height: 1rem;"> Khác / Dùng chung
+                        </label>
+                    </div>
+                </aside>
 
-            <!-- Phân Trang (Pagination) -->
-            <div id="pagination-container" class="pagination"></div>
-        </main>
+                <main class="content">
+                    <h1>Kho Thiết Bị</h1>
+                    <div class="search-bar" style="margin-bottom: 25px;">
+                        <input type="text" id="search-input" placeholder="Nhập tên thiết bị để tìm kiếm..."
+                            style="width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1.05rem; outline: none; box-sizing: border-box; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); transition: border-color 0.2s;">
+                    </div>
+                    <div class="equipment-grid" id="equipment-grid">
+                        <!-- Data will be rendered here by ../javascript/kho_thiet_bi.js -->
+                    </div>
+
+                    <div id="pagination-container" class="pagination"></div>
+                </main>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-content">
+                Copyright 2026<br>
+                Website này là tài sản thuộc quyền sở hữu hợp pháp của SEB.<br>
+                Nội dung, hình ảnh và mã nguồn được bảo hộ theo quy định pháp luật hiện hành.<br>
+                Mọi thông tin chi tiết xin liên hệ<br>
+                Hotline: 0344655621
+            </div>
+            <div class="footer-tip">
+                <i class="far fa-lightbulb"></i>
+                Bạn có thể quét mã QR để mượn, trả và báo hỏng thiết bị nhanh chóng !
+            </div>
+        </footer>
     </div>
 
-    <div id="footer-placeholder">Đang tải footer...</div>
-
-    <script>
-        async function loadFooter() {
-            try {
-                const res = await fetch('../components/footer.html');
-                if (!res.ok) throw new Error('Không thể tải footer');
-                const html = await res.text();
-                document.getElementById('footer-placeholder').innerHTML = html;
-            } catch (err) {
-                console.error(err);
-                document.getElementById('footer-placeholder').innerHTML = '<p style="color:red;">Không tải được footer. Kiểm tra đường dẫn components/footer.html.</p>';
-            }
-        }
-        loadFooter();
-    </script>
     <script src="../javascript/device_modal.js"></script>
     <script src="../javascript/kho_thiet_bi.js"></script>
 
