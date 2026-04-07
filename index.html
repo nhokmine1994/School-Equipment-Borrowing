@@ -26,8 +26,8 @@
         <h1>HỆ THỐNG MƯỢN/TRẢ THIẾT BỊ ( SEB )</h1>
       </div>
       <div class="header-right">
-        <button class="icon-btn"><i class="far fa-user"></i></button>
-        <button class="icon-btn"><i class="fas fa-pencil-alt"></i></button>
+        <button class="icon-btn" id="loginBtn"><i class="far fa-user"></i></button>
+        <button class="icon-btn" id="registerBtn"><i class="fas fa-pencil-alt"></i></button>
       </div>
     </header>
 
@@ -207,8 +207,8 @@
     <!-- 7. Footer -->
     <footer class="footer">
       <div class="footer-content">
-        Copyright 2025<br>
-        Website này là tài sản thuộc quyền sở hữu hợp pháp của OFM.<br>
+        Copyright 2026<br>
+        Website này là tài sản thuộc quyền sở hữu hợp pháp của SEB.<br>
         Nội dung, hình ảnh và mã nguồn được bảo hộ theo quy định pháp luật hiện hành.<br>
         Mọi thông tin chi tiết xin liên hệ<br>
         Hotline: 0344655621
@@ -219,8 +219,62 @@
       </div>
     </footer>
 
+    <!-- 8. Modals for Login and Register -->
+    <div id="authModal" class="modal-overlay">
+      <div class="modal-content">
+        <span class="close-btn" id="closeModalBtn">&times;</span>
+        
+        <!-- Login Form -->
+        <div id="loginFormContainer" class="auth-form-container">
+          <h2 class="auth-title">Đăng nhập</h2>
+          <form>
+            <div class="input-group">
+              <label for="loginName">Tên đăng nhập</label>
+              <input type="text" id="loginName" placeholder="Nhập tên đăng nhập">
+            </div>
+            <div class="input-group">
+              <label for="loginPass">Mật khẩu</label>
+              <input type="password" id="loginPass" placeholder="Nhập mật khẩu">
+            </div>
+            <button type="submit" class="submit-btn auth-submit">Đăng nhập</button>
+          </form>
+          <div class="auth-switch">
+             Chưa có tài khoản? <a href="#" id="switchToRegister">Đăng ký ngay</a>
+          </div>
+        </div>
+
+        <!-- Register Form -->
+        <div id="registerFormContainer" class="auth-form-container" style="display: none;">
+          <h2 class="auth-title">Đăng ký</h2>
+          <form>
+            <div class="input-group">
+              <label for="regName">Tên đăng nhập</label>
+              <input type="text" id="regName" placeholder="Nhập tên đăng nhập">
+            </div>
+            <div class="input-group">
+              <label for="regEmail">Email</label>
+              <input type="email" id="regEmail" placeholder="Nhập email">
+            </div>
+            <div class="input-group">
+              <label for="regPass">Mật khẩu</label>
+              <input type="password" id="regPass" placeholder="Tạo mật khẩu">
+            </div>
+            <div class="input-group">
+              <label for="regPassConfirm">Xác nhận mật khẩu</label>
+              <input type="password" id="regPassConfirm" placeholder="Nhập lại mật khẩu">
+            </div>
+            <button type="submit" class="submit-btn auth-submit">Đăng ký</button>
+          </form>
+          <div class="auth-switch">
+             Đã có tài khoản? <a href="#" id="switchToLogin">Đăng nhập ngay</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
+  <script src="Javascript/Java.js"></script>
 </body>
 
 </html>
