@@ -7,8 +7,8 @@
   <title>Tin tức & Thông báo — SEB Lộc An</title>
   <meta name="description"
     content="Cập nhật tin tức, thông báo bảo trì, thiết bị mới và sự kiện từ hệ thống SEB Trường THCS Lộc An.">
-  <link rel="stylesheet" href="CSS/main.css">
-  <link rel="stylesheet" href="CSS/news.css">
+  <link rel="stylesheet" href="../CSS/main.css">
+  <link rel="stylesheet" href="../CSS/news.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -22,7 +22,7 @@
     <!-- 1. Header -->
     <header class="header-banner">
       <div class="header-logo-box">
-        <img src="Images/logo.png" alt="Logo Lộc An">
+        <img src="../Images/logo.png" alt="Logo Lộc An">
       </div>
       <div class="header-title-group">
         <h2>TRƯỜNG TRUNG HỌC CƠ SỞ LỘC AN</h2>
@@ -42,12 +42,12 @@
         <span></span>
       </button>
       <div class="nav-links" id="navLinks">
-        <a href="index.html" class="nav-tab">Trang chủ</a>
-        <a href="#" class="nav-tab">Kho thiết bị</a>
-        <a href="#" class="nav-tab">Đăng ký phòng học</a>
-        <a href="#" class="nav-tab">Kho cá nhân</a>
-        <a href="news.html" class="nav-tab active">Tin tức</a>
-        <a href="#" class="nav-tab">Liên hệ</a>
+        <a href="../index.html" class="nav-tab">Trang chủ</a>
+        <a href="../Page/kho_thiet_bi.html" class="nav-tab">Kho thiết bị</a>
+        <a href="dang-ky-phong-hoc.html" class="nav-tab">Đăng ký phòng học</a>
+        <a href="../Page/kho-ca-nhan.html" class="nav-tab">Kho cá nhân</a>
+        <a href="../Page/news.html" class="nav-tab active">Tin tức</a>
+        <a href="../Page/about.html" class="nav-tab">Liên hệ</a>
       </div>
     </nav>
 
@@ -99,9 +99,9 @@
         <i class="fas fa-star"></i> Bài viết nổi bật
       </div>
       <div class="news-featured-wrapper">
-        <div class="news-featured-img gradient-su-kien">
-          <i class="fas fa-calendar-star"></i>
-          <span class="news-featured-label">Nổi bật</span>
+        <div class="news-featured-img" style="padding: 0; background: none; position: relative;">
+          <img src="../Images/news_khaigiang.jpg" alt="Lễ khai giảng" style="width: 100%; height: 100%; object-fit: cover;">
+          <span class="news-featured-label" style="position: absolute; top: 15px; left: 15px; z-index: 1;">Nổi bật</span>
         </div>
         <div class="news-featured-content">
           <span class="news-badge badge-su-kien"><i class="fas fa-calendar-alt"></i> Sự kiện</span>
@@ -134,8 +134,8 @@
 
           <!-- Card 1 -->
           <article class="news-card" data-category="bao-tri">
-            <div class="news-card-img gradient-bao-tri">
-              <i class="fas fa-tools"></i>
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_baotri.jpg" alt="Bảo trì" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
             </div>
             <div class="news-card-body">
               <span class="news-badge badge-bao-tri"><i class="fas fa-tools"></i> Bảo trì</span>
@@ -154,8 +154,8 @@
 
           <!-- Card 2 -->
           <article class="news-card" data-category="thiet-bi-moi">
-            <div class="news-card-img gradient-thiet-bi-moi">
-              <i class="fas fa-video"></i>
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_maychieu.jpg" alt="Máy chiếu" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
             </div>
             <div class="news-card-body">
               <span class="news-badge badge-thiet-bi-moi"><i class="fas fa-box-open"></i> Thiết bị mới</span>
@@ -174,8 +174,8 @@
 
           <!-- Card 3 -->
           <article class="news-card" data-category="thong-bao">
-            <div class="news-card-img gradient-thong-bao">
-              <i class="fas fa-bullhorn"></i>
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_quydinh.jpg" alt="Thông báo" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
             </div>
             <div class="news-card-body">
               <span class="news-badge badge-thong-bao"><i class="fas fa-bullhorn"></i> Thông báo</span>
@@ -194,8 +194,8 @@
 
           <!-- Card 4 -->
           <article class="news-card" data-category="thiet-bi-moi">
-            <div class="news-card-img gradient-khoa-hoc">
-              <i class="fas fa-microscope"></i>
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_kinhhienvi.jpg" alt="Kính hiển vi" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
             </div>
             <div class="news-card-body">
               <span class="news-badge badge-thiet-bi-moi"><i class="fas fa-box-open"></i> Thiết bị mới</span>
@@ -214,8 +214,8 @@
 
           <!-- Card 5 -->
           <article class="news-card" data-category="bao-tri">
-            <div class="news-card-img gradient-bao-tri-2">
-              <i class="fas fa-tv"></i>
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_tivi.jpg" alt="Sửa chữa Tivi" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
             </div>
             <div class="news-card-body">
               <span class="news-badge badge-bao-tri"><i class="fas fa-tools"></i> Bảo trì</span>
@@ -234,8 +234,8 @@
 
           <!-- Card 6 -->
           <article class="news-card" data-category="su-kien">
-            <div class="news-card-img gradient-su-kien-2">
-              <i class="fas fa-trophy"></i>
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_giaovien.jpg" alt="Hội thi giáo viên" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
             </div>
             <div class="news-card-body">
               <span class="news-badge badge-su-kien"><i class="fas fa-calendar-alt"></i> Sự kiện</span>
@@ -254,8 +254,8 @@
 
           <!-- Card 7 -->
           <article class="news-card" data-category="thong-bao">
-            <div class="news-card-img gradient-qr">
-              <i class="fas fa-qrcode"></i>
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_qrcode.jpg" alt="Mã QR" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
             </div>
             <div class="news-card-body">
               <span class="news-badge badge-thong-bao"><i class="fas fa-bullhorn"></i> Thông báo</span>
@@ -274,8 +274,8 @@
 
           <!-- Card 8 -->
           <article class="news-card" data-category="thiet-bi-moi">
-            <div class="news-card-img gradient-laptop">
-              <i class="fas fa-laptop"></i>
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_laptop.jpg" alt="Laptop" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
             </div>
             <div class="news-card-body">
               <span class="news-badge badge-thiet-bi-moi"><i class="fas fa-box-open"></i> Thiết bị mới</span>
@@ -294,8 +294,8 @@
 
           <!-- Card 9 -->
           <article class="news-card" data-category="su-kien">
-            <div class="news-card-img gradient-dao-tao">
-              <i class="fas fa-chalkboard-teacher"></i>
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_taphuans.jpg" alt="Tập huấn" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
             </div>
             <div class="news-card-body">
               <span class="news-badge badge-su-kien"><i class="fas fa-calendar-alt"></i> Sự kiện</span>
@@ -348,8 +348,8 @@
 
   </div><!-- /.system-container -->
 
-  <script src="Javascript/Java.js"></script>
-  <script src="Javascript/news.js"></script>
+  <script src="../Javascript/Java.js"></script>
+  <script src="../Javascript/news.js"></script>
 </body>
 
 </html>

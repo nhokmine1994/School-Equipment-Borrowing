@@ -1,9 +1,9 @@
 // javascript/kho_thiet_bi.js
 
-let allDevices = []; 
+let allDevices = [];
 let filteredDevices = [];
 let currentPage = 1;
-const itemsPerPage = 8; 
+const itemsPerPage = 8;
 
 function renderCard(device) {
     const isUnavailable = device.status === 'unavailable';
@@ -16,7 +16,7 @@ function renderCard(device) {
 
     const isPersonalPage = window.location.pathname.includes('kho-ca-nhan.html');
     let actionsHtml = '';
-    
+
     if (isPersonalPage) {
         actionsHtml = `<button class="btn-borrow" style="width: 100%; margin: 0; display: block;" ${btnState} onclick="handleBorrow('${device.id}')">${btnText}</button>`;
     } else {
@@ -49,7 +49,7 @@ function renderCard(device) {
 function handleBorrow(id) {
     const device = allDevices.find(d => d.id === id);
     if (!device) return;
-    
+
     let borrowHistory = JSON.parse(localStorage.getItem('borrowHistory')) || [];
     const borrowRecord = {
         ...device,
@@ -57,19 +57,19 @@ function handleBorrow(id) {
     };
     borrowHistory.push(borrowRecord);
     localStorage.setItem('borrowHistory', JSON.stringify(borrowHistory));
-    
+
     alert('Đã ghi nhận mượn thiết bị: ' + device.name);
-    
+
     const isPersonalPage = window.location.pathname.includes('kho-ca-nhan.html');
     if (isPersonalPage) {
         let myDevices = JSON.parse(localStorage.getItem('myDevices')) || [];
         myDevices = myDevices.filter(d => d.id !== id);
         localStorage.setItem('myDevices', JSON.stringify(myDevices));
-        
+
         allDevices = myDevices;
         applyFilters();
     }
-    
+
     if (typeof window.renderBorrowHistorySidebar === 'function') {
         window.renderBorrowHistorySidebar();
     }
@@ -78,7 +78,7 @@ function handleBorrow(id) {
 function handleAdd(id) {
     const device = allDevices.find(d => d.id === id);
     if (!device) return;
-    
+
     let myDevices = JSON.parse(localStorage.getItem('myDevices')) || [];
     if (!myDevices.find(d => d.id === id)) {
         myDevices.push(device);
@@ -92,11 +92,11 @@ function handleAdd(id) {
 function renderPage(page) {
     const grid = document.getElementById('equipment-grid');
     if (!grid) return;
-    
+
     const startIndex = (page - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const pageData = filteredDevices.slice(startIndex, endIndex);
-    
+
     if (pageData.length === 0) {
         // Giao diện Khôn tìm thấy kết quả
         grid.innerHTML = `
@@ -107,52 +107,52 @@ function renderPage(page) {
         `;
         return;
     }
-    
+
     grid.innerHTML = pageData.map(d => renderCard(d)).join('');
 }
 
 function renderPagination() {
     const container = document.getElementById('pagination-container');
     if (!container) return;
-    
+
     const totalPages = Math.ceil(filteredDevices.length / itemsPerPage);
-    
+
     if (totalPages <= 1) {
         container.innerHTML = '';
         return;
     }
-    
+
     let html = '';
-    
+
     if (currentPage > 1) {
         html += `<button class="page-btn prev" onclick="goToPage(${currentPage - 1})">Prev</button>`;
     } else {
         html += `<button class="page-btn prev" disabled>Prev</button>`;
     }
-    
+
     for (let i = 1; i <= totalPages; i++) {
         const activeClass = (i === currentPage) ? 'active' : '';
         html += `<button class="page-btn ${activeClass}" onclick="goToPage(${i})">${i}</button>`;
     }
-    
+
     if (currentPage < totalPages) {
         html += `<button class="page-btn next" onclick="goToPage(${currentPage + 1})">Next</button>`;
     } else {
         html += `<button class="page-btn next" disabled>Next</button>`;
     }
-    
+
     container.innerHTML = html;
 }
 
-window.goToPage = function(page) {
+window.goToPage = function (page) {
     const totalPages = Math.ceil(filteredDevices.length / itemsPerPage);
     if (page >= 1 && page <= totalPages) {
         currentPage = page;
         renderPage(currentPage);
         renderPagination();
-        
+
         const searchBar = document.getElementById('search-input');
-        if(searchBar) {
+        if (searchBar) {
             window.scrollTo({
                 top: searchBar.offsetTop - 50,
                 behavior: 'smooth'
@@ -163,7 +163,7 @@ window.goToPage = function(page) {
 
 function debounce(func, wait) {
     let timeout;
-    return function(...args) {
+    return function (...args) {
         clearTimeout(timeout);
         timeout = setTimeout(() => func.apply(this, args), wait);
     };
@@ -183,10 +183,10 @@ function setupFilters() {
             applyFilters();
         }, 300));
     }
-    
+
     const filterCategory = document.getElementById('filter-category');
     if (filterCategory) filterCategory.addEventListener('change', applyFilters);
-    
+
     const filterSubject = document.getElementById('filter-subject');
     if (filterSubject) filterSubject.addEventListener('change', applyFilters);
 }
@@ -213,7 +213,7 @@ function applyFilters() {
         const matchCategory = selectedCategories.length === 0 || selectedCategories.includes(device.category);
         const matchSubject = selectedSubjects.length === 0 || selectedSubjects.includes(device.subject);
         const matchSearch = searchTerm === '' || device.name.toLowerCase().includes(searchTerm);
-        
+
         return matchCategory && matchSubject && matchSearch;
     });
 
@@ -225,7 +225,7 @@ function applyFilters() {
 function renderSkeleton() {
     const grid = document.getElementById('equipment-grid');
     if (!grid) return;
-    
+
     // Sinh HTML placeholder của 8 skeleton form tương ứng với itemsPerPage
     const skeletonHTML = Array(8).fill(`
         <div class="skeleton-card">
@@ -239,26 +239,26 @@ function renderSkeleton() {
             </div>
         </div>
     `).join('');
-    
+
     grid.innerHTML = skeletonHTML;
 }
 
-window.renderBorrowHistorySidebar = function() {
+window.renderBorrowHistorySidebar = function () {
     const listEl = document.getElementById('borrow-history-list');
     if (!listEl) return;
-    
+
     const borrowHistory = JSON.parse(localStorage.getItem('borrowHistory')) || [];
     if (borrowHistory.length === 0) {
         listEl.innerHTML = '<li style="color: #64748b; font-size: 0.9rem;">Chưa có lịch sử mượn.</li>';
         return;
     }
-    
+
     const recent = [...borrowHistory].reverse().slice(0, 5);
     listEl.innerHTML = recent.map(item => {
         const dateObj = new Date(item.borrowDate);
         const date = dateObj.toLocaleDateString('vi-VN');
         const time = dateObj.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-        
+
         return `
             <li style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; display: flex; gap: 12px; align-items: flex-start;">
                 <div style="width: 44px; height: 44px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center;">
@@ -282,12 +282,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const grid = document.getElementById('equipment-grid');
     if (grid) {
         renderSkeleton();
-        
+
         try {
             await new Promise(resolve => setTimeout(resolve, 600));
 
             const isPersonalPage = window.location.pathname.includes('kho-ca-nhan.html');
-            
+
             if (isPersonalPage) {
                 const stored = localStorage.getItem('myDevices');
                 allDevices = stored ? JSON.parse(stored) : [];
@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 allDevices = window.DEVICES_DATA;
             }
-            
+
             applyFilters();
             setupFilters();
         } catch (err) {
@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // Hàm Bridge để tương tác chéo giúp mở Modal cho thiết bị
-window.openDeviceModalById = function(id) {
+window.openDeviceModalById = function (id) {
     const device = allDevices.find(d => d.id === id);
     if (device && typeof window.openModal === 'function') {
         window.openModal(device);

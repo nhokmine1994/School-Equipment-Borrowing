@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SEB - Kho cá nhân</title>
-    <meta name="description" content="Kho cá nhân SEB: theo dõi thiết bị đã thêm, lọc nhanh và quản lý lịch sử mượn gần đây.">
+    <meta name="description"
+        content="Kho cá nhân SEB: theo dõi thiết bị đã thêm, lọc nhanh và quản lý lịch sử mượn gần đây.">
     <link rel="stylesheet" href="../CSS/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,13 +32,20 @@
             </div>
         </header>
 
-        <nav class="nav-bar">
-            <a href="../index.html" class="nav-tab">Trang chủ</a>
-            <a href="kho_thiet_bi.html" class="nav-tab">Kho thiết bị</a>
-            <a href="#" class="nav-tab">Đăng ký phòng học</a>
-            <a href="kho-ca-nhan.html" class="nav-tab active">Kho cá nhân</a>
-            <a href="#" class="nav-tab">Tin tức</a>
-            <a href="about.html" class="nav-tab">Liên hệ</a>
+        <nav class="nav-bar" id="mainNav">
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Mở menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-links" id="navLinks">
+                <a href="../index.html" class="nav-tab">Trang chủ</a>
+                <a href="kho_thiet_bi.html" class="nav-tab">Kho thiết bị</a>
+                <a href="dang-ky-phong-hoc.html" class="nav-tab">Đăng ký phòng học</a>
+                <a href="kho-ca-nhan.html" class="nav-tab active">Kho cá nhân</a>
+                <a href="news.html" class="nav-tab">Tin tức</a>
+                <a href="about.html" class="nav-tab">Liên hệ</a>
+            </div>
         </nav>
 
         <section class="section-wrapper">
@@ -57,8 +65,7 @@
                 <main class="content">
                     <h1>Kho Cá Nhân</h1>
                     <div class="search-bar kho-select-wrap">
-                        <select id="filter-category"
-                            class="kho-select">
+                        <select id="filter-category" class="kho-select">
                             <option value="">Tất cả danh mục</option>
                             <option value="CNTT">CNTT</option>
                             <option value="Âm thanh">Âm thanh</option>
@@ -68,8 +75,7 @@
                             <option value="Hóa chất">Hóa chất</option>
                             <option value="Khác">Khác</option>
                         </select>
-                        <select id="filter-subject"
-                            class="kho-select">
+                        <select id="filter-subject" class="kho-select">
                             <option value="">Tất cả môn học</option>
                             <option value="Vật lý">Vật lý</option>
                             <option value="Hóa học">Hóa học</option>
@@ -102,6 +108,7 @@
         </footer>
     </div>
 
+    <script src="../Javascript/Java.js"></script>
     <script src="../Javascript/device_modal.js"></script>
     <script src="../Javascript/devices_data.js"></script>
     <script src="../Javascript/kho_thiet_bi.js"></script>
@@ -109,4 +116,3 @@
 </body>
 
 </html>
-
