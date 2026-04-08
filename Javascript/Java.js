@@ -1,4 +1,40 @@
 document.addEventListener("DOMContentLoaded", () => {
+    function initScrollReveal() {
+        const revealTargets = document.querySelectorAll(".section-wrapper, .search-container, .stats-row, .footer");
+        if (!revealTargets.length) {
+            return;
+        }
+
+        if (!("IntersectionObserver" in window)) {
+            revealTargets.forEach((element) => {
+                element.classList.add("is-visible");
+            });
+            return;
+        }
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("is-visible");
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            {
+                threshold: 0.12,
+                rootMargin: "0px 0px -30px 0px",
+            }
+        );
+
+        revealTargets.forEach((element) => {
+            element.classList.add("reveal-on-scroll");
+            observer.observe(element);
+        });
+    }
+
+    initScrollReveal();
+
     const loginBtn = document.getElementById("loginBtn");
     const registerBtn = document.getElementById("registerBtn");
     
