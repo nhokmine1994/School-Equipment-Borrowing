@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEB - Về chúng tôi</title>
+  <link rel="stylesheet" href="../CSS/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    .team-intro-tip {
+      text-align: center;
+      font-size: 14px;
+      color: #1a5fa6;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .card-arena {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      overflow: visible;
+      padding: 6px 4px 20px 4px;
+    }
+
+    .card-arena::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .card-arena::-webkit-scrollbar-thumb {
+      background-color: #9ec7ec;
+      border-radius: 999px;
+    }
+
+    .member-card {
+      width: 186px;
+      min-width: 186px;
+      border: 1px solid #97bde4;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffffff 0%, #e8f4ff 100%);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      box-shadow: 0 8px 18px rgba(16, 84, 147, 0.14);
+      text-align: left;
+      padding: 0;
+      position: relative;
+      z-index: var(--stack-z, 1);
+    }
+
+    .member-card + .member-card {
+      margin-left: -52px;
+    }
+
+    .member-card:hover {
+      transform: translateY(-14px) scale(1.03);
+      z-index: 220;
+    }
+
+    .member-card.active {
+      border-color: #1976d2;
+      box-shadow: 0 14px 24px rgba(8, 74, 140, 0.24);
+      transform: translateX(-24px) translateY(-18px) scale(1.05);
+      z-index: 240;
+    }
+
+    .member-card.active:hover {
+      transform: translateX(-24px) translateY(-22px) scale(1.06);
+    }
+
+    .member-card.add-member {
+      border: 2px dashed #7fb1df;
+      background: linear-gradient(180deg, #fafdff 0%, #e9f4ff 100%);
+    }
+
+    .member-card.add-member .member-role {
+      background: linear-gradient(90deg, #2a78c5 0%, #4ba0ef 100%);
+    }
+
+    .add-member-body {
+      height: 248px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: #1b67b2;
+    }
+
+    .add-member-plus {
+      font-size: 64px;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .add-member-text {
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .member-role {
+      display: block;
+      background: linear-gradient(90deg, #125cae 0%, #1f8be9 100%);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      padding: 8px 10px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .member-photo {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid #cde1f5;
+    }
+
+    .member-name {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f4d8f;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 10px 8px;
+      min-height: 58px;
+    }
+
+    .member-detail {
+      margin: 4px auto 0 auto;
+      max-width: 760px;
+      width: 100%;
+      border: 1px solid #cfe4f9;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #f9fcff 0%, #edf6ff 100%);
+      padding: 18px;
+    }
+
+    .member-detail.empty {
+      opacity: 0.78;
+    }
+
+    .member-detail-head {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .member-detail-name {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0c4a88;
+      margin-bottom: 4px;
+    }
+
+    .member-detail-role {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1f77cf;
+      text-transform: uppercase;
+      margin-bottom: 0;
+      letter-spacing: 0.3px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 8px 14px;
+      align-items: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .detail-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #14579f;
+      text-align: right;
+    }
+
+    .detail-value {
+      font-size: 14px;
+      color: #1d3b5b;
+      text-align: left;
+      word-break: break-word;
+    }
+
+    .detail-value a {
+      color: #0f5faa;
+      text-decoration: none;
+    }
+
+    .detail-value a:hover {
+      text-decoration: underline;
+    }
+
+    .detail-placeholder {
+      text-align: center;
+      font-size: 13px;
+      color: #3a648d;
+      margin-top: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .add-member-form {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .add-member-form h4 {
+      font-size: 18px;
+      color: #11589f;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 10px 12px;
+      align-items: center;
+    }
+
+    .form-grid label {
+      text-align: right;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1b5fa5;
+    }
+
+    .form-grid input,
+    .form-grid textarea {
+      width: 100%;
+      border: 1px solid #b9d5f0;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 14px;
+      font-family: var(--font-body);
+    }
+
+    .form-grid textarea {
+      min-height: 72px;
+      resize: vertical;
+    }
+
+    .form-actions {
+      margin-top: 14px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .form-submit {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #ffffff;
+      background: linear-gradient(90deg, #1665b8 0%, #2c8de3 100%);
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .card-arena {
+        justify-content: flex-start;
+        overflow-x: auto;
+        overflow-y: visible;
+        align-items: flex-start;
+        padding: 16px 8px 24px 8px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .member-card {
+        width: 170px;
+        min-width: 170px;
+        flex-shrink: 0;
+      }
+
+      .member-card + .member-card {
+        margin-left: -24px;
+      }
+
+      .member-card.active {
+        transform: translateX(-10px) translateY(0) scale(1.02);
+      }
+
+      .member-card.active:hover {
+        transform: translateX(-10px) translateY(0) scale(1.03);
+      }
+
+      .member-photo {
+        height: 170px;
+      }
+
+      .add-member-body {
+        height: 228px;
+      }
+
+      .member-detail {
+        padding: 14px;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+
+      .detail-label,
+      .detail-value {
+        text-align: center;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid label {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="system-container">
+
+    <!-- Header -->
+    <header class="header-banner">
+      <div class="header-logo-box">
+        <img src="../Images/logo.png" alt="Logo Lộc An">
+      </div>
+      <div class="header-title-group">
+        <h2>TRƯỜNG TRUNG HỌC CƠ SỞ LỘC AN</h2>
+        <h1>HỆ THỐNG MƯỢN/TRẢ THIẾT BỊ ( SEB )</h1>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn"><i class="far fa-user"></i></button>
+        <button class="icon-btn"><i class="fas fa-pencil-alt"></i></button>
+      </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-bar" id="mainNav">
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Mở menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links" id="navLinks">
+        <a href="../index.html" class="nav-tab">Trang chủ</a>
+        <a href="kho_thiet_bi.html" class="nav-tab">Kho thiết bị</a>
+        <a href="dang-ky-phong-hoc.html" class="nav-tab">Đăng ký phòng học</a>
+        <a href="kho-ca-nhan.html" class="nav-tab">Kho cá nhân</a>
+        <a href="news.html" class="nav-tab">Tin tức</a>
+        <a href="about.html" class="nav-tab active">Liên hệ</a>
+      </div>
+    </nav>
+
+    <!-- Về chúng tôi -->
+    <section class="section-wrapper">
+      <div class="section-heading">
+        <i class="fas fa-users"></i>
+        Về chúng tôi
+      </div>
+      <div class="maintenance-content">
+        <p>
+          Nhóm phát triển SEB gồm các thành viên phụ trách quản lý dự án, phân tích nghiệp vụ, phát triển phần mềm và thiết kế giao diện.
+          Chúng tôi xây dựng giải pháp này để giúp nhà trường số hóa quy trình mượn thiết bị, giảm tải cho giáo viên và nâng cao hiệu quả quản lý kho.
+        </p>
+      </div>
+    </section>
+
+    <!-- Đội ngũ phát triển -->
+    <section class="section-wrapper">
+      <div class="section-heading">
+        <i class="far fa-id-badge"></i>
+        Đội ngũ phát triển
+      </div>
+
+      <div class="equipment-container">
+        <p class="team-intro-tip">Nhấn vào một thành viên để xem thông tin</p>
+        <div class="card-arena" id="cardArena">
+          <button class="member-card active" type="button"
+            data-name="PHẠM CÔNG HẬU"
+            data-role="PROJECT MANAGER"
+            data-phone="0344655621"
+            data-email="525000458@lachong.edu.vn"
+            data-image="../Images/conghau-avatar.jpg"
+            data-note="Điều phối tiến độ và định hướng tổng thể dự án SEB.">
+            <span class="member-role">PROJECT MANAGER</span>
+            <img class="member-photo" src="../Images/conghau-avatar.jpg" alt="Phạm Công Hậu">
+            <span class="member-name">PHẠM CÔNG HẬU</span>
+          </button>
+
+          <button class="member-card" type="button"
+            data-name="ĐẶNG BẮC NAM"
+            data-role="BUSINESS ANALYST"
+            data-phone="0378047778"
+            data-email="dangbacnamlhu@gmail.com"
+            data-image="../Images/nam.png"
+            data-note="Phân tích nghiệp vụ và chuẩn hóa quy trình mượn trả thiết bị.">
+            <span class="member-role">BUSINESS ANALYST</span>
+            <img class="member-photo" src="../Images/nam.png" alt="Đặng Bắc Nam">
+            <span class="member-name">ĐẶNG BẮC NAM</span>
+          </button>
+
+          <button class="member-card" type="button"
+            data-name="LÒ VĂN DUẪN"
+            data-role="SOFTWARE DEVELOPER"
+            data-phone="0947478016"
+            data-email="minhduan29s4@gmail.com"
+            data-image="../Images/duan.png"
+            data-note="Phát triển chức năng cốt lõi và tối ưu hiệu năng hệ thống.">
+            <span class="member-role">SOFTWARE DEVELOPER</span>
+            <img class="member-photo" src="../Images/duan.png" alt="Lò Văn Duẫn">
+            <span class="member-name">LÒ VĂN DUẪN</span>
+          </button>
+
+          <button class="member-card" type="button"
+            data-name="NGUYỄN THỊ BÍCH HẰNG"
+            data-role="UI/UX DESIGNER"
+            data-phone="0976543210"
+            data-email="hangbich045@gmail.com"
+            data-image="../Images/hang.png"
+            data-note="Thiết kế trải nghiệm và giao diện trực quan, thân thiện người dùng.">
+            <span class="member-role">UI/UX DESIGNER</span>
+            <img class="member-photo" src="../Images/hang.png" alt="Nguyễn Thị Bích Hằng">
+            <span class="member-name">NGUYỄN THỊ BÍCH HẰNG</span>
+          </button>
+
+          <button class="member-card add-member" type="button" data-add="true">
+            <span class="member-role">THÊM THÀNH VIÊN</span>
+            <div class="add-member-body">
+              <span class="add-member-plus">+</span>
+              <span class="add-member-text">Mở form nhập</span>
+            </div>
+          </button>
+        </div>
+
+        <div class="member-detail" id="memberDetail">
+          <div class="member-detail-head" id="detailHead">
+            <p class="member-detail-name" id="detailName">PHẠM CÔNG HẬU</p>
+            <p class="member-detail-role" id="detailRole">PROJECT MANAGER</p>
+          </div>
+          <div class="detail-grid" id="detailGrid">
+            <p class="detail-label">Họ và tên</p>
+            <p class="detail-value" id="detailNameValue">PHẠM CÔNG HẬU</p>
+            <p class="detail-label">Vai trò</p>
+            <p class="detail-value" id="detailRoleValue">PROJECT MANAGER</p>
+            <p class="detail-label">Số điện thoại</p>
+            <p class="detail-value"><a id="detailPhone" href="tel:0344655621">0344655621</a></p>
+            <p class="detail-label">Email</p>
+            <p class="detail-value"><a id="detailEmail" href="mailto:525000458@lachong.edu.vn">525000458@lachong.edu.vn</a></p>
+            <p class="detail-label">Mô tả</p>
+            <p class="detail-value" id="detailNote">Điều phối tiến độ và định hướng tổng thể dự án SEB.</p>
+          </div>
+          <p class="detail-placeholder" id="detailPlaceholder" style="display: none;">Nhấn vào một thành viên để xem thông tin chi tiết</p>
+
+          <form class="add-member-form hidden" id="addMemberForm">
+            <h4>Thêm thành viên mới</h4>
+            <div class="form-grid">
+              <label for="newName">Họ và tên</label>
+              <input id="newName" name="name" type="text" required>
+
+              <label for="newRole">Vai trò</label>
+              <input id="newRole" name="role" type="text" required>
+
+              <label for="newPhone">Số điện thoại</label>
+              <input id="newPhone" name="phone" type="text" required>
+
+              <label for="newEmail">Email</label>
+              <input id="newEmail" name="email" type="email" required>
+
+              <label for="newImage">Ảnh (đường dẫn)</label>
+              <input id="newImage" name="image" type="text" placeholder="../Images/ten-anh.jpg">
+
+              <label for="newNote">Mô tả</label>
+              <textarea id="newNote" name="note" required></textarea>
+            </div>
+            <div class="form-actions">
+              <button class="form-submit" type="submit">Thêm vào danh sách</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="section-link-left">
+          <a href="ve-du-an.html" class="section-link-btn"><i class="fas fa-arrow-left"></i> Sang trang Về dự án</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        Copyright 2026<br>
+        Website này là tài sản thuộc quyền sở hữu hợp pháp của SEB.<br>
+        Nội dung, hình ảnh và mã nguồn được bảo hộ theo quy định pháp luật hiện hành.<br>
+        Mọi thông tin chi tiết xin liên hệ<br>
+        Hotline: 0344655621
+      </div>
+      <div class="footer-tip">
+        <i class="far fa-lightbulb"></i>
+        Bạn có thể quét mã QR để mượn, trả và báo hỏng thiết bị nhanh chóng !
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const cardArena = document.getElementById("cardArena");
+      const memberDetail = document.getElementById("memberDetail");
+      const detailHead = document.getElementById("detailHead");
+      const detailGrid = document.getElementById("detailGrid");
+      const detailName = document.getElementById("detailName");
+      const detailRole = document.getElementById("detailRole");
+      const detailNameValue = document.getElementById("detailNameValue");
+      const detailRoleValue = document.getElementById("detailRoleValue");
+      const detailPhone = document.getElementById("detailPhone");
+      const detailEmail = document.getElementById("detailEmail");
+      const detailNote = document.getElementById("detailNote");
+      const detailPlaceholder = document.getElementById("detailPlaceholder");
+      const addMemberForm = document.getElementById("addMemberForm");
+
+      function getCards() {
+        return cardArena.querySelectorAll(".member-card");
+      }
+
+      function updateCardStackOrder() {
+        const cards = Array.from(getCards());
+        const total = cards.length;
+        cards.forEach((card, index) => {
+          card.style.setProperty("--stack-z", String(total - index));
+        });
+      }
+
+      function setDetailState(mode) {
+        const isEmpty = mode === "empty";
+        const isForm = mode === "form";
+
+        memberDetail.classList.toggle("empty", isEmpty);
+        detailHead.classList.toggle("hidden", isEmpty || isForm);
+        detailGrid.classList.toggle("hidden", isEmpty || isForm);
+        detailPlaceholder.style.display = isEmpty ? "block" : "none";
+        addMemberForm.classList.toggle("hidden", !isForm);
+      }
+
+      function setActiveCard(card) {
+        getCards().forEach((item) => item.classList.remove("active"));
+        card.classList.add("active");
+
+        if (card.getAttribute("data-add") === "true") {
+          setDetailState("form");
+          return;
+        }
+
+        setDetailState("info");
+
+        const name = card.getAttribute("data-name") || "";
+        const role = card.getAttribute("data-role") || "";
+        const phone = card.getAttribute("data-phone") || "";
+        const email = card.getAttribute("data-email") || "";
+        const note = card.getAttribute("data-note") || "";
+
+        detailName.textContent = name;
+        detailRole.textContent = role;
+        detailNameValue.textContent = name;
+        detailRoleValue.textContent = role;
+        detailPhone.textContent = phone;
+        detailPhone.setAttribute("href", "tel:" + phone);
+        detailEmail.textContent = email;
+        detailEmail.setAttribute("href", "mailto:" + email);
+        detailNote.textContent = note;
+      }
+
+      function clearActiveCards() {
+        getCards().forEach((item) => item.classList.remove("active"));
+        setDetailState("empty");
+      }
+
+      function createMemberCard(data) {
+        const card = document.createElement("button");
+        card.className = "member-card";
+        card.type = "button";
+        card.setAttribute("data-name", data.name);
+        card.setAttribute("data-role", data.role);
+        card.setAttribute("data-phone", data.phone);
+        card.setAttribute("data-email", data.email);
+        card.setAttribute("data-image", data.image);
+        card.setAttribute("data-note", data.note);
+
+        const role = document.createElement("span");
+        role.className = "member-role";
+        role.textContent = data.role.toUpperCase();
+
+        const img = document.createElement("img");
+        img.className = "member-photo";
+        img.src = data.image;
+        img.alt = data.name;
+
+        const name = document.createElement("span");
+        name.className = "member-name";
+        name.textContent = data.name.toUpperCase();
+
+        card.appendChild(role);
+        card.appendChild(img);
+        card.appendChild(name);
+        return card;
+      }
+
+      cardArena.addEventListener("click", (event) => {
+        const card = event.target.closest(".member-card");
+        if (!card) {
+          return;
+        }
+        setActiveCard(card);
+      });
+
+      addMemberForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(addMemberForm);
+        const memberData = {
+          name: String(formData.get("name") || "").trim(),
+          role: String(formData.get("role") || "").trim(),
+          phone: String(formData.get("phone") || "").trim(),
+          email: String(formData.get("email") || "").trim(),
+          image: String(formData.get("image") || "").trim() || "../Images/logo.png",
+          note: String(formData.get("note") || "").trim(),
+        };
+
+        if (!memberData.name || !memberData.role || !memberData.phone || !memberData.email || !memberData.note) {
+          return;
+        }
+
+        const addCard = cardArena.querySelector(".member-card.add-member");
+        const newCard = createMemberCard(memberData);
+        cardArena.insertBefore(newCard, addCard);
+        updateCardStackOrder();
+
+        addMemberForm.reset();
+        setActiveCard(newCard);
+      });
+
+      updateCardStackOrder();
+
+      document.addEventListener("click", (event) => {
+        const clickedCard = event.target.closest(".member-card");
+        const clickedDetail = event.target.closest("#memberDetail");
+        if (!clickedCard && !clickedDetail) {
+          clearActiveCards();
+        }
+      });
+    });
+  </script>
+
+  <script src="../Javascript/Java.js"></script>
+</body>
+
+</html>

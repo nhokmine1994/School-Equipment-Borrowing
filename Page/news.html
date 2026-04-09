@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tin tức & Thông báo — SEB Lộc An</title>
+  <meta name="description"
+    content="Cập nhật tin tức, thông báo bảo trì, thiết bị mới và sự kiện từ hệ thống SEB Trường THCS Lộc An.">
+  <link rel="stylesheet" href="../CSS/main.css">
+  <link rel="stylesheet" href="../CSS/news.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+  <div class="system-container">
+
+    <!-- 1. Header -->
+    <header class="header-banner">
+      <div class="header-logo-box">
+        <img src="../Images/logo.png" alt="Logo Lộc An">
+      </div>
+      <div class="header-title-group">
+        <h2>TRƯỜNG TRUNG HỌC CƠ SỞ LỘC AN</h2>
+        <h1>HỆ THỐNG MƯỢN/TRẢ THIẾT BỊ ( SEB )</h1>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn"><i class="far fa-user"></i></button>
+        <button class="icon-btn"><i class="fas fa-pencil-alt"></i></button>
+      </div>
+    </header>
+
+    <!-- 2. Navigation -->
+    <nav class="nav-bar" id="mainNav">
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Mở menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links" id="navLinks">
+        <a href="../index.html" class="nav-tab">Trang chủ</a>
+        <a href="kho_thiet_bi.html" class="nav-tab">Kho thiết bị</a>
+        <a href="dang-ky-phong-hoc.html" class="nav-tab">Đăng ký phòng học</a>
+        <a href="kho-ca-nhan.html" class="nav-tab">Kho cá nhân</a>
+        <a href="news.html" class="nav-tab active">Tin tức</a>
+        <a href="about.html" class="nav-tab">Liên hệ</a>
+      </div>
+    </nav>
+
+    <!-- 3. Page Banner -->
+    <div class="news-page-banner">
+      <div class="news-banner-icon"><i class="fas fa-newspaper"></i></div>
+      <div class="news-banner-text">
+        <h2>Tin tức &amp; Thông báo</h2>
+        <p>Cập nhật mới nhất về thiết bị, bảo trì và sự kiện nhà trường</p>
+      </div>
+      <div class="news-banner-stats">
+        <div class="news-banner-stat">
+          <span class="nbs-value">42</span>
+          <span class="nbs-label">Bài viết</span>
+        </div>
+        <div class="news-banner-stat">
+          <span class="nbs-value">5</span>
+          <span class="nbs-label">Chủ đề</span>
+        </div>
+        <div class="news-banner-stat">
+          <span class="nbs-value">1.2K</span>
+          <span class="nbs-label">Lượt xem</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Category Filter -->
+    <div class="news-filter-bar">
+      <button class="news-filter-btn active" data-filter="all">
+        <i class="fas fa-th-large"></i> Tất cả
+      </button>
+      <button class="news-filter-btn" data-filter="thong-bao">
+        <i class="fas fa-bullhorn"></i> Thông báo
+      </button>
+      <button class="news-filter-btn" data-filter="bao-tri">
+        <i class="fas fa-tools"></i> Bảo trì
+      </button>
+      <button class="news-filter-btn" data-filter="su-kien">
+        <i class="fas fa-calendar-alt"></i> Sự kiện
+      </button>
+      <button class="news-filter-btn" data-filter="thiet-bi-moi">
+        <i class="fas fa-box-open"></i> Thiết bị mới
+      </button>
+    </div>
+
+    <!-- 5. Featured Article -->
+    <section class="news-section" data-category="su-kien" id="featuredSection">
+      <div class="section-heading">
+        <i class="fas fa-star"></i> Bài viết nổi bật
+      </div>
+      <div class="news-featured-wrapper">
+        <div class="news-featured-img" style="padding: 0; background: none; position: relative;">
+          <img src="../Images/news_khaigiang.jpg" alt="Lễ khai giảng" style="width: 100%; height: 100%; object-fit: cover;">
+          <span class="news-featured-label" style="position: absolute; top: 15px; left: 15px; z-index: 1;">Nổi bật</span>
+        </div>
+        <div class="news-featured-content">
+          <span class="news-badge badge-su-kien"><i class="fas fa-calendar-alt"></i> Sự kiện</span>
+          <h2 class="news-featured-title">
+            Lễ khai giảng năm học 2025–2026 và ra mắt chính thức Hệ thống SEB
+          </h2>
+          <p class="news-featured-excerpt">
+            Trường THCS Lộc An long trọng tổ chức lễ khai giảng năm học mới đồng thời chính thức ra mắt
+            Hệ thống Mượn/Trả Thiết Bị (SEB) — giải pháp quản lý thông minh giúp giáo viên và học sinh
+            dễ dàng đăng ký, theo dõi và trả thiết bị học tập mọi lúc, mọi nơi.
+          </p>
+          <div class="news-featured-meta">
+            <span><i class="far fa-calendar"></i> 05/09/2025</span>
+            <span><i class="far fa-clock"></i> 5 phút đọc</span>
+            <span><i class="far fa-eye"></i> 1,240 lượt xem</span>
+          </div>
+          <button class="news-read-btn">Đọc bài viết <i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. News Grid -->
+    <section class="news-section">
+      <div class="section-heading">
+        <i class="fas fa-newspaper"></i> Tin tức mới nhất
+      </div>
+
+      <div class="news-grid-wrapper">
+        <div class="news-grid" id="newsGrid">
+
+          <!-- Card 1 -->
+          <article class="news-card" data-category="bao-tri">
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_baotri.jpg" alt="Bảo trì" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+            </div>
+            <div class="news-card-body">
+              <span class="news-badge badge-bao-tri"><i class="fas fa-tools"></i> Bảo trì</span>
+              <h3 class="news-card-title">Bảo trì định kỳ phòng máy PM102 — Tháng 12/2025</h3>
+              <p class="news-card-excerpt">Phòng máy PM102 tạm ngừng hoạt động từ 18–20/12/2025 để bảo trì toàn bộ hệ
+                thống máy tính và làm mới thiết bị ngoại vi.</p>
+              <div class="news-card-meta">
+                <span><i class="far fa-calendar"></i> 15/12/2025</span>
+                <span><i class="far fa-clock"></i> 2 phút</span>
+              </div>
+            </div>
+            <div class="news-card-footer">
+              <button class="news-card-btn">Đọc thêm <i class="fas fa-chevron-right"></i></button>
+            </div>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="news-card" data-category="thiet-bi-moi">
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_maychieu.jpg" alt="Máy chiếu" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+            </div>
+            <div class="news-card-body">
+              <span class="news-badge badge-thiet-bi-moi"><i class="fas fa-box-open"></i> Thiết bị mới</span>
+              <h3 class="news-card-title">Bổ sung 5 máy chiếu Epson EB-X41 cho phòng hội nghị HN108</h3>
+              <p class="news-card-excerpt">Nhằm phục vụ giảng dạy và hội họp, trường trang bị thêm 5 máy chiếu Epson
+                EB-X41. Đặt lịch qua hệ thống SEB.</p>
+              <div class="news-card-meta">
+                <span><i class="far fa-calendar"></i> 10/12/2025</span>
+                <span><i class="far fa-clock"></i> 3 phút</span>
+              </div>
+            </div>
+            <div class="news-card-footer">
+              <button class="news-card-btn">Đọc thêm <i class="fas fa-chevron-right"></i></button>
+            </div>
+          </article>
+
+          <!-- Card 3 -->
+          <article class="news-card" data-category="thong-bao">
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_quydinh.jpg" alt="Thông báo" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+            </div>
+            <div class="news-card-body">
+              <span class="news-badge badge-thong-bao"><i class="fas fa-bullhorn"></i> Thông báo</span>
+              <h3 class="news-card-title">Quy định mới về mượn thiết bị — Áp dụng từ 01/01/2026</h3>
+              <p class="news-card-excerpt">Kể từ 01/01/2026, thời hạn mượn tối đa là 7 ngày/lượt. Có thể gia hạn thêm 3
+                ngày nếu không có người đặt trước.</p>
+              <div class="news-card-meta">
+                <span><i class="far fa-calendar"></i> 28/12/2025</span>
+                <span><i class="far fa-clock"></i> 4 phút</span>
+              </div>
+            </div>
+            <div class="news-card-footer">
+              <button class="news-card-btn">Đọc thêm <i class="fas fa-chevron-right"></i></button>
+            </div>
+          </article>
+
+          <!-- Card 4 -->
+          <article class="news-card" data-category="thiet-bi-moi">
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_kinhhienvi.jpg" alt="Kính hiển vi" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+            </div>
+            <div class="news-card-body">
+              <span class="news-badge badge-thiet-bi-moi"><i class="fas fa-box-open"></i> Thiết bị mới</span>
+              <h3 class="news-card-title">Tiếp nhận 10 kính hiển vi Olympus CX23 cho phòng thí nghiệm</h3>
+              <p class="news-card-excerpt">Trường vừa tiếp nhận 10 kính hiển vi điện tử từ dự án phòng lab. Tất cả đã
+                được dán nhãn QR và cập nhật lên SEB.</p>
+              <div class="news-card-meta">
+                <span><i class="far fa-calendar"></i> 20/12/2025</span>
+                <span><i class="far fa-clock"></i> 3 phút</span>
+              </div>
+            </div>
+            <div class="news-card-footer">
+              <button class="news-card-btn">Đọc thêm <i class="fas fa-chevron-right"></i></button>
+            </div>
+          </article>
+
+          <!-- Card 5 -->
+          <article class="news-card" data-category="bao-tri">
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_tivi.jpg" alt="Sửa chữa Tivi" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+            </div>
+            <div class="news-card-body">
+              <span class="news-badge badge-bao-tri"><i class="fas fa-tools"></i> Bảo trì</span>
+              <h3 class="news-card-title">Hoàn thành sửa chữa tivi Samsung 55" phòng học PH305</h3>
+              <p class="news-card-excerpt">Sau 3 ngày bảo dưỡng, tivi PH305 đã hoạt động bình thường và sẵn sàng phục vụ
+                giảng dạy. Trạng thái cập nhật trên SEB.</p>
+              <div class="news-card-meta">
+                <span><i class="far fa-calendar"></i> 22/12/2025</span>
+                <span><i class="far fa-clock"></i> 2 phút</span>
+              </div>
+            </div>
+            <div class="news-card-footer">
+              <button class="news-card-btn">Đọc thêm <i class="fas fa-chevron-right"></i></button>
+            </div>
+          </article>
+
+          <!-- Card 6 -->
+          <article class="news-card" data-category="su-kien">
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_giaovien.jpg" alt="Hội thi giáo viên" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+            </div>
+            <div class="news-card-body">
+              <span class="news-badge badge-su-kien"><i class="fas fa-calendar-alt"></i> Sự kiện</span>
+              <h3 class="news-card-title">Hội thi Giáo viên giỏi cấp huyện — Trường Lộc An đăng cai</h3>
+              <p class="news-card-excerpt">Trường THCS Lộc An vinh dự đăng cai Hội thi Giáo viên giỏi ngày 15/01/2026.
+                Đăng ký thiết bị hỗ trợ qua SEB.</p>
+              <div class="news-card-meta">
+                <span><i class="far fa-calendar"></i> 02/01/2026</span>
+                <span><i class="far fa-clock"></i> 3 phút</span>
+              </div>
+            </div>
+            <div class="news-card-footer">
+              <button class="news-card-btn">Đọc thêm <i class="fas fa-chevron-right"></i></button>
+            </div>
+          </article>
+
+          <!-- Card 7 -->
+          <article class="news-card" data-category="thong-bao">
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_qrcode.jpg" alt="Mã QR" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+            </div>
+            <div class="news-card-body">
+              <span class="news-badge badge-thong-bao"><i class="fas fa-bullhorn"></i> Thông báo</span>
+              <h3 class="news-card-title">Hướng dẫn dùng mã QR để mượn/trả thiết bị tức thì</h3>
+              <p class="news-card-excerpt">SEB nay hỗ trợ quét QR trực tiếp trên thiết bị để mượn, trả và báo hỏng mà
+                không cần đăng nhập thủ công.</p>
+              <div class="news-card-meta">
+                <span><i class="far fa-calendar"></i> 05/01/2026</span>
+                <span><i class="far fa-clock"></i> 5 phút</span>
+              </div>
+            </div>
+            <div class="news-card-footer">
+              <button class="news-card-btn">Đọc thêm <i class="fas fa-chevron-right"></i></button>
+            </div>
+          </article>
+
+          <!-- Card 8 -->
+          <article class="news-card" data-category="thiet-bi-moi">
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_laptop.jpg" alt="Laptop" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+            </div>
+            <div class="news-card-body">
+              <span class="news-badge badge-thiet-bi-moi"><i class="fas fa-box-open"></i> Thiết bị mới</span>
+              <h3 class="news-card-title">20 laptop Dell XPS 13 bổ sung vào kho tháng 1/2026</h3>
+              <p class="news-card-excerpt">Nhà trường tiếp nhận 20 laptop Dell XPS 13 từ ngân sách đầu tư. Tất cả đã
+                kiểm tra, dán nhãn QR và cập nhật SEB.</p>
+              <div class="news-card-meta">
+                <span><i class="far fa-calendar"></i> 08/01/2026</span>
+                <span><i class="far fa-clock"></i> 3 phút</span>
+              </div>
+            </div>
+            <div class="news-card-footer">
+              <button class="news-card-btn">Đọc thêm <i class="fas fa-chevron-right"></i></button>
+            </div>
+          </article>
+
+          <!-- Card 9 -->
+          <article class="news-card" data-category="su-kien">
+            <div class="news-card-img" style="padding: 0; background: none; overflow: hidden;">
+              <img src="../Images/news_taphuans.jpg" alt="Tập huấn" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+            </div>
+            <div class="news-card-body">
+              <span class="news-badge badge-su-kien"><i class="fas fa-calendar-alt"></i> Sự kiện</span>
+              <h3 class="news-card-title">Tập huấn sử dụng hệ thống SEB toàn thể giáo viên</h3>
+              <p class="news-card-excerpt">Nhà trường tổ chức tập huấn SEB ngày 10/01/2026. Toàn thể giáo viên vui lòng
+                đăng ký tham dự qua email nội bộ.</p>
+              <div class="news-card-meta">
+                <span><i class="far fa-calendar"></i> 09/01/2026</span>
+                <span><i class="far fa-clock"></i> 2 phút</span>
+              </div>
+            </div>
+            <div class="news-card-footer">
+              <button class="news-card-btn">Đọc thêm <i class="fas fa-chevron-right"></i></button>
+            </div>
+          </article>
+
+        </div>
+        <!-- End news-grid -->
+
+        <!-- Empty state (ẩn mặc định) -->
+        <div class="news-empty" id="newsEmpty" style="display:none;">
+          <i class="fas fa-search"></i>
+          <p>Không có bài viết trong chủ đề này.</p>
+        </div>
+
+        <!-- Load More -->
+        <div class="see-more-container" id="loadMoreContainer">
+          <button class="btn-see-more" id="loadMoreBtn">
+            Xem thêm <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 7. Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        Copyright 2026<br>
+        Website này là tài sản thuộc quyền sở hữu hợp pháp của SEB.<br>
+        Nội dung, hình ảnh và mã nguồn được bảo hộ theo quy định pháp luật hiện hành.<br>
+        Mọi thông tin chi tiết xin liên hệ<br>
+        Hotline: 0344655621
+      </div>
+      <div class="footer-tip">
+        <i class="far fa-lightbulb"></i>
+        Bạn có thể quét mã QR để mượn, trả và báo hỏng thiết bị nhanh chóng !
+      </div>
+    </footer>
+
+  </div><!-- /.system-container -->
+
+  <script src="../Javascript/Java.js"></script>
+  <script src="../Javascript/news.js"></script>
+</body>
+
+</html>
