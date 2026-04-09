@@ -153,8 +153,10 @@
 /* ---- FEATURED ARTICLE ---- */
 .news-featured-wrapper {
   display: flex;
-  gap: 0;
+  gap: 20px;
   min-height: 280px;
+  padding: 20px;
+  background-color: #ffffff;
 }
 
 .news-featured-img {
@@ -167,6 +169,7 @@
   color: rgba(255, 255, 255, 0.75);
   position: relative;
   overflow: hidden;
+  border-radius: 10px;
 }
 
 .news-featured-label {
@@ -186,7 +189,7 @@
 
 .news-featured-content {
   flex: 1;
-  padding: 28px 28px 24px;
+  padding: 8px 8px 8px 0;
   display: flex;
   flex-direction: column;
   justify-content: center;

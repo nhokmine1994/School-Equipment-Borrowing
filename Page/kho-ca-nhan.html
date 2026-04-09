@@ -33,8 +33,6 @@
         </header>
 
         <nav class="nav-bar" id="mainNav">
-
-            </button>
             <div class="nav-links" id="navLinks">
                 <a href="../index.html" class="nav-tab">Trang chủ</a>
                 <a href="kho_thiet_bi.html" class="nav-tab">Kho thiết bị</a>
@@ -46,6 +44,12 @@
         </nav>
 
         <section class="section-wrapper">
+            <div id="auth-banner" class="auth-notification-banner" style="display: none;">
+                <i class="fas fa-lock"></i>
+                <span>Vui lòng <strong>đăng nhập</strong> hoặc <strong>đăng ký</strong> để sử dụng kho cá nhân</span>
+                <button class="banner-close" onclick="this.parentElement.style.display='none';">&times;</button>
+            </div>
+
             <div class="section-heading">
                 <i class="fas fa-user-check"></i>
                 Kho cá nhân
@@ -86,6 +90,21 @@
                     </div>
 
                     <div id="pagination-container" class="pagination"></div>
+
+                    <section id="my-room-bookings-section" class="my-room-bookings-section">
+                        <h2 class="my-room-bookings-title">Phòng học của tôi</h2>
+                        <p class="my-room-bookings-desc">Danh sách các ca phòng học bạn đã đăng ký gần đây.</p>
+                        <div class="my-room-filter-row">
+                            <select id="my-room-filter-room" class="my-room-filter-select">
+                                <option value="">Tất cả phòng</option>
+                            </select>
+                            <select id="my-room-filter-day" class="my-room-filter-select">
+                                <option value="">Tất cả ngày</option>
+                            </select>
+                            <input id="my-room-filter-keyword" class="my-room-filter-input" type="text" placeholder="Tìm theo mục đích / ca học...">
+                        </div>
+                        <div id="my-room-bookings-list" class="my-room-bookings-list"></div>
+                    </section>
                 </main>
             </div>
         </section>

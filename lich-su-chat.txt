@@ -1,0 +1,36 @@
+Lich su trao doi (tom tat)
+Ngay cap nhat: 2026-04-09
+
+1) Sua loi va cai tien he thong xac thuc demo
+- Them/co dinh modal dang nhap-dang ky demo.
+- Bao ve trang kho ca nhan, yeu cau dang nhap.
+- Trang dang ky phong hoc: vao duoc binh thuong, nhung khi thao tac dat phong/ca hoac gui yeu cau thi yeu cau dang nhap.
+
+2) Cai tien trang Dang ky phong hoc
+- Dong bo ngay thoi khoa bieu theo ngay thuc te trong tuan hoc.
+- Luu lich dat phong vao localStorage.
+- Phan biet trang thai: Trong / Co lich / Lich cua toi.
+- Nho lua chon tam theo tung phong de khong bi mat khi doi phong.
+
+3) Cai tien trang Kho ca nhan
+- Them muc "Phong hoc cua toi".
+- Them bo loc (phong, ngay, tu khoa).
+- Them huy lich voi xac nhan.
+
+4) Cai tien header tai khoan
+- Chua dang nhap: hien 2 icon goc (dang nhap, dang ky).
+- Da dang nhap: doi sang 1 avatar + dropdown menu.
+- Menu hien tai gom: Thong tin ca nhan, Lich su muon/tra, Cai dat, Che do Admin, Dang xuat.
+- Tang kich thuoc vung bam avatar de de thao tac.
+
+5) Fix mobile UI
+- Sua logo truong tren mobile khong con dinh sat le.
+- Dieu chinh card thanh vien trang Ve chung toi de han che bi che/cat tren mobile.
+
+6) Tep da tao theo yeu cau
+- seb-prompt.txt (ban text prompt de tai su dung)
+- lich-su-chat.txt (tep nay)
+
+Ghi chu
+- Day la ban tom tat lich su chat, khong phai sao chep nguyen van 100% tung tin nhan.
+- Neu can, co the cap nhat tep nay tiep sau moi lan ban nhan "luu lai".

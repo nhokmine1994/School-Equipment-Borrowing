@@ -167,6 +167,8 @@ body {
   color: var(--text-dark);
   font-weight: 600;
   font-size: 16px;
+  border: 1px solid #8bc2ea;
+  border-radius: 6px;
   transition: all 0.2s ease;
   white-space: nowrap;
 }
@@ -736,6 +738,74 @@ body {
 }
 
 /* =========================================
+   AUTH NOTIFICATION BANNER
+   ========================================= */
+.auth-notification-banner {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: #ffffff;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+  font-weight: 600;
+  font-size: 16px;
+  animation: slideDown 0.4s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-notification-banner i {
+  font-size: 20px;
+  min-width: 24px;
+}
+
+.auth-notification-banner .banner-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.auth-notification-banner .banner-close:hover {
+  opacity: 1;
+}
+
+.page-overlay-locked {
+  position: relative;
+}
+
+.page-overlay-locked::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+/* =========================================
    RESPONSIVE DESIGN (Mobile & Tablet)
    ========================================= */
 
@@ -765,12 +835,12 @@ body {
   .header-banner {
     height: auto;
     min-height: 70px;
-    padding: 8px 12px 8px 0;
+    padding: 8px 12px 8px 8px;
     gap: 8px;
   }
 
   .header-logo-box {
-    margin-left: 0;
+    margin-left: 4px;
     width: 60px;
     height: 52px;
     flex-shrink: 0;
@@ -852,7 +922,6 @@ body {
     font-size: 14px;
     white-space: nowrap;
     justify-content: center;
-    border-radius: 6px;
     scroll-snap-align: start;
   }
 
