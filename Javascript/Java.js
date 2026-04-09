@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const AUTH_STORAGE_KEY = "seb_demo_auth_user";
-    const PROTECTED_PAGE_PATTERN = /(dang-ky-phong-hoc|kho-ca-nhan)\.html$/i;
-    const PROTECTED_LINK_PATTERN = /(dang-ky-phong-hoc|kho-ca-nhan)\.html(?:$|[?#])/i;
+    const PROTECTED_PAGE_PATTERN = /kho-ca-nhan\.html$/i;
+    const PROTECTED_LINK_PATTERN = /kho-ca-nhan\.html(?:$|[?#])/i;
     let pendingRedirect = "";
 
     function getAuthUser() {
@@ -109,6 +109,26 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
+    function updateHeaderAuthButtons(loginBtn, registerBtn) {
+        if (loginBtn && loginBtn.classList.contains("icon-btn")) {
+            loginBtn.classList.remove("avatar-btn", "avatar-main-btn");
+            loginBtn.innerHTML = '<i class="far fa-user"></i>';
+            loginBtn.style.display = "flex";
+            loginBtn.setAttribute("title", "Đăng nhập");
+            loginBtn.setAttribute("aria-label", "Đăng nhập");
+            loginBtn.removeAttribute("aria-haspopup");
+            loginBtn.setAttribute("aria-expanded", "false");
+        }
+
+        if (registerBtn && registerBtn.classList.contains("icon-btn")) {
+            registerBtn.classList.remove("avatar-btn", "avatar-main-btn");
+            registerBtn.innerHTML = '<i class="fas fa-pencil-alt"></i>';
+            registerBtn.style.display = "flex";
+            registerBtn.setAttribute("title", "Đăng ký");
+            registerBtn.setAttribute("aria-label", "Đăng ký");
+        }
+    }
+
     function initScrollReveal() {
         const revealTargets = document.querySelectorAll(".section-wrapper, .search-container, .stats-row, .footer");
         if (!revealTargets.length) {
@@ -148,6 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ensureAuthModal();
 
     const { loginBtn, registerBtn } = resolveAuthButtons();
+    updateHeaderAuthButtons(loginBtn, registerBtn);
     
     const authModal = document.getElementById("authModal");
     const closeModalBtn = document.getElementById("closeModalBtn");
@@ -193,6 +214,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function finishDemoAuth(username) {
         setAuthUser(username);
+        updateHeaderAuthButtons(loginBtn, registerBtn);
+        window.dispatchEvent(new CustomEvent("seb:auth-changed"));
         setAuthLockState(false);
         closeModal();
 
@@ -234,6 +257,12 @@ document.addEventListener("DOMContentLoaded", () => {
         authModal.style.display = "none";
     }
 
+    window.addEventListener("seb:require-auth", () => {
+        setAuthLockState(false);
+        openModal("login");
+        alert("Vui lòng đăng nhập hoặc đăng ký để gửi yêu cầu đăng ký phòng.");
+    });
+
     if (loginBtn) {
         loginBtn.addEventListener("click", () => openModal("login"));
     }
@@ -241,6 +270,20 @@ document.addEventListener("DOMContentLoaded", () => {
     if (registerBtn) {
         registerBtn.addEventListener("click", () => openModal("register"));
     }
+
+    window.addEventListener("seb:auth-changed", () => {
+        updateHeaderAuthButtons(loginBtn, registerBtn);
+    });
+
+    window.addEventListener("storage", (event) => {
+        if (event.key === AUTH_STORAGE_KEY) {
+            updateHeaderAuthButtons(loginBtn, registerBtn);
+        }
+    });
+
+    window.addEventListener("focus", () => {
+        updateHeaderAuthButtons(loginBtn, registerBtn);
+    });
 
     if (closeModalBtn) {
         closeModalBtn.addEventListener("click", closeModal);
@@ -327,6 +370,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
     ensureDemoHints();
     setAuthLockState(authLock);
+
+    // Show auth notification banner on kho-ca-nhan if not logged in
+    const authBanner = document.getElementById("auth-banner");
+    const appWrapper = document.getElementById("app");
+    
+    if (isProtectedCurrentPage() && !isLoggedIn()) {
+        if (authBanner) {
+            authBanner.style.display = "flex";
+        }
+        if (appWrapper) {
+            appWrapper.classList.add("page-overlay-locked");
+        }
+    } else {
+        if (authBanner) {
+            authBanner.style.display = "none";
+        }
+        if (appWrapper) {
+            appWrapper.classList.remove("page-overlay-locked");
+        }
+    }
+
+    // Update banner visibility after login
+    const originalFinishDemoAuth = finishDemoAuth;
+    finishDemoAuth = function(username) {
+        originalFinishDemoAuth.call(this, username);
+        if (authBanner) {
+            authBanner.style.display = "none";
+        }
+        if (appWrapper) {
+            appWrapper.classList.remove("page-overlay-locked");
+        }
+    };
 
     if (authLock) {
         openModal("login");

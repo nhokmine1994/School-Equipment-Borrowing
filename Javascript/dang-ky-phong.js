@@ -52,6 +52,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const roomNumberSelect = document.querySelector('select[name="room-number"]');
     const userNameSelect = document.querySelector('select[name="user-name"]');
     const purposeInput = document.querySelector('.textarea-field textarea');
+    const draftSelectionsByRoom = {};
+    const SUBMIT_TEXT_DEFAULT = 'Gửi Yêu Cầu';
+    const SUBMIT_TEXT_REQUIRE_AUTH = 'Đăng nhập để gửi yêu cầu';
 
     function getStoredBookings() {
         try {
@@ -79,6 +82,45 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function updateSubmitButtonAuthState() {
+        if (!submitBtn) {
+            return;
+        }
+
+        const loggedIn = Boolean(getAuthUsername());
+        submitBtn.textContent = loggedIn ? SUBMIT_TEXT_DEFAULT : SUBMIT_TEXT_REQUIRE_AUTH;
+        submitBtn.title = loggedIn
+            ? 'Gửi yêu cầu đăng ký phòng học'
+            : 'Vui lòng đăng nhập hoặc đăng ký để gửi yêu cầu';
+    }
+
+    function promptAuthForBookingAction() {
+        window.dispatchEvent(new CustomEvent('seb:require-auth'));
+        updateSubmitButtonAuthState();
+    }
+
+    function guardFieldInteractionBeforeLogin(fieldElement) {
+        if (!fieldElement) {
+            return;
+        }
+
+        fieldElement.addEventListener('mousedown', function (event) {
+            if (getAuthUsername()) {
+                return;
+            }
+            event.preventDefault();
+            promptAuthForBookingAction();
+        });
+
+        fieldElement.addEventListener('touchstart', function (event) {
+            if (getAuthUsername()) {
+                return;
+            }
+            event.preventDefault();
+            promptAuthForBookingAction();
+        }, { passive: false });
+    }
+
     function getSlotMeta(button) {
         const row = button.closest('tr');
         const cell = button.closest('td');
@@ -100,6 +142,29 @@ document.addEventListener('DOMContentLoaded', function () {
             timeLabel,
             slotKey: dayLabel + '__' + timeLabel,
         };
+    }
+
+    function getCurrentRoomKey() {
+        const roomType = roomTypeSelect ? roomTypeSelect.value : '';
+        const roomNumber = roomNumberSelect ? roomNumberSelect.value : '';
+        if (!roomType || !roomNumber) {
+            return '';
+        }
+        return roomType + '__' + roomNumber;
+    }
+
+    function saveCurrentDraftSelection() {
+        const roomKey = getCurrentRoomKey();
+        if (!roomKey) {
+            return;
+        }
+
+        const selectedSlotKeys = Array.from(document.querySelectorAll('.slot-btn.selected'))
+            .map((button) => getSlotMeta(button))
+            .filter((meta) => Boolean(meta && meta.slotKey))
+            .map((meta) => meta.slotKey);
+
+        draftSelectionsByRoom[roomKey] = selectedSlotKeys;
     }
 
     const slotSnapshots = Array.from(document.querySelectorAll('.timetable tbody .slot-btn')).map((button) => ({
@@ -166,12 +231,40 @@ document.addEventListener('DOMContentLoaded', function () {
                 button.disabled = true;
             }
         });
+
+        const roomKey = getCurrentRoomKey();
+        if (!roomKey) {
+            return;
+        }
+
+        const draftSlotKeys = new Set(draftSelectionsByRoom[roomKey] || []);
+        if (!draftSlotKeys.size) {
+            return;
+        }
+
+        slotSnapshots.forEach((snapshot) => {
+            const button = snapshot.button;
+            const meta = getSlotMeta(button);
+            if (!meta || !draftSlotKeys.has(meta.slotKey)) {
+                return;
+            }
+
+            if (button.classList.contains('empty') && !button.disabled) {
+                button.classList.add('selected');
+                button.textContent = 'Đã chọn';
+            }
+        });
     }
 
     if (timetable) {
         timetable.addEventListener('click', function (event) {
             const button = event.target.closest('.slot-btn');
             if (!button || !button.classList.contains('empty')) {
+                return;
+            }
+
+            if (!getAuthUsername()) {
+                promptAuthForBookingAction();
                 return;
             }
 
@@ -182,18 +275,49 @@ document.addEventListener('DOMContentLoaded', function () {
                 button.classList.add('selected');
                 button.textContent = 'Đã chọn';
             }
+
+            saveCurrentDraftSelection();
         });
     }
 
     if (roomTypeSelect) {
-        roomTypeSelect.addEventListener('change', applyMyBookingsForCurrentRoom);
+        guardFieldInteractionBeforeLogin(roomTypeSelect);
+        roomTypeSelect.addEventListener('change', function () {
+            if (!getAuthUsername()) {
+                promptAuthForBookingAction();
+            }
+            saveCurrentDraftSelection();
+            applyMyBookingsForCurrentRoom();
+        });
     }
 
     if (roomNumberSelect) {
-        roomNumberSelect.addEventListener('change', applyMyBookingsForCurrentRoom);
+        guardFieldInteractionBeforeLogin(roomNumberSelect);
+        roomNumberSelect.addEventListener('change', function () {
+            if (!getAuthUsername()) {
+                promptAuthForBookingAction();
+            }
+            saveCurrentDraftSelection();
+            applyMyBookingsForCurrentRoom();
+        });
     }
 
     applyMyBookingsForCurrentRoom();
+    updateSubmitButtonAuthState();
+
+    window.addEventListener('storage', function (event) {
+        if (event.key === AUTH_STORAGE_KEY) {
+            updateSubmitButtonAuthState();
+            applyMyBookingsForCurrentRoom();
+        }
+    });
+
+    window.addEventListener('focus', updateSubmitButtonAuthState);
+
+    window.addEventListener('seb:auth-changed', function () {
+        updateSubmitButtonAuthState();
+        applyMyBookingsForCurrentRoom();
+    });
 
     // Xử lý gửi yêu cầu
     if (submitBtn) {
@@ -201,6 +325,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const selectedSlots = Array.from(document.querySelectorAll('.slot-btn.selected'));
             const roomType = roomTypeSelect ? roomTypeSelect.value : '';
             const roomNumber = roomNumberSelect ? roomNumberSelect.value : '';
+            const authUsername = getAuthUsername();
+
+            if (!authUsername) {
+                promptAuthForBookingAction();
+                return;
+            }
 
             if (selectedSlots.length === 0) {
                 alert('Vui lòng chọn ít nhất một tiết học trống!');
@@ -221,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const userNameLabel = userNameSelect && userNameSelect.selectedOptions[0] && userNameSelect.value
                 ? userNameSelect.selectedOptions[0].textContent.trim()
                 : 'Người dùng demo';
-            const authUsername = getAuthUsername() || userNameLabel;
+            const bookingOwner = authUsername || userNameLabel;
             const purpose = purposeInput && purposeInput.value.trim() ? purposeInput.value.trim() : 'Không có ghi chú';
 
             const slotDetails = selectedSlots
@@ -240,13 +370,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 roomTypeLabel,
                 roomNumber,
                 roomNumberLabel,
-                createdBy: authUsername,
+                createdBy: bookingOwner,
                 userNameLabel,
                 purpose,
                 createdAt: new Date().toISOString(),
                 slots: slotDetails,
             });
             setStoredBookings(bookings);
+
+            const roomKey = getCurrentRoomKey();
+            if (roomKey) {
+                draftSelectionsByRoom[roomKey] = [];
+            }
 
             applyMyBookingsForCurrentRoom();
 

@@ -280,25 +280,27 @@
         justify-content: flex-start;
         overflow-x: auto;
         overflow-y: visible;
-        padding-bottom: 16px;
+        align-items: flex-start;
+        padding: 16px 8px 24px 8px;
         -webkit-overflow-scrolling: touch;
       }
 
       .member-card {
         width: 170px;
         min-width: 170px;
+        flex-shrink: 0;
       }
 
       .member-card + .member-card {
-        margin-left: -38px;
+        margin-left: -24px;
       }
 
       .member-card.active {
-        transform: translateX(-14px) translateY(-18px) scale(1.04);
+        transform: translateX(-10px) translateY(0) scale(1.02);
       }
 
       .member-card.active:hover {
-        transform: translateX(-14px) translateY(-20px) scale(1.05);
+        transform: translateX(-10px) translateY(0) scale(1.03);
       }
 
       .member-photo {
