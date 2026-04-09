@@ -444,13 +444,74 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- COLLAPSIBLE SIDEBAR LOGIC (MOBILE) ---
-    const collapsibleTitles = document.querySelectorAll('.collapsible-title');
-    collapsibleTitles.forEach(title => {
-        title.addEventListener('click', () => {
-            if (window.innerWidth <= 768) {
-                title.classList.toggle('active');
+    // --- LOGIN / LOGOUT & AVATAR LOGIC ---
+    const loginFormContainerNode = document.getElementById("loginFormContainer");
+    if (loginFormContainerNode) {
+        const loginForm = loginFormContainerNode.querySelector("form");
+        const userProfileMenu = document.getElementById("userProfileMenu");
+        const avatarBtn = document.getElementById("avatarBtn");
+        const avatarDropdown = document.getElementById("avatarDropdown");
+        const logoutBtn = document.getElementById("logoutBtn");
+
+        // Handle login submission
+        if (loginForm) {
+            loginForm.addEventListener("submit", (e) => {
+                e.preventDefault(); // Ngăn chặn load lại trang
+                
+                const loginNameInput = document.getElementById("loginName");
+                const loginPassInput = document.getElementById("loginPass");
+                
+                if (loginNameInput && loginPassInput) {
+                    const username = loginNameInput.value.trim();
+                    const password = loginPassInput.value;
+                    
+                    if (username === "Duan" && password === "12345678") {
+                        // Đăng nhập thành công
+                        if (loginBtn) loginBtn.style.display = "none";
+                        if (registerBtn) registerBtn.style.display = "none";
+                        if (userProfileMenu) userProfileMenu.style.display = "block";
+                        
+                        // Xóa dữ liệu khi đăng nhập thành công
+                        loginNameInput.value = "";
+                        loginPassInput.value = "";
+                        closeModal();
+                    } else {
+                        alert("Tên đăng nhập hoặc mật khẩu không chính xác!");
+                    }
+                }
+            });
+        }
+
+        // Handle avatar click to toggle dropdown
+        if (avatarBtn) {
+            avatarBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                if (avatarDropdown.style.display === "flex") {
+                    avatarDropdown.style.display = "none";
+                } else {
+                    avatarDropdown.style.display = "flex";
+                }
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", () => {
+            if (avatarDropdown && avatarDropdown.style.display === "flex") {
+                avatarDropdown.style.display = "none";
             }
         });
-    });
+
+        // Handle logout
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                if (confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
+                    if (loginBtn) loginBtn.style.display = "flex";
+                    if (registerBtn) registerBtn.style.display = "flex";
+                    if (userProfileMenu) userProfileMenu.style.display = "none";
+                    if (avatarDropdown) avatarDropdown.style.display = "none";
+                }
+            });
+        }
+    }
 });
