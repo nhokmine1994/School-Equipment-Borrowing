@@ -7,8 +7,11 @@
     gap: 20px;
     padding: 20px;
     min-height: 80vh;
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 @media (max-width: 768px) {
@@ -367,8 +370,8 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     background-color: rgba(15, 23, 42, 0.65);
     display: flex;
     justify-content: center;
@@ -586,4 +589,122 @@
 .modal-btn-confirm:disabled {
     background-color: #94a3b8;
     cursor: not-allowed;
+}
+
+/* Sidebar collapsible on mobile */
+.toggle-icon {
+    display: none;
+    transition: transform 0.3s;
+}
+
+.collapsible-title.active .toggle-icon {
+    transform: rotate(180deg);
+}
+
+@media (max-width: 768px) {
+    .toggle-icon {
+        display: inline-block;
+    }
+
+    .collapsible-title {
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .collapsible-content {
+        display: none;
+        overflow: hidden;
+    }
+
+    .collapsible-title.active+.collapsible-content {
+        display: block;
+    }
+
+    .sidebar {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+}
+
+/* === Extra Mobile Optimization: <= 450px === */
+@media (max-width: 450px) {
+    #app {
+        padding: 8px;
+        gap: 12px;
+    }
+
+    .sidebar {
+        padding: 12px;
+        margin-bottom: 10px;
+    }
+
+    .sidebar h3 {
+        font-size: 1rem;
+        padding-bottom: 8px;
+        margin-bottom: 10px;
+    }
+
+    .content {
+        padding: 12px;
+    }
+
+    .content h1 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+
+    .equipment-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    /* Shrink the card contents */
+    .device-card,
+    .equipment-card {
+        padding: 12px;
+    }
+
+    .device-image,
+    .equipment-image {
+        height: 120px;
+        margin-bottom: 10px;
+    }
+
+    .device-info h3,
+    .equipment-card h3 {
+        font-size: 1rem;
+        margin-bottom: 4px;
+    }
+
+    .device-info p,
+    .equipment-card p {
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+
+    .device-actions {
+        gap: 8px;
+    }
+
+    .device-actions button,
+    .equipment-card button {
+        padding: 8px;
+        font-size: 0.85rem;
+    }
+
+    .kho-select-wrap {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .kho-select,
+    .kho-search-input {
+        width: 100%;
+        padding: 10px;
+        font-size: 0.95rem;
+    }
 }

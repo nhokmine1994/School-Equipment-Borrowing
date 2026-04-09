@@ -1,0 +1,40 @@
+<header class="site-header">
+  <div class="header-container">
+    <div class="brand">
+      <img src="../images/logo.png" alt="Logo" class="logo" />
+    </div>
+
+    <div class="brand-text center-title">
+      <div class="school-name">TRƯỜNG TRUNG HỌC CƠ SỞ LỘC AN</div>
+      <div class="system-name">HỆ THỐNG MƯỢN/TRẢ THIẾT BỊ (SEB)</div>
+    </div>
+
+    <div class="header-actions">
+      <button class="icon-btn icon-signin" aria-label="Đăng nhập"></button>
+      <button class="icon-btn icon-signup" aria-label="Đăng ký"></button>
+    </div>
+  </div>
+</header>
+
+<nav class="site-nav">
+  <a href="../index.html">Trang chủ</a>
+  <a href="../page/kho_thiet_bi.html">Kho thiết bị</a>
+  <a href="../page/dang-ky.html">Đăng ký phòng học</a>
+  <a href="../page/kho-ca-nhan.html">Kho cá nhân</a>
+  <a href="../page/tin-tuc.html">Tin tức</a>
+  <a href="../page/lien-he.html">Liên hệ</a>
+</nav>
+<script>
+  const currentPath = window.location.pathname.toLowerCase();
+  const currentPage = (currentPath === '/' || currentPath === '' || currentPath.endsWith('/'))
+    ? 'index.html'
+    : currentPath.split('/').pop();
+
+  document.querySelectorAll('.site-nav a').forEach(link => {
+    const href = link.getAttribute('href').toLowerCase();
+    const hrefPage = href === '/' || href === '' || href.endsWith('/') ? 'index.html' : href.split('/').pop();
+    if (hrefPage === currentPage || (currentPage === 'index.html' && hrefPage === 'index.html')) {
+      link.classList.add('active');
+    }
+  });
+</script>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEB - Kho thiết bị</title>
+    <meta name="description"
+        content="Kho thiết bị SEB: tra cứu, lọc và mượn thiết bị dạy học theo danh mục và môn học.">
+    <link rel="stylesheet" href="../CSS/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../CSS/kho.css">
+    <link rel="stylesheet" href="../CSS/kho-pages.css">
+</head>
+
+<body>
+    <div class="system-container">
+        <header class="header-banner">
+            <div class="header-logo-box">
+                <img src="../Images/logo.png" alt="Logo Lộc An">
+            </div>
+            <div class="header-title-group">
+                <h2>TRƯỜNG TRUNG HỌC CƠ SỞ LỘC AN</h2>
+                <h1>HỆ THỐNG MƯỢN/TRẢ THIẾT BỊ ( SEB )</h1>
+            </div>
+            <div class="header-right">
+                <button class="icon-btn"><i class="far fa-user"></i></button>
+                <button class="icon-btn"><i class="fas fa-pencil-alt"></i></button>
+            </div>
+        </header>
+
+        <nav class="nav-bar" id="mainNav">
+            <div class="nav-links" id="navLinks">
+                <a href="../index.html" class="nav-tab">Trang chủ</a>
+                <a href="kho_thiet_bi.html" class="nav-tab active">Kho thiết bị</a>
+                <a href="dang-ky-phong-hoc.html" class="nav-tab">Đăng ký phòng học</a>
+                <a href="kho-ca-nhan.html" class="nav-tab">Kho cá nhân</a>
+                <a href="news.html" class="nav-tab">Tin tức</a>
+                <a href="about.html" class="nav-tab">Liên hệ</a>
+            </div>
+        </nav>
+
+        <section class="section-wrapper">
+            <div class="section-heading">
+                <i class="fas fa-boxes-stacked"></i>
+                Kho thiết bị
+            </div>
+
+            <div id="app" class="kho-app">
+                <aside class="sidebar">
+                    <h3 class="collapsible-title">Danh mục <i class="fas fa-chevron-down toggle-icon"></i></h3>
+                    <div class="collapsible-content">
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="CNTT"
+                                data-type="category"> CNTT
+                        </label>
+                    </div>
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Âm thanh"
+                                data-type="category"> Âm thanh
+                        </label>
+                    </div>
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Trình chiếu"
+                                data-type="category"> Trình chiếu
+                        </label>
+                    </div>
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Phòng lab"
+                                data-type="category"> Phòng lab
+                        </label>
+                    </div>
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Dụng cụ thực hành"
+                                data-type="category"> Dụng cụ thực hành
+                        </label>
+                    </div>
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Hóa chất"
+                                data-type="category"> Hóa chất
+                        </label>
+                    </div>
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Khác"
+                                data-type="category"> Khác
+                        </label>
+                    </div>
+
+                    </div>
+                    
+                    <h3 class="kho-subject-title collapsible-title">Môn học <i class="fas fa-chevron-down toggle-icon"></i></h3>
+                    <div class="collapsible-content">
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Vật lý"
+                                data-type="subject"> Vật lý
+                        </label>
+                    </div>
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Hóa học"
+                                data-type="subject"> Hóa học
+                        </label>
+                    </div>
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Sinh học"
+                                data-type="subject"> Sinh học
+                        </label>
+                    </div>
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Tin học"
+                                data-type="subject"> Tin học
+                        </label>
+                    </div>
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Chung"
+                                data-type="subject"> Khác / Dùng chung
+                        </label>
+                    </div>
+                    </div>
+                </aside>
+
+                <main class="content">
+                    <h1>Kho Thiết Bị</h1>
+                    <div class="search-bar kho-search-wrap">
+                        <input type="text" id="search-input" placeholder="Nhập tên thiết bị để tìm kiếm..."
+                            class="kho-search-input">
+                    </div>
+                    <div class="equipment-grid" id="equipment-grid">
+                        <!-- Data will be rendered here by ../javascript/kho_thiet_bi.js -->
+                    </div>
+
+                    <div id="pagination-container" class="pagination"></div>
+                </main>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-content">
+                Copyright 2026<br>
+                Website này là tài sản thuộc quyền sở hữu hợp pháp của SEB.<br>
+                Nội dung, hình ảnh và mã nguồn được bảo hộ theo quy định pháp luật hiện hành.<br>
+                Mọi thông tin chi tiết xin liên hệ<br>
+                Hotline: 0344655621
+            </div>
+            <div class="footer-tip">
+                <i class="far fa-lightbulb"></i>
+                Bạn có thể quét mã QR để mượn, trả và báo hỏng thiết bị nhanh chóng !
+            </div>
+        </footer>
+    </div>
+
+    <script src="../Javascript/Java.js"></script>
+    <script src="../Javascript/device_modal.js"></script>
+    <script src="../Javascript/devices_data.js"></script>
+    <script src="../Javascript/kho_thiet_bi.js"></script>
+
+</body>
+
+</html>
