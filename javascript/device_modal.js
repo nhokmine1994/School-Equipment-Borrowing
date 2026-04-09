@@ -1,5 +1,73 @@
 // javascript/device_modal.js
 
+function createModalImagePlaceholder(text) {
+    const placeholder = document.createElement('div');
+    placeholder.style.padding = '100px';
+    placeholder.style.textAlign = 'center';
+    placeholder.style.color = '#64748b';
+    placeholder.textContent = text;
+    return placeholder;
+}
+
+function renderSafeModalImage(container, imageHtml) {
+    if (!container) {
+        return;
+    }
+
+    container.textContent = '';
+
+    if (typeof imageHtml !== 'string' || imageHtml.trim() === '') {
+        container.appendChild(createModalImagePlaceholder('Không có ảnh'));
+        return;
+    }
+
+    const template = document.createElement('template');
+    template.innerHTML = imageHtml.trim();
+    const img = template.content.querySelector('img');
+
+    if (!img) {
+        container.appendChild(createModalImagePlaceholder('Không có ảnh'));
+        return;
+    }
+
+    const src = (img.getAttribute('src') || '').trim();
+    const isTrustedSrc = /^(https?:\/\/|\/|\.\.?\/)/i.test(src);
+    if (!isTrustedSrc) {
+        container.appendChild(createModalImagePlaceholder('Ảnh không hợp lệ'));
+        return;
+    }
+
+    const safeImg = document.createElement('img');
+    safeImg.src = src;
+    safeImg.alt = img.getAttribute('alt') || 'Thiết bị';
+    safeImg.style.width = '100%';
+    safeImg.style.height = '100%';
+    safeImg.style.objectFit = 'cover';
+    safeImg.style.display = 'block';
+    container.appendChild(safeImg);
+}
+
+function renderSafeAccessories(container, accessories) {
+    if (!container) {
+        return;
+    }
+
+    container.textContent = '';
+
+    const safeAccessories = Array.isArray(accessories) && accessories.length
+        ? accessories
+        : ['Dây nguồn, hướng dẫn sử dụng', 'Hộp chống sốc / Cáp tín hiệu'];
+
+    const list = document.createElement('ul');
+    safeAccessories.forEach((item) => {
+        const li = document.createElement('li');
+        li.textContent = String(item ?? '');
+        list.appendChild(li);
+    });
+
+    container.appendChild(list);
+}
+
 // Tạo và nhúng HTML Modal toàn cục vào Document Body
 function initDeviceModal() {
     if (document.getElementById('device-modal-overlay')) return;
@@ -112,12 +180,11 @@ window.openModal = function(device) {
     const stock = device.quantity || Math.floor(Math.random() * 15) + 3;
     document.getElementById('modal-stock').textContent = isAvail ? `Còn ${stock} cái` : 'Đã xuất hết (0 cái)';
     
-    document.getElementById('modal-image').innerHTML = device.image || '<div style="padding: 100px; text-align: center;">X</div>';
+    renderSafeModalImage(document.getElementById('modal-image'), device.image);
 
     document.getElementById('modal-desc').textContent = device.description || `Đây là thiết bị [${device.name}] được cung cấp mặc định trong kho. Đảm bảo hỗ trợ giáo viên và học sinh đáp ứng nhu cầu sử dụng thực tiễn công nghệ, an toàn và dễ sử dụng tại trường học.`;
 
-    const accessories = device.accessories || ["Dây nguồn, hướng dẫn sử dụng", "Hộp chống sốc / Cáp tín hiệu"];
-    document.getElementById('modal-accessories').innerHTML = `<ul>${accessories.map(a => `<li>${a}</li>`).join('')}</ul>`;
+    renderSafeAccessories(document.getElementById('modal-accessories'), device.accessories);
 
     // Validate Input form
     const qtyInput = document.getElementById('modal-qty');

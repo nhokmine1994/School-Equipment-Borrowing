@@ -5,27 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SEB - Kho cá nhân</title>
-    <link rel="stylesheet" href="../../../CSS/main.css">
+    <meta name="description"
+        content="Kho cá nhân SEB: theo dõi thiết bị đã thêm, lọc nhanh và quản lý lịch sử mượn gần đây.">
+    <link rel="stylesheet" href="../CSS/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/body.css">
-    <link rel="stylesheet" href="../css/card.css">
-    <link rel="stylesheet" href="../css/modal.css">
-    <style>
-        #app {
-            padding-top: 25px;
-            padding-bottom: 25px;
-        }
-    </style>
+    <link rel="stylesheet" href="../CSS/kho.css">
+    <link rel="stylesheet" href="../CSS/kho-pages.css">
 </head>
 
 <body>
     <div class="system-container">
         <header class="header-banner">
             <div class="header-logo-box">
-                <img src="../../../Images/logo.png" alt="Logo Lộc An">
+                <img src="../Images/logo.png" alt="Logo Lộc An">
             </div>
             <div class="header-title-group">
                 <h2>TRƯỜNG TRUNG HỌC CƠ SỞ LỘC AN</h2>
@@ -37,34 +32,43 @@
             </div>
         </header>
 
-        <nav class="nav-bar">
-            <a href="../../../index.html" class="nav-tab">Trang chủ</a>
-            <a href="kho_thiet_bi.html" class="nav-tab">Kho thiết bị</a>
-            <a href="#" class="nav-tab">Đăng ký phòng học</a>
-            <a href="kho-ca-nhan.html" class="nav-tab active">Kho cá nhân</a>
-            <a href="#" class="nav-tab">Tin tức</a>
-            <a href="../../../Page/about.html" class="nav-tab">Liên hệ</a>
+        <nav class="nav-bar" id="mainNav">
+            <div class="nav-links" id="navLinks">
+                <a href="../index.html" class="nav-tab">Trang chủ</a>
+                <a href="kho_thiet_bi.html" class="nav-tab">Kho thiết bị</a>
+                <a href="dang-ky-phong-hoc.html" class="nav-tab">Đăng ký phòng học</a>
+                <a href="kho-ca-nhan.html" class="nav-tab active">Kho cá nhân</a>
+                <a href="news.html" class="nav-tab">Tin tức</a>
+                <a href="about.html" class="nav-tab">Liên hệ</a>
+            </div>
         </nav>
 
         <section class="section-wrapper">
+            <div id="auth-banner" class="auth-notification-banner" style="display: none;">
+                <i class="fas fa-lock"></i>
+                <span>Vui lòng <strong>đăng nhập</strong> hoặc <strong>đăng ký</strong> để sử dụng kho cá nhân</span>
+                <button class="banner-close" onclick="this.parentElement.style.display='none';">&times;</button>
+            </div>
+
             <div class="section-heading">
                 <i class="fas fa-user-check"></i>
                 Kho cá nhân
             </div>
 
-            <div id="app">
+            <div id="app" class="kho-app">
                 <aside class="sidebar">
-                    <h3 style="margin-bottom: 15px;">Lịch sử mượn gần đây</h3>
-                    <ul id="borrow-history-list" style="list-style: none; padding: 0; margin: 0;">
-                        <li style="color: #64748b; font-size: 0.9rem;">Chưa có lịch sử mượn.</li>
-                    </ul>
+                    <h3 class="kho-search-wrap collapsible-title">Lịch sử mượn gần đây <i class="fas fa-chevron-down toggle-icon"></i></h3>
+                    <div class="collapsible-content">
+                        <ul id="borrow-history-list" class="borrow-list">
+                            <li class="borrow-empty">Chưa có lịch sử mượn.</li>
+                        </ul>
+                    </div>
                 </aside>
 
                 <main class="content">
                     <h1>Kho Cá Nhân</h1>
-                    <div class="search-bar" style="margin-bottom: 25px; display: flex; gap: 15px;">
-                        <select id="filter-category"
-                            style="flex: 1; padding: 12px 15px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1.05rem; outline: none; transition: border-color 0.2s; cursor: pointer;">
+                    <div class="search-bar kho-select-wrap">
+                        <select id="filter-category" class="kho-select">
                             <option value="">Tất cả danh mục</option>
                             <option value="CNTT">CNTT</option>
                             <option value="Âm thanh">Âm thanh</option>
@@ -74,8 +78,7 @@
                             <option value="Hóa chất">Hóa chất</option>
                             <option value="Khác">Khác</option>
                         </select>
-                        <select id="filter-subject"
-                            style="flex: 1; padding: 12px 15px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1.05rem; outline: none; transition: border-color 0.2s; cursor: pointer;">
+                        <select id="filter-subject" class="kho-select">
                             <option value="">Tất cả môn học</option>
                             <option value="Vật lý">Vật lý</option>
                             <option value="Hóa học">Hóa học</option>
@@ -89,6 +92,21 @@
                     </div>
 
                     <div id="pagination-container" class="pagination"></div>
+
+                    <section id="my-room-bookings-section" class="my-room-bookings-section">
+                        <h2 class="my-room-bookings-title">Phòng học của tôi</h2>
+                        <p class="my-room-bookings-desc">Danh sách các ca phòng học bạn đã đăng ký gần đây.</p>
+                        <div class="my-room-filter-row">
+                            <select id="my-room-filter-room" class="my-room-filter-select">
+                                <option value="">Tất cả phòng</option>
+                            </select>
+                            <select id="my-room-filter-day" class="my-room-filter-select">
+                                <option value="">Tất cả ngày</option>
+                            </select>
+                            <input id="my-room-filter-keyword" class="my-room-filter-input" type="text" placeholder="Tìm theo mục đích / ca học...">
+                        </div>
+                        <div id="my-room-bookings-list" class="my-room-bookings-list"></div>
+                    </section>
                 </main>
             </div>
         </section>
@@ -108,8 +126,10 @@
         </footer>
     </div>
 
-    <script src="../javascript/device_modal.js"></script>
-    <script src="../javascript/kho_thiet_bi.js"></script>
+    <script src="../Javascript/Java.js"></script>
+    <script src="../Javascript/device_modal.js"></script>
+    <script src="../Javascript/devices_data.js"></script>
+    <script src="../Javascript/kho_thiet_bi.js"></script>
 
 </body>
 

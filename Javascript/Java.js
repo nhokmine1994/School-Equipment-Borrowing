@@ -443,4 +443,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    // --- COLLAPSIBLE SIDEBAR LOGIC (MOBILE) ---
+    const collapsibleTitles = document.querySelectorAll('.collapsible-title');
+    collapsibleTitles.forEach(title => {
+        title.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                title.classList.toggle('active');
+            }
+        });
+    });
 });

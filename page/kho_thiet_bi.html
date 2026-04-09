@@ -5,27 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SEB - Kho thiết bị</title>
-    <link rel="stylesheet" href="../../../CSS/main.css">
+    <meta name="description"
+        content="Kho thiết bị SEB: tra cứu, lọc và mượn thiết bị dạy học theo danh mục và môn học.">
+    <link rel="stylesheet" href="../CSS/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/body.css">
-    <link rel="stylesheet" href="../css/card.css">
-    <link rel="stylesheet" href="../css/modal.css">
-    <style>
-        #app {
-            padding-top: 25px;
-            padding-bottom: 25px;
-        }
-    </style>
+    <link rel="stylesheet" href="../CSS/kho.css">
+    <link rel="stylesheet" href="../CSS/kho-pages.css">
 </head>
 
 <body>
     <div class="system-container">
         <header class="header-banner">
             <div class="header-logo-box">
-                <img src="../../../Images/logo.png" alt="Logo Lộc An">
+                <img src="../Images/logo.png" alt="Logo Lộc An">
             </div>
             <div class="header-title-group">
                 <h2>TRƯỜNG TRUNG HỌC CƠ SỞ LỘC AN</h2>
@@ -37,13 +32,15 @@
             </div>
         </header>
 
-        <nav class="nav-bar">
-            <a href="../../../index.html" class="nav-tab">Trang chủ</a>
-            <a href="kho_thiet_bi.html" class="nav-tab active">Kho thiết bị</a>
-            <a href="#" class="nav-tab">Đăng ký phòng học</a>
-            <a href="kho-ca-nhan.html" class="nav-tab">Kho cá nhân</a>
-            <a href="#" class="nav-tab">Tin tức</a>
-            <a href="../../../Page/about.html" class="nav-tab">Liên hệ</a>
+        <nav class="nav-bar" id="mainNav">
+            <div class="nav-links" id="navLinks">
+                <a href="../index.html" class="nav-tab">Trang chủ</a>
+                <a href="kho_thiet_bi.html" class="nav-tab active">Kho thiết bị</a>
+                <a href="dang-ky-phong-hoc.html" class="nav-tab">Đăng ký phòng học</a>
+                <a href="kho-ca-nhan.html" class="nav-tab">Kho cá nhân</a>
+                <a href="news.html" class="nav-tab">Tin tức</a>
+                <a href="about.html" class="nav-tab">Liên hệ</a>
+            </div>
         </nav>
 
         <section class="section-wrapper">
@@ -52,90 +49,95 @@
                 Kho thiết bị
             </div>
 
-            <div id="app">
+            <div id="app" class="kho-app">
                 <aside class="sidebar">
-                    <h3>Danh mục</h3>
-                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" class="filter-checkbox" value="CNTT" data-type="category"
-                                style="width: 1rem; height: 1rem;"> CNTT
+                    <h3 class="collapsible-title">Danh mục <i class="fas fa-chevron-down toggle-icon"></i></h3>
+                    <div class="collapsible-content">
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="CNTT"
+                                data-type="category"> CNTT
                         </label>
                     </div>
-                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" class="filter-checkbox" value="Âm thanh" data-type="category"
-                                style="width: 1rem; height: 1rem;"> Âm thanh
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Âm thanh"
+                                data-type="category"> Âm thanh
                         </label>
                     </div>
-                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" class="filter-checkbox" value="Trình chiếu" data-type="category"
-                                style="width: 1rem; height: 1rem;"> Trình chiếu
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Trình chiếu"
+                                data-type="category"> Trình chiếu
                         </label>
                     </div>
-                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" class="filter-checkbox" value="Phòng lab" data-type="category"
-                                style="width: 1rem; height: 1rem;"> Phòng lab
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Phòng lab"
+                                data-type="category"> Phòng lab
                         </label>
                     </div>
-                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" class="filter-checkbox" value="Dụng cụ thực hành" data-type="category"
-                                style="width: 1rem; height: 1rem;"> Dụng cụ thực hành
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Dụng cụ thực hành"
+                                data-type="category"> Dụng cụ thực hành
                         </label>
                     </div>
-                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" class="filter-checkbox" value="Hóa chất" data-type="category"
-                                style="width: 1rem; height: 1rem;"> Hóa chất
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Hóa chất"
+                                data-type="category"> Hóa chất
                         </label>
                     </div>
-                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" class="filter-checkbox" value="Khác" data-type="category"
-                                style="width: 1rem; height: 1rem;"> Khác
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Khác"
+                                data-type="category"> Khác
                         </label>
                     </div>
 
-                    <h3 style="margin-top: 25px;">Môn học</h3>
-                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" class="filter-checkbox" value="Vật lý" data-type="subject"
-                                style="width: 1rem; height: 1rem;"> Vật lý
+                    </div>
+                    
+                    <h3 class="kho-subject-title collapsible-title">Môn học <i class="fas fa-chevron-down toggle-icon"></i></h3>
+                    <div class="collapsible-content">
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Vật lý"
+                                data-type="subject"> Vật lý
                         </label>
                     </div>
-                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" class="filter-checkbox" value="Hóa học" data-type="subject"
-                                style="width: 1rem; height: 1rem;"> Hóa học
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Hóa học"
+                                data-type="subject"> Hóa học
                         </label>
                     </div>
-                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" class="filter-checkbox" value="Sinh học" data-type="subject"
-                                style="width: 1rem; height: 1rem;"> Sinh học
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Sinh học"
+                                data-type="subject"> Sinh học
                         </label>
                     </div>
-                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" class="filter-checkbox" value="Tin học" data-type="subject"
-                                style="width: 1rem; height: 1rem;"> Tin học
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Tin học"
+                                data-type="subject"> Tin học
                         </label>
                     </div>
-                    <div class="filter-group" style="margin-bottom: 12px; font-size: 1.05rem; color: #555;">
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" class="filter-checkbox" value="Chung" data-type="subject"
-                                style="width: 1rem; height: 1rem;"> Khác / Dùng chung
+                    <div class="filter-group kho-filter-group">
+                        <label class="kho-filter-label">
+                            <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Chung"
+                                data-type="subject"> Khác / Dùng chung
                         </label>
+                    </div>
                     </div>
                 </aside>
 
                 <main class="content">
                     <h1>Kho Thiết Bị</h1>
-                    <div class="search-bar" style="margin-bottom: 25px;">
+                    <div class="search-bar kho-search-wrap">
                         <input type="text" id="search-input" placeholder="Nhập tên thiết bị để tìm kiếm..."
-                            style="width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1.05rem; outline: none; box-sizing: border-box; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); transition: border-color 0.2s;">
+                            class="kho-search-input">
                     </div>
                     <div class="equipment-grid" id="equipment-grid">
                         <!-- Data will be rendered here by ../javascript/kho_thiet_bi.js -->
@@ -161,8 +163,10 @@
         </footer>
     </div>
 
-    <script src="../javascript/device_modal.js"></script>
-    <script src="../javascript/kho_thiet_bi.js"></script>
+    <script src="../Javascript/Java.js"></script>
+    <script src="../Javascript/device_modal.js"></script>
+    <script src="../Javascript/devices_data.js"></script>
+    <script src="../Javascript/kho_thiet_bi.js"></script>
 
 </body>
 
