@@ -51,7 +51,8 @@
 
             <div id="app" class="kho-app">
                 <aside class="sidebar">
-                    <h3>Danh mục</h3>
+                    <h3 class="collapsible-title">Danh mục <i class="fas fa-chevron-down toggle-icon"></i></h3>
+                    <div class="collapsible-content">
                     <div class="filter-group kho-filter-group">
                         <label class="kho-filter-label">
                             <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="CNTT"
@@ -95,7 +96,10 @@
                         </label>
                     </div>
 
-                    <h3 class="kho-subject-title">Môn học</h3>
+                    </div>
+                    
+                    <h3 class="kho-subject-title collapsible-title">Môn học <i class="fas fa-chevron-down toggle-icon"></i></h3>
+                    <div class="collapsible-content">
                     <div class="filter-group kho-filter-group">
                         <label class="kho-filter-label">
                             <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Vật lý"
@@ -125,6 +129,7 @@
                             <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="Chung"
                                 data-type="subject"> Khác / Dùng chung
                         </label>
+                    </div>
                     </div>
                 </aside>
 

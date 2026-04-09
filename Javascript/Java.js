@@ -91,6 +91,86 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.appendChild(authModal);
     }
 
+    function ensureConfirmPopup() {
+        if (document.getElementById("sebConfirmOverlay")) {
+            return;
+        }
+
+        const overlay = document.createElement("div");
+        overlay.id = "sebConfirmOverlay";
+        overlay.className = "seb-confirm-overlay";
+        overlay.setAttribute("aria-hidden", "true");
+        overlay.innerHTML = `
+            <div class="seb-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="sebConfirmTitle">
+                <h3 id="sebConfirmTitle" class="seb-confirm-title">Xác nhận</h3>
+                <p id="sebConfirmMessage" class="seb-confirm-message"></p>
+                <div class="seb-confirm-actions">
+                    <button type="button" id="sebConfirmCancel" class="seb-confirm-btn seb-confirm-cancel">Hủy</button>
+                    <button type="button" id="sebConfirmAccept" class="seb-confirm-btn seb-confirm-accept">Đồng ý</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+    }
+
+    window.sebConfirm = function (message, title = "Xác nhận") {
+        ensureConfirmPopup();
+
+        const overlay = document.getElementById("sebConfirmOverlay");
+        const titleEl = document.getElementById("sebConfirmTitle");
+        const messageEl = document.getElementById("sebConfirmMessage");
+        const acceptBtn = document.getElementById("sebConfirmAccept");
+        const cancelBtn = document.getElementById("sebConfirmCancel");
+
+        if (!overlay || !titleEl || !messageEl || !acceptBtn || !cancelBtn) {
+            return Promise.resolve(window.confirm(message));
+        }
+
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+        overlay.classList.add("active");
+        overlay.setAttribute("aria-hidden", "false");
+
+        return new Promise((resolve) => {
+            const cleanup = () => {
+                overlay.classList.remove("active");
+                overlay.setAttribute("aria-hidden", "true");
+                acceptBtn.removeEventListener("click", onAccept);
+                cancelBtn.removeEventListener("click", onCancel);
+                overlay.removeEventListener("click", onOverlayClick);
+                document.removeEventListener("keydown", onKeyDown);
+            };
+
+            const onAccept = () => {
+                cleanup();
+                resolve(true);
+            };
+
+            const onCancel = () => {
+                cleanup();
+                resolve(false);
+            };
+
+            const onOverlayClick = (event) => {
+                if (event.target === overlay) {
+                    onCancel();
+                }
+            };
+
+            const onKeyDown = (event) => {
+                if (event.key === "Escape") {
+                    onCancel();
+                }
+            };
+
+            acceptBtn.addEventListener("click", onAccept);
+            cancelBtn.addEventListener("click", onCancel);
+            overlay.addEventListener("click", onOverlayClick);
+            document.addEventListener("keydown", onKeyDown);
+        });
+    };
+
     function resolveAuthButtons() {
         const loginById = document.getElementById("loginBtn");
         const registerById = document.getElementById("registerBtn");
@@ -127,6 +207,11 @@ document.addEventListener("DOMContentLoaded", () => {
             registerBtn.setAttribute("title", "Đăng ký");
             registerBtn.setAttribute("aria-label", "Đăng ký");
         }
+    }
+
+    function makeAvatarPlaceholder(username) {
+        const label = encodeURIComponent(String(username || "User").trim() || "User");
+        return `https://ui-avatars.com/api/?name=${label}&background=0D8ABC&color=fff`;
     }
 
     function initScrollReveal() {
@@ -168,7 +253,89 @@ document.addEventListener("DOMContentLoaded", () => {
     ensureAuthModal();
 
     const { loginBtn, registerBtn } = resolveAuthButtons();
-    updateHeaderAuthButtons(loginBtn, registerBtn);
+    let userProfileMenu = document.getElementById("userProfileMenu");
+    let avatarBtn = document.getElementById("avatarBtn");
+    let avatarDropdown = document.getElementById("avatarDropdown");
+    let logoutBtn = document.getElementById("logoutBtn");
+    let avatarImage = avatarBtn ? avatarBtn.querySelector("img") : null;
+
+    function ensureAvatarMenu() {
+        if (userProfileMenu) {
+            return;
+        }
+
+        const headerRight = document.querySelector(".header-right");
+        if (!headerRight) {
+            return;
+        }
+
+        const menu = document.createElement("div");
+        menu.className = "user-profile-menu";
+        menu.id = "userProfileMenu";
+        menu.style.display = "none";
+        menu.style.position = "relative";
+
+        menu.innerHTML = `
+            <button class="icon-btn avatar-btn" id="avatarBtn" aria-label="Avatar người dùng">
+                <img src="${makeAvatarPlaceholder("User")}" alt="Avatar User" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+            </button>
+            <div class="dropdown-content" id="avatarDropdown" style="display: none; position: absolute; right: 0; top: 120%; min-width: 220px; background-color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.15); border-radius: 8px; z-index: 100; overflow: hidden; border: 1px solid #e0e0e0; flex-direction: column; text-align: left;">
+                <a href="#" class="dropdown-item"><i class="fas fa-id-card"></i> Thông tin cá nhân</a>
+                <a href="#" class="dropdown-item"><i class="fas fa-history"></i> Lịch sử mượn/trả</a>
+                <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Cài đặt</a>
+                <a href="#" class="dropdown-item"><i class="fas fa-user-shield"></i> Chế độ quản trị viên</a>
+                <div style="border-top: 1px solid #eee; margin: 4px 0;"></div>
+                <a href="#" class="dropdown-item" id="logoutBtn" style="color: #dc3545;"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+            </div>
+        `;
+
+        headerRight.appendChild(menu);
+
+        userProfileMenu = menu;
+        avatarBtn = menu.querySelector("#avatarBtn");
+        avatarDropdown = menu.querySelector("#avatarDropdown");
+        logoutBtn = menu.querySelector("#logoutBtn");
+        avatarImage = avatarBtn ? avatarBtn.querySelector("img") : null;
+    }
+
+    ensureAvatarMenu();
+
+    function closeAvatarDropdown() {
+        if (!avatarDropdown) {
+            return;
+        }
+        avatarDropdown.style.display = "none";
+    }
+
+    function updateHeaderAuthUi() {
+        const loggedIn = isLoggedIn();
+        updateHeaderAuthButtons(loginBtn, registerBtn);
+
+        if (!userProfileMenu) {
+            ensureAvatarMenu();
+        }
+
+        if (!userProfileMenu) return;
+
+        if (loggedIn) {
+            if (loginBtn) loginBtn.style.display = "none";
+            if (registerBtn) registerBtn.style.display = "none";
+            userProfileMenu.style.display = "block";
+
+            const authUser = getAuthUser();
+            if (avatarImage) {
+                avatarImage.src = makeAvatarPlaceholder(authUser && authUser.username ? authUser.username : "User");
+                avatarImage.alt = `Avatar ${authUser && authUser.username ? authUser.username : "User"}`;
+            }
+        } else {
+            if (loginBtn) loginBtn.style.display = "flex";
+            if (registerBtn) registerBtn.style.display = "flex";
+            userProfileMenu.style.display = "none";
+            closeAvatarDropdown();
+        }
+    }
+
+    updateHeaderAuthUi();
     
     const authModal = document.getElementById("authModal");
     const closeModalBtn = document.getElementById("closeModalBtn");
@@ -214,7 +381,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function finishDemoAuth(username) {
         setAuthUser(username);
-        updateHeaderAuthButtons(loginBtn, registerBtn);
+        updateHeaderAuthUi();
         window.dispatchEvent(new CustomEvent("seb:auth-changed"));
         setAuthLockState(false);
         closeModal();
@@ -272,18 +439,50 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     window.addEventListener("seb:auth-changed", () => {
-        updateHeaderAuthButtons(loginBtn, registerBtn);
+        updateHeaderAuthUi();
     });
 
     window.addEventListener("storage", (event) => {
         if (event.key === AUTH_STORAGE_KEY) {
-            updateHeaderAuthButtons(loginBtn, registerBtn);
+            updateHeaderAuthUi();
         }
     });
 
     window.addEventListener("focus", () => {
-        updateHeaderAuthButtons(loginBtn, registerBtn);
+        updateHeaderAuthUi();
     });
+
+    if (avatarBtn && avatarDropdown) {
+        avatarBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const nextDisplay = avatarDropdown.style.display === "flex" ? "none" : "flex";
+            avatarDropdown.style.display = nextDisplay;
+        });
+
+        document.addEventListener("click", (event) => {
+            if (!avatarDropdown || !userProfileMenu) {
+                return;
+            }
+
+            if (!userProfileMenu.contains(event.target)) {
+                closeAvatarDropdown();
+            }
+        });
+    }
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", async (event) => {
+            event.preventDefault();
+            const accepted = await window.sebConfirm("Bạn có chắc muốn đăng xuất không?", "Xác nhận đăng xuất");
+            if (!accepted) {
+                return;
+            }
+            localStorage.removeItem(AUTH_STORAGE_KEY);
+            closeAvatarDropdown();
+            updateHeaderAuthUi();
+            window.dispatchEvent(new CustomEvent("seb:auth-changed"));
+        });
+    }
 
     if (closeModalBtn) {
         closeModalBtn.addEventListener("click", closeModal);
@@ -409,7 +608,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // --- HAMBURGER MENU LOGIC ---
-    // --- HAMBURGER MENU LOGIC ---
     const hamburgerBtn = document.getElementById("hamburgerBtn");
     const navLinks = document.getElementById("navLinks");
 
@@ -444,74 +642,51 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- LOGIN / LOGOUT & AVATAR LOGIC ---
-    const loginFormContainerNode = document.getElementById("loginFormContainer");
-    if (loginFormContainerNode) {
-        const loginForm = loginFormContainerNode.querySelector("form");
-        const userProfileMenu = document.getElementById("userProfileMenu");
-        const avatarBtn = document.getElementById("avatarBtn");
-        const avatarDropdown = document.getElementById("avatarDropdown");
-        const logoutBtn = document.getElementById("logoutBtn");
+    // --- SIDEBAR COLLAPSIBLE LOGIC (mobile) ---
+    const collapsibleTitles = document.querySelectorAll(".collapsible-title");
+    if (collapsibleTitles.length) {
+        const isMobile = () => window.matchMedia("(max-width: 768px)").matches;
 
-        // Handle login submission
-        if (loginForm) {
-            loginForm.addEventListener("submit", (e) => {
-                e.preventDefault(); // Ngăn chặn load lại trang
-                
-                const loginNameInput = document.getElementById("loginName");
-                const loginPassInput = document.getElementById("loginPass");
-                
-                if (loginNameInput && loginPassInput) {
-                    const username = loginNameInput.value.trim();
-                    const password = loginPassInput.value;
-                    
-                    if (username === "Duan" && password === "12345678") {
-                        // Đăng nhập thành công
-                        if (loginBtn) loginBtn.style.display = "none";
-                        if (registerBtn) registerBtn.style.display = "none";
-                        if (userProfileMenu) userProfileMenu.style.display = "block";
-                        
-                        // Xóa dữ liệu khi đăng nhập thành công
-                        loginNameInput.value = "";
-                        loginPassInput.value = "";
-                        closeModal();
-                    } else {
-                        alert("Tên đăng nhập hoặc mật khẩu không chính xác!");
-                    }
-                }
-            });
-        }
-
-        // Handle avatar click to toggle dropdown
-        if (avatarBtn) {
-            avatarBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                if (avatarDropdown.style.display === "flex") {
-                    avatarDropdown.style.display = "none";
-                } else {
-                    avatarDropdown.style.display = "flex";
-                }
-            });
-        }
-
-        // Close dropdown when clicking outside
-        document.addEventListener("click", () => {
-            if (avatarDropdown && avatarDropdown.style.display === "flex") {
-                avatarDropdown.style.display = "none";
+        collapsibleTitles.forEach((title, index) => {
+            const content = title.nextElementSibling;
+            if (!content || !content.classList.contains("collapsible-content")) {
+                return;
             }
+
+            title.setAttribute("role", "button");
+            title.setAttribute("tabindex", "0");
+
+            const setExpanded = (expanded) => {
+                title.classList.toggle("active", expanded);
+                title.setAttribute("aria-expanded", expanded ? "true" : "false");
+            };
+
+            // Mặc định mở block đầu tiên trên mobile để người dùng dễ nhận biết.
+            setExpanded(isMobile() && index === 0);
+
+            const onToggle = () => {
+                if (!isMobile()) {
+                    return;
+                }
+                setExpanded(!title.classList.contains("active"));
+            };
+
+            title.addEventListener("click", onToggle);
+            title.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onToggle();
+                }
+            });
         });
 
-        // Handle logout
-        if (logoutBtn) {
-            logoutBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                if (confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
-                    if (loginBtn) loginBtn.style.display = "flex";
-                    if (registerBtn) registerBtn.style.display = "flex";
-                    if (userProfileMenu) userProfileMenu.style.display = "none";
-                    if (avatarDropdown) avatarDropdown.style.display = "none";
-                }
-            });
-        }
+        window.addEventListener("resize", () => {
+            if (!isMobile()) {
+                collapsibleTitles.forEach((title) => {
+                    title.classList.remove("active");
+                    title.setAttribute("aria-expanded", "false");
+                });
+            }
+        });
     }
 });

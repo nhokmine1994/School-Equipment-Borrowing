@@ -130,13 +130,18 @@
 
     .member-name {
       display: block;
+      font-family: var(--font-body);
       font-size: 14px;
-      font-weight: 800;
+      font-weight: 700;
+      line-height: 1.35;
+      letter-spacing: 0;
       color: #0f4d8f;
       text-transform: uppercase;
       text-align: center;
       padding: 10px 8px;
       min-height: 58px;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
     }
 
     .member-detail {
@@ -289,6 +294,11 @@
         width: 170px;
         min-width: 170px;
         flex-shrink: 0;
+      }
+
+      .member-name {
+        font-size: 13px;
+        min-height: 52px;
       }
 
       .member-card + .member-card {

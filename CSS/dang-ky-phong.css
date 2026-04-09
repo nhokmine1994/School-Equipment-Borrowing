@@ -40,6 +40,10 @@
     font-weight: 600;
 }
 
+.mobile-legend {
+    display: none;
+}
+
 .legend-item {
     display: flex;
     align-items: center;
@@ -176,6 +180,7 @@
 
 .timetable-wrapper {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .timetable {
@@ -265,3 +270,87 @@
         font-size: 18px;
     }
 }
+
+@media (max-width: 768px) {
+    .booking-main-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background-color: #ffffff;
+    }
+
+    /* Flatten sidebar children so we can place action buttons at the end on mobile */
+    .booking-sidebar {
+        display: contents;
+    }
+
+    .booking-sidebar .sidebar-block {
+        order: 1;
+        margin: 0 12px;
+        background-color: #ffffff;
+    }
+
+    .booking-content {
+        order: 2;
+        margin: 0 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        background-color: #ffffff;
+        padding: 12px;
+    }
+
+    .header-legend {
+        display: none;
+    }
+
+    .mobile-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 10px;
+        font-size: 13px;
+    }
+
+    .mobile-legend .status-dot {
+        width: 22px;
+        height: 22px;
+    }
+
+    .btn-submit-booking {
+        order: 3;
+        margin: 0 12px;
+    }
+
+    .btn-my-room-bookings {
+        order: 4;
+        margin: 0 12px 12px 12px;
+    }
+
+    .timetable {
+        table-layout: fixed;
+        min-width: 0;
+    }
+
+    .timetable th {
+        padding: 6px 4px;
+        font-size: 12px;
+    }
+
+    .timetable td {
+        padding: 4px 3px;
+    }
+
+    .time-label {
+        font-size: 12px;
+        padding-right: 8px !important;
+    }
+
+    .slot-btn {
+        max-width: 58px;
+        height: 34px;
+        font-size: 12px;
+        border-radius: 7px;
+        padding: 0;
+    }
+}
+
