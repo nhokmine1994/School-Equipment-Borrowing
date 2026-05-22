@@ -978,3 +978,115 @@ admin_render_page_intro(
     })();
   </script>
 <?php admin_render_shell_close(); ?>
+<script>
+// Runtime fallback: ensure modal file-picker UI exists and attach listeners
+(function(){
+  function ensureModalFileUI() {
+    const modal = document.getElementById('deviceEditModal');
+    if (!modal) return;
+    const form = modal.querySelector('form') || document.getElementById('deviceEditForm');
+    if (!form) return;
+
+    // If the modal file input already exists, nothing to do
+    if (document.getElementById('modalEditHinhAnhFile')) return;
+
+    const insertBefore = form.querySelector('.admin-actions') || null;
+
+    // Build the file input block
+    const fileBlock = document.createElement('div');
+    fileBlock.className = 'admin-field admin-col-12';
+    fileBlock.innerHTML = `
+      <label>Ảnh thiết bị</label>
+      <div class="admin-actions" style="align-items:center; padding:10px 12px; border:1px dashed #93c5fd; border-radius:8px; background:#f8fbff;">
+        <input class="admin-input" type="file" name="HinhAnhFile" id="modalEditHinhAnhFile" accept="image/*" style="display:none;">
+        <label for="modalEditHinhAnhFile" class="admin-btn admin-btn-soft" style="display:inline-flex; align-items:center; cursor:pointer;">Chọn ảnh</label>
+        <span id="modalEditHinhAnhFileName" style="font-size:12px; color:#6b7280;">Chưa chọn file</span>
+      </div>
+      <div style="font-size:12px; color:#6b7280; margin-top:6px;">Để trống nếu không đổi ảnh. File mới sẽ lưu trong Images/devices/.</div>
+    `;
+
+    // Preview block
+    const previewBlock = document.createElement('div');
+    previewBlock.className = 'admin-field admin-col-12';
+    previewBlock.id = 'modalSelectedPreviewWrapper';
+    previewBlock.style.display = 'none';
+    previewBlock.style.marginTop = '8px';
+    previewBlock.innerHTML = `
+      <label>Xem trước ảnh mới</label>
+      <div style="display:flex; align-items:center; gap:12px; padding:10px 12px; border:1px solid #e6edf8; border-radius:8px; background:#fff;">
+        <img id="modalSelectedPreviewImg" src="" alt="Preview" style="width:72px; height:72px; object-fit:cover; border-radius:8px; border:1px solid #dbe7f3; display:none;">
+        <div style="display:flex; flex-direction:column;">
+          <span id="modalSelectedPreviewName" style="font-size:13px; color:#334155;"></span>
+          <span id="modalFileError" style="font-size:12px; color:#dc2626;"></span>
+        </div>
+      </div>
+    `;
+
+    if (insertBefore) {
+      form.insertBefore(fileBlock, insertBefore);
+      form.insertBefore(previewBlock, insertBefore);
+    } else {
+      form.appendChild(fileBlock);
+      form.appendChild(previewBlock);
+    }
+
+    // Attach listeners similar to main script
+    try {
+      const fileInput = document.getElementById('modalEditHinhAnhFile');
+      const fileNameSpan = document.getElementById('modalEditHinhAnhFileName');
+      const selectedWrapper = document.getElementById('modalSelectedPreviewWrapper');
+      const selectedImg = document.getElementById('modalSelectedPreviewImg');
+      const selectedName = document.getElementById('modalSelectedPreviewName');
+      const fileError = document.getElementById('modalFileError');
+      const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
+
+      if (fileInput && fileNameSpan) {
+        fileInput.addEventListener('change', function () {
+          const f = fileInput.files && fileInput.files[0];
+          if (!f) {
+            fileNameSpan.textContent = 'Chưa chọn file';
+            if (selectedWrapper) selectedWrapper.style.display = 'none';
+            if (fileError) fileError.textContent = '';
+            return;
+          }
+          fileNameSpan.textContent = f.name;
+          if (!f.type || !f.type.startsWith('image/')) {
+            if (fileError) fileError.textContent = 'Vui lòng chọn file ảnh (jpg/png/gif).';
+            if (selectedWrapper) selectedWrapper.style.display = 'none';
+            return;
+          }
+          if (f.size > MAX_UPLOAD_BYTES) {
+            if (fileError) fileError.textContent = 'Kích thước ảnh quá lớn (tối đa 2MB).';
+            if (selectedWrapper) selectedWrapper.style.display = 'none';
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            if (selectedImg) { selectedImg.src = e.target.result; selectedImg.style.display = ''; }
+            if (selectedName) selectedName.textContent = f.name;
+            if (selectedWrapper) selectedWrapper.style.display = '';
+            if (fileError) fileError.textContent = '';
+          };
+          reader.readAsDataURL(f);
+        });
+      }
+
+      // Ensure form submit checks file error
+      const deviceEditForm = document.getElementById('deviceEditForm');
+      if (deviceEditForm && fileError) {
+        deviceEditForm.addEventListener('submit', function(ev){
+          if (fileError.textContent) { ev.preventDefault(); alert('Vui lòng sửa lỗi file ảnh trước khi lưu.'); }
+        });
+      }
+    } catch (e) {
+      console.warn('ensureModalFileUI error', e);
+    }
+  }
+
+  const origOpen = window.openDeviceEditModal;
+  window.openDeviceEditModal = function(device) {
+    try { if (typeof origOpen === 'function') origOpen(device); } catch(e){ console.warn('origOpen failed', e); }
+    try { ensureModalFileUI(); } catch(e){ console.warn('ensureModalFileUI failed', e); }
+  };
+})();
+</script>
