@@ -611,7 +611,11 @@ admin_render_page_intro(
             </div>
             <div class="admin-field admin-col-3">
               <label>Ảnh thiết bị</label>
-              <input class="admin-input" type="file" name="HinhAnhFile" accept="image/*">
+              <div class="admin-actions" style="align-items:center; padding:8px 10px; border:1px dashed #e6eefc; border-radius:8px; background:#fff;">
+                <input class="admin-input" type="file" name="HinhAnhFile" id="addHinhAnhFile" accept="image/*" style="display:none;">
+                <label for="addHinhAnhFile" class="admin-btn admin-btn-soft" style="display:inline-flex; align-items:center; cursor:pointer; padding:8px 10px;">Chọn ảnh</label>
+                <span id="addHinhAnhFileName" style="font-size:12px; color:#6b7280; margin-left:8px;">Chưa chọn file</span>
+              </div>
             </div>
             <div class="admin-field admin-col-3">
               <label>Phụ kiện</label>
@@ -877,6 +881,17 @@ admin_render_page_intro(
     // Search functionality
     const deviceSearch = document.getElementById('deviceSearch');
     const deviceItems = Array.from(document.querySelectorAll('.device-item'));
+
+    // Add-form file input listener
+    const addHinhAnhFile = document.getElementById('addHinhAnhFile');
+    const addHinhAnhFileName = document.getElementById('addHinhAnhFileName');
+    if (addHinhAnhFile && addHinhAnhFileName) {
+      addHinhAnhFile.addEventListener('change', () => {
+        addHinhAnhFileName.textContent = addHinhAnhFile.files && addHinhAnhFile.files.length
+          ? addHinhAnhFile.files[0].name
+          : 'Chưa chọn file';
+      });
+    }
 
     if (deviceSearch) {
       deviceSearch.addEventListener('input', () => {
