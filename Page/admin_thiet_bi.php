@@ -266,27 +266,6 @@ if ($stmt) {
 // Load category names from dbo.DanhMuc
 $categoryMap = seb_load_category_map($conn);
 
-// Load device statuses directly from Kho.TinhTrang in SQL Server
-$deviceStatusOptions = [];
-$statusSql = "SELECT DISTINCT LTRIM(RTRIM(TinhTrang)) AS TinhTrang
-              FROM Kho
-              WHERE TinhTrang IS NOT NULL
-                AND LTRIM(RTRIM(TinhTrang)) <> ''
-              ORDER BY LTRIM(RTRIM(TinhTrang))";
-$statusStmt = sqlsrv_query($conn, $statusSql);
-if ($statusStmt) {
-  while ($statusRow = sqlsrv_fetch_array($statusStmt, SQLSRV_FETCH_ASSOC)) {
-    $statusValue = trim((string) ($statusRow['TinhTrang'] ?? ''));
-    if ($statusValue === '') {
-      continue;
-    }
-    $deviceStatusOptions[$statusValue] = $statusValue;
-  }
-}
-if (empty($deviceStatusOptions)) {
-  $deviceStatusOptions = [];
-}
-
 // Resolve category display name from MaDanhMuc
 foreach ($devices as &$device) {
   $categoryInfo = seb_resolve_category_display($device, $categoryMap);
@@ -625,11 +604,9 @@ admin_render_page_intro(
             <div class="admin-field admin-col-3">
               <label>Trạng thái</label>
               <select class="admin-input" name="TinhTrang" id="addTinhTrang">
-                <?php if (!empty($deviceStatusOptions)): ?>
-                  <?php foreach ($deviceStatusOptions as $statusValue): ?>
-                    <option value="<?php echo htmlspecialchars($statusValue); ?>"><?php echo htmlspecialchars($statusValue); ?></option>
-                  <?php endforeach; ?>
-                <?php endif; ?>
+                <option value="Sẵn sàng">Sẵn sàng</option>
+                <option value="Đang bảo trì">Đang bảo trì</option>
+                <option value="Hỏng">Hỏng</option>
               </select>
             </div>
             <div class="admin-field admin-col-3">
@@ -691,11 +668,9 @@ admin_render_page_intro(
               <div class="admin-field admin-col-3">
                 <label>Trạng thái</label>
                 <select class="admin-input" name="TinhTrang" id="editTinhTrang">
-                  <?php if (!empty($deviceStatusOptions)): ?>
-                    <?php foreach ($deviceStatusOptions as $statusValue): ?>
-                      <option value="<?php echo htmlspecialchars($statusValue); ?>"><?php echo htmlspecialchars($statusValue); ?></option>
-                    <?php endforeach; ?>
-                  <?php endif; ?>
+                  <option value="Sẵn sàng">Sẵn sàng</option>
+                  <option value="Đang bảo trì">Đang bảo trì</option>
+                  <option value="Hỏng">Hỏng</option>
                 </select>
               </div>
               <div class="admin-field admin-col-3">
