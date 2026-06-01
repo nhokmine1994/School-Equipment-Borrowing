@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEB - Đăng ký phòng học</title>
+  <link rel="stylesheet" href="../CSS/main.css">
+  <link rel="stylesheet" href="../CSS/dang-ky-phong.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+  <div class="system-container">
+
+    <!-- 1. Header Elements -->
+    <header class="header-banner">
+      <div class="header-logo-box">
+        <img src="../Images/logo.png" alt="Logo Lộc An">
+      </div>
+      <div class="header-title-group">
+        <h2>TRƯỜNG TRUNG HỌC CƠ SỞ LỘC AN</h2>
+        <h1>HỆ THỐNG MƯỢN/TRẢ THIẾT BỊ ( SEB )</h1>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn"><i class="far fa-user"></i></button>
+        <button class="icon-btn"><i class="fas fa-pencil-alt"></i></button>
+      </div>
+    </header>
+
+    <!-- 2. Navigation -->
+    <nav class="nav-bar" id="mainNav">
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Mở menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links" id="navLinks">
+        <a href="../index.html" class="nav-tab">Trang chủ</a>
+        <a href="kho_thiet_bi.html" class="nav-tab">Kho thiết bị</a>
+        <a href="dang-ky-phong-hoc.html" class="nav-tab active">Đăng ký phòng học</a>
+        <a href="kho-ca-nhan.html" class="nav-tab">Kho các nhân</a>
+        <a href="news.html" class="nav-tab">Tin tức</a>
+        <a href="about.html" class="nav-tab">Liên hệ</a>
+      </div>
+    </nav>
+
+    <!-- 3. Title Section -->
+    <div class="page-title-bar">
+      ĐĂNG KÝ PHÒNG HỌC CHỨC NĂNG
+    </div>
+
+    <!-- 4. Main App Content -->
+    <section class="booking-container">
+      <div class="booking-header">
+        <div class="booking-title">CHỌN PHÒNG HỌC</div>
+        <div class="status-legend">
+          <div class="legend-item">
+            <span class="status-dot status-empty"></span>
+            Trống
+          </div>
+          <div class="legend-item">
+            <span class="status-dot status-busy"></span>
+            Có lịch
+          </div>
+        </div>
+      </div>
+
+      <div class="booking-main-layout">
+        <!-- Sidebar -->
+        <aside class="booking-sidebar">
+          <div class="sidebar-block">
+            <h3 class="block-title">Thông tin phòng học</h3>
+            <div class="input-field">
+              <select name="room-type">
+                <option value="" disabled selected>Loại phòng</option>
+                <option value="cntt">Phòng CNTT</option>
+                <option value="ly">Phòng Vật lý</option>
+              </select>
+              <i class="fas fa-chevron-down field-arrow"></i>
+            </div>
+            <div class="input-field">
+              <select name="room-number">
+                <option value="" disabled selected>Số phòng</option>
+                <option value="101">101</option>
+                <option value="102">102</option>
+              </select>
+              <i class="fas fa-chevron-down field-arrow"></i>
+            </div>
+          </div>
+
+          <div class="sidebar-block">
+            <h3 class="block-title">Thông tin người dùng</h3>
+            <div class="input-field">
+              <select name="user-name">
+                <option value="" disabled selected>Người sử dụng</option>
+                <option value="gv-a">GV. Nguyễn Văn A</option>
+                <option value="gv-b">GV. Trần Thị B</option>
+              </select>
+              <i class="fas fa-chevron-down field-arrow"></i>
+            </div>
+          </div>
+
+          <div class="sidebar-block">
+            <h3 class="block-title">Mục đích sử dụng</h3>
+            <div class="input-field textarea-field">
+              <textarea placeholder="VD: Dạy Tin học..."></textarea>
+            </div>
+          </div>
+
+          <button class="btn-submit-booking">Gửi Yêu Cầu</button>
+        </aside>
+
+        <!-- Timetable -->
+        <main class="booking-content">
+          <div class="timetable-wrapper">
+            <table class="timetable">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>T2 15/12</th>
+                  <th>T3 16/12</th>
+                  <th>T4 17/12</th>
+                  <th>T5 18/12</th>
+                  <th>T6 19/12</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Sáng rows -->
+                <tr>
+                  <td class="time-label">Sáng T1</td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                </tr>
+                <tr>
+                  <td class="time-label">Sáng T2</td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                </tr>
+                <tr>
+                  <td class="time-label">Sáng T3</td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                </tr>
+                <tr>
+                  <td class="time-label">Sáng T4</td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                </tr>
+                <tr>
+                  <td class="time-label">Sáng T5</td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                </tr>
+
+                <!-- Chiều rows divider -->
+                <tr class="row-divider">
+                  <td colspan="6"></td>
+                </tr>
+
+                <!-- Chiều rows -->
+                <tr>
+                  <td class="time-label">Chiều T1</td>
+                  <td><button class="slot-btn busy">Có lịch</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn busy">Có lịch</button></td>
+                  <td><button class="slot-btn busy">Có lịch</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                </tr>
+                <tr>
+                  <td class="time-label">Chiều T2</td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn busy">Có lịch</button></td>
+                  <td><button class="slot-btn busy">Có lịch</button></td>
+                  <td><button class="slot-btn busy">Có lịch</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                </tr>
+                <tr>
+                  <td class="time-label">Chiều T3</td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn busy">Có lịch</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn busy">Có lịch</button></td>
+                </tr>
+                <tr>
+                  <td class="time-label">Chiều T4</td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn busy">Có lịch</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn busy">Có lịch</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                </tr>
+                <tr>
+                  <td class="time-label">Chiều T5</td>
+                  <td><button class="slot-btn busy">Có lịch</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                  <td><button class="slot-btn busy">Có lịch</button></td>
+                  <td><button class="slot-btn empty">Trống</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <!-- 7. Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        Copyright 2026<br>
+        Website này là tài sản thuộc quyền sở hữu hợp pháp của SEB.<br>
+        Nội dung, hình ảnh và mã nguồn được bảo hộ theo quy định pháp luật hiện hành.<br>
+        Mọi thông tin chi tiết xin liên hệ<br>
+        Hotline: 0344655621
+      </div>
+      <div class="footer-tip">
+        <i class="far fa-lightbulb"></i>
+        Bạn có thể quét mã QR để mượn, trả và báo hỏng thiết bị nhanh chóng !
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="../Javascript/Java.js"></script>
+  <script src="../Javascript/dang-ky-phong.js"></script>
+</body>
+
+</html>

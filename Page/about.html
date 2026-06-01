@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEB - Liên hệ</title>
+  <link rel="stylesheet" href="../CSS/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* 2 thành viên mỗi dòng cho phần đội ngũ */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 25px;
+    }
+
+    /* Căn layout: nhiệm vụ trên, hình giữa, tên dưới */
+    .team-card .equipment-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .team-card {
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .team-card .equipment-time {
+      width: 100%;
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background-color: var(--primary-blue);
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      border-radius: 10px;
+    }
+
+    .team-card .equipment-img-box {
+      margin: 10px 0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .team-card .equipment-name {
+      margin-top: 10px;
+    }
+
+    .team-contact {
+      width: 100%;
+      margin-top: 8px;
+      padding: 8px 10px;
+      border: 1px dashed var(--container-border);
+      border-radius: 8px;
+      font-size: 13px;
+      text-align: center;
+      line-height: 1.5;
+      color: var(--text-dark);
+      background: #f8fcff;
+    }
+
+    @media (max-width: 768px) {
+      .team-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="system-container">
+
+    <!-- Header -->
+    <header class="header-banner">
+      <div class="header-logo-box">
+        <img src="../Images/logo.png" alt="Logo Lộc An">
+      </div>
+      <div class="header-title-group">
+        <h2>TRƯỜNG TRUNG HỌC CƠ SỞ LỘC AN</h2>
+        <h1>HỆ THỐNG MƯỢN/TRẢ THIẾT BỊ ( SEB )</h1>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn"><i class="far fa-user"></i></button>
+        <button class="icon-btn"><i class="fas fa-pencil-alt"></i></button>
+      </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-bar" id="mainNav">
+      </button>
+      <div class="nav-links" id="navLinks">
+        <a href="../index.html" class="nav-tab">Trang chủ</a>
+        <a href="kho_thiet_bi.html" class="nav-tab">Kho thiết bị</a>
+        <a href="dang-ky-phong-hoc.html" class="nav-tab">Đăng ký phòng học</a>
+        <a href="kho-ca-nhan.html" class="nav-tab">Kho cá nhân</a>
+        <a href="news.html" class="nav-tab">Tin tức</a>
+        <a href="about.html" class="nav-tab active">Liên hệ</a>
+      </div>
+    </nav>
+
+    <section class="section-wrapper">
+      <div class="section-heading">
+        <i class="fas fa-address-book"></i>
+        Liên hệ
+      </div>
+
+      <div class="equipment-container">
+        <div class="equipment-grid team-grid">
+          <!-- Về dự án -->
+          <a href="ve-du-an.html" style="text-decoration: none; color: inherit; display: block;">
+            <div class="equipment-card team-card">
+              <div class="equipment-info">
+                <div class="equipment-time">
+                  Về dự án
+                </div>
+                <div class="equipment-img-box">
+                  <img src="../Images/logo.png" alt="Về dự án">
+                </div>
+                <div class="equipment-name">SEB - Hệ thống mượn/trả thiết bị</div>
+                <div class="team-contact">
+                  Tìm hiểu về mục đích, triển vọng và giải pháp của dự án SEB.
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- Về chúng tôi -->
+          <a href="ve-chung-toi.html" style="text-decoration: none; color: inherit; display: block;">
+            <div class="equipment-card team-card">
+              <div class="equipment-info">
+                <div class="equipment-time">
+                  Về chúng tôi
+                </div>
+                <div class="equipment-img-box">
+                  <img src="../Images/conghau-avatar.jpg" alt="Về chúng tôi">
+                </div>
+                <div class="equipment-name">Đội ngũ phát triển</div>
+                <div class="team-contact">
+                  Làm quen với đội ngũ đằng sau dự án SEB.
+                </div>
+              </div>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Ghi chú liên hệ -->
+    <section class="section-wrapper">
+      <div class="section-heading">
+        <i class="fas fa-circle-info"></i>
+        Ghi chú liên hệ
+      </div>
+      <div class="maintenance-content">
+        <p>
+          Bạn có thể bổ sung SĐT, Email hoặc các kênh liên hệ khác (Zalo, Facebook, GitHub) cho từng thành viên.
+        </p>
+        <p>
+          Khi cần, mình có thể giúp bạn thêm nút gọi nhanh hoặc mailto để bấm là liên hệ trực tiếp.
+        </p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        Copyright 2026<br>
+        Website này là tài sản thuộc quyền sở hữu hợp pháp của SEB.<br>
+        Nội dung, hình ảnh và mã nguồn được bảo hộ theo quy định pháp luật hiện hành.<br>
+        Mọi thông tin chi tiết xin liên hệ<br>
+        Hotline: 0344655621
+      </div>
+      <div class="footer-tip">
+        <i class="far fa-lightbulb"></i>
+        Bạn có thể quét mã QR để mượn, trả và báo hỏng thiết bị nhanh chóng !
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="../Javascript/Java.js"></script>
+</body>
+
+</html>

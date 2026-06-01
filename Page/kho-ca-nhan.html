@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEB - Kho cá nhân</title>
+    <meta name="description"
+        content="Kho cá nhân SEB: theo dõi thiết bị đã thêm, lọc nhanh và quản lý lịch sử mượn gần đây.">
+    <link rel="stylesheet" href="../CSS/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../CSS/kho.css">
+    <link rel="stylesheet" href="../CSS/kho-pages.css">
+</head>
+
+<body>
+    <div class="system-container">
+        <header class="header-banner">
+            <div class="header-logo-box">
+                <img src="../Images/logo.png" alt="Logo Lộc An">
+            </div>
+            <div class="header-title-group">
+                <h2>TRƯỜNG TRUNG HỌC CƠ SỞ LỘC AN</h2>
+                <h1>HỆ THỐNG MƯỢN/TRẢ THIẾT BỊ ( SEB )</h1>
+            </div>
+            <div class="header-right">
+                <button class="icon-btn"><i class="far fa-user"></i></button>
+                <button class="icon-btn"><i class="fas fa-pencil-alt"></i></button>
+            </div>
+        </header>
+
+        <nav class="nav-bar" id="mainNav">
+
+            </button>
+            <div class="nav-links" id="navLinks">
+                <a href="../index.html" class="nav-tab">Trang chủ</a>
+                <a href="kho_thiet_bi.html" class="nav-tab">Kho thiết bị</a>
+                <a href="dang-ky-phong-hoc.html" class="nav-tab">Đăng ký phòng học</a>
+                <a href="kho-ca-nhan.html" class="nav-tab active">Kho cá nhân</a>
+                <a href="news.html" class="nav-tab">Tin tức</a>
+                <a href="about.html" class="nav-tab">Liên hệ</a>
+            </div>
+        </nav>
+
+        <section class="section-wrapper">
+            <div class="section-heading">
+                <i class="fas fa-user-check"></i>
+                Kho cá nhân
+            </div>
+
+            <div id="app" class="kho-app">
+                <aside class="sidebar">
+                    <h3 class="kho-search-wrap">Lịch sử mượn gần đây</h3>
+                    <ul id="borrow-history-list" class="borrow-list">
+                        <li class="borrow-empty">Chưa có lịch sử mượn.</li>
+                    </ul>
+                </aside>
+
+                <main class="content">
+                    <h1>Kho Cá Nhân</h1>
+                    <div class="search-bar kho-select-wrap">
+                        <select id="filter-category" class="kho-select">
+                            <option value="">Tất cả danh mục</option>
+                            <option value="CNTT">CNTT</option>
+                            <option value="Âm thanh">Âm thanh</option>
+                            <option value="Trình chiếu">Trình chiếu</option>
+                            <option value="Phòng lab">Phòng lab</option>
+                            <option value="Dụng cụ thực hành">Dụng cụ thực hành</option>
+                            <option value="Hóa chất">Hóa chất</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                        <select id="filter-subject" class="kho-select">
+                            <option value="">Tất cả môn học</option>
+                            <option value="Vật lý">Vật lý</option>
+                            <option value="Hóa học">Hóa học</option>
+                            <option value="Sinh học">Sinh học</option>
+                            <option value="Tin học">Tin học</option>
+                            <option value="Chung">Khác / Dùng chung</option>
+                        </select>
+                    </div>
+                    <div class="equipment-grid" id="equipment-grid">
+                        <!-- Data will be rendered here by ../javascript/kho_thiet_bi.js -->
+                    </div>
+
+                    <div id="pagination-container" class="pagination"></div>
+                </main>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-content">
+                Copyright 2026<br>
+                Website này là tài sản thuộc quyền sở hữu hợp pháp của SEB.<br>
+                Nội dung, hình ảnh và mã nguồn được bảo hộ theo quy định pháp luật hiện hành.<br>
+                Mọi thông tin chi tiết xin liên hệ<br>
+                Hotline: 0344655621
+            </div>
+            <div class="footer-tip">
+                <i class="far fa-lightbulb"></i>
+                Bạn có thể quét mã QR để mượn, trả và báo hỏng thiết bị nhanh chóng !
+            </div>
+        </footer>
+    </div>
+
+    <script src="../Javascript/Java.js"></script>
+    <script src="../Javascript/device_modal.js"></script>
+    <script src="../Javascript/devices_data.js"></script>
+    <script src="../Javascript/kho_thiet_bi.js"></script>
+
+</body>
+
+</html>

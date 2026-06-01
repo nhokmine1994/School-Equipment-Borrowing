@@ -26,19 +26,26 @@
         <h1>HỆ THỐNG MƯỢN/TRẢ THIẾT BỊ ( SEB )</h1>
       </div>
       <div class="header-right">
-        <button class="icon-btn"><i class="far fa-user"></i></button>
-        <button class="icon-btn"><i class="fas fa-pencil-alt"></i></button>
+        <button class="icon-btn" id="loginBtn"><i class="far fa-user"></i></button>
+        <button class="icon-btn" id="registerBtn"><i class="fas fa-pencil-alt"></i></button>
       </div>
     </header>
 
     <!-- 2. Navigation -->
-    <nav class="nav-bar">
-      <a href="#" class="nav-tab active">Trang chủ</a>
-      <a href="#" class="nav-tab">Kho thiết bị</a>
-      <a href="#" class="nav-tab">Đăng ký phòng học</a>
-      <a href="#" class="nav-tab">Kho cá nhân</a>
-      <a href="#" class="nav-tab">Tin tức</a>
-      <a href="#" class="nav-tab">Liên hệ</a>
+    <nav class="nav-bar" id="mainNav">
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Mở menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-tab active">Trang chủ</a>
+        <a href="Page/kho_thiet_bi.html" class="nav-tab">Kho thiết bị</a>
+        <a href="Page/dang-ky-phong-hoc.html" class="nav-tab">Đăng ký phòng học</a>
+        <a href="Page/kho-ca-nhan.html" class="nav-tab">Kho cá nhân</a>
+        <a href="Page/news.html" class="nav-tab">Tin tức</a>
+        <a href="Page/about.html" class="nav-tab">Liên hệ</a>
+      </div>
     </nav>
 
     <!-- 3. Search Bar -->
@@ -79,7 +86,7 @@
           <!-- Card 1 -->
           <div class="equipment-card">
             <div class="equipment-img-box">
-              <img src="Images/cân.jpg" alt="Cân" onerror="this.src='https://via.placeholder.com/80';">
+              <img src="Images/can.jpg" alt="Cân" onerror="this.src='https://via.placeholder.com/80';">
             </div>
             <div class="equipment-info">
               <div class="equipment-name">CÂN SHIMADZU<br>B322</div>
@@ -89,7 +96,7 @@
           <!-- Card 2 -->
           <div class="equipment-card">
             <div class="equipment-img-box">
-              <img src="Images/nhiet ke.jpg" alt="Nhiệt kế" onerror="this.src='https://via.placeholder.com/80';">
+              <img src="Images/nhiet-ke.jpg" alt="Nhiệt kế" onerror="this.src='https://via.placeholder.com/80';">
             </div>
             <div class="equipment-info">
               <div class="equipment-name">NHIỆT KẾ 100 ĐỘ</div>
@@ -99,7 +106,7 @@
           <!-- Card 3 -->
           <div class="equipment-card">
             <div class="equipment-img-box">
-              <img src="Images/thước đo độ.jpg" alt="Thước đo độ" onerror="this.src='https://via.placeholder.com/80';">
+              <img src="Images/thuoc-do-do.jpg" alt="Thước đo độ" onerror="this.src='https://via.placeholder.com/80';">
             </div>
             <div class="equipment-info">
               <div class="equipment-name">THƯỚC ĐO ĐỘ</div>
@@ -119,7 +126,7 @@
           <!-- Card 5 -->
           <div class="equipment-card">
             <div class="equipment-img-box">
-              <img src="Images/màn hình dell.png" alt="Màn hình" onerror="this.src='https://via.placeholder.com/80';">
+              <img src="Images/man-hinh-dell.png" alt="Màn hình" onerror="this.src='https://via.placeholder.com/80';">
             </div>
             <div class="equipment-info">
               <div class="equipment-name">MÀN HÌNH DELL<br>S2423</div>
@@ -129,7 +136,7 @@
           <!-- Card 6 -->
           <div class="equipment-card">
             <div class="equipment-img-box">
-              <img src="Images/bộ lực kế.png" alt="Bộ lực kế" onerror="this.src='https://via.placeholder.com/80';">
+              <img src="Images/bo-luc-ke.png" alt="Bộ lực kế" onerror="this.src='https://via.placeholder.com/80';">
             </div>
             <div class="equipment-info">
               <div class="equipment-name">BỘ LỰC KẾ</div>
@@ -139,7 +146,7 @@
           <!-- Card 7 -->
           <div class="equipment-card">
             <div class="equipment-img-box">
-              <img src="Images/bảng mẫu vật kim loại.jpg" alt="Bảng mẫu vật kim loại"
+              <img src="Images/bang-mau-vat-kim-loai.jpg" alt="Bảng mẫu vật kim loại"
                 onerror="this.src='https://via.placeholder.com/80';">
             </div>
             <div class="equipment-info">
@@ -150,7 +157,7 @@
           <!-- Card 8 -->
           <div class="equipment-card">
             <div class="equipment-img-box">
-              <img src="Images/địa cầu để bàn.jpg" alt="Địa cầu để bàn"
+              <img src="Images/dia-cau-de-ban.jpg" alt="Địa cầu để bàn"
                 onerror="this.src='https://via.placeholder.com/80';">
             </div>
             <div class="equipment-info">
@@ -161,7 +168,7 @@
           <!-- Card 9 -->
           <div class="equipment-card">
             <div class="equipment-img-box">
-              <img src="Images/mô hình arn.jpg" alt="Mô hình ARN" onerror="this.src='https://via.placeholder.com/80';">
+              <img src="Images/mo-hinh-arn.jpg" alt="Mô hình ARN" onerror="this.src='https://via.placeholder.com/80';">
             </div>
             <div class="equipment-info">
               <div class="equipment-name">MÔ PHỎNG RNA</div>
@@ -204,6 +211,61 @@
       </div>
     </section>
 
+    <section class="section-wrapper">
+      <div class="section-heading">
+        <i class="fas fa-bullhorn"></i>
+        Tin vắn & Thành tựu
+      </div>
+      <div class="maintenance-content">
+        <div class="highlight-grid">
+          <article class="highlight-card">
+            <h4><i class="fas fa-newspaper"></i> Tin vắn</h4>
+            <ul class="highlight-list">
+              <li>SEB hoàn tất tối ưu giao diện mobile, cải thiện trải nghiệm mượn/trả trên điện thoại.</li>
+              <li>Thêm bộ lọc theo trạng thái thiết bị để tra cứu nhanh trong giờ lên lớp.</li>
+              <li>Hoàn thiện trang Về dự án và Về chúng tôi với luồng điều hướng trực tiếp.</li>
+            </ul>
+          </article>
+
+          <article class="highlight-card">
+            <h4><i class="fas fa-award"></i> Chứng nhận nổi bật</h4>
+            <ul class="highlight-list">
+              <li>Top giải pháp ứng dụng CNTT trong quản lý thiết bị nội bộ năm 2026.</li>
+              <li>Được đánh giá cao về tính thực tiễn và chi phí triển khai thấp.</li>
+              <li>Đề xuất nhân rộng mô hình sang các phòng bộ môn và các trường lân cận.</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="partner-strip">
+          <p class="partner-title"><i class="fas fa-handshake"></i> Đơn vị đồng hành</p>
+          <div class="partner-logo-row">
+            <div class="partner-logo-item">
+              <img src="Images/nhataitro-1.png" alt="Nhà tài trợ 1">
+            </div>
+            <div class="partner-logo-item">
+              <img src="Images/nhataitro-2.jpg" alt="Nhà tài trợ 2">
+            </div>
+            <div class="partner-logo-item">
+              <img src="Images/nhataitro-3.png" alt="Nhà tài trợ 3">
+            </div>
+            <div class="partner-logo-item">
+              <img src="Images/nhataitro-4.png" alt="Nhà tài trợ 4">
+            </div>
+            <div class="partner-logo-item">
+              <img src="Images/nhataitro-5.png" alt="Nhà tài trợ 5">
+            </div>
+            <div class="partner-logo-item">
+              <img src="Images/nhataitro-6.png" alt="Nhà tài trợ 6">
+            </div>
+            <div class="partner-logo-item">
+              <img src="Images/logo.png" alt="Logo trường THCS Lộc An">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- 7. Footer -->
     <footer class="footer">
       <div class="footer-content">
@@ -219,8 +281,62 @@
       </div>
     </footer>
 
+    <!-- 8. Modals for Login and Register -->
+    <div id="authModal" class="modal-overlay">
+      <div class="modal-content">
+        <span class="close-btn" id="closeModalBtn">&times;</span>
+        
+        <!-- Login Form -->
+        <div id="loginFormContainer" class="auth-form-container">
+          <h2 class="auth-title">Đăng nhập</h2>
+          <form>
+            <div class="input-group">
+              <label for="loginName">Tên đăng nhập</label>
+              <input type="text" id="loginName" placeholder="Nhập tên đăng nhập">
+            </div>
+            <div class="input-group">
+              <label for="loginPass">Mật khẩu</label>
+              <input type="password" id="loginPass" placeholder="Nhập mật khẩu">
+            </div>
+            <button type="submit" class="submit-btn auth-submit">Đăng nhập</button>
+          </form>
+          <div class="auth-switch">
+             Chưa có tài khoản? <a href="#" id="switchToRegister">Đăng ký ngay</a>
+          </div>
+        </div>
+
+        <!-- Register Form -->
+        <div id="registerFormContainer" class="auth-form-container" style="display: none;">
+          <h2 class="auth-title">Đăng ký</h2>
+          <form>
+            <div class="input-group">
+              <label for="regName">Tên đăng nhập</label>
+              <input type="text" id="regName" placeholder="Nhập tên đăng nhập">
+            </div>
+            <div class="input-group">
+              <label for="regEmail">Email</label>
+              <input type="email" id="regEmail" placeholder="Nhập email">
+            </div>
+            <div class="input-group">
+              <label for="regPass">Mật khẩu</label>
+              <input type="password" id="regPass" placeholder="Tạo mật khẩu">
+            </div>
+            <div class="input-group">
+              <label for="regPassConfirm">Xác nhận mật khẩu</label>
+              <input type="password" id="regPassConfirm" placeholder="Nhập lại mật khẩu">
+            </div>
+            <button type="submit" class="submit-btn auth-submit">Đăng ký</button>
+          </form>
+          <div class="auth-switch">
+             Đã có tài khoản? <a href="#" id="switchToLogin">Đăng nhập ngay</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
+  <script src="Javascript/Java.js"></script>
 </body>
 
 </html>

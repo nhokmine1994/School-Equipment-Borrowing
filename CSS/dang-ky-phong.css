@@ -1,0 +1,235 @@
+/* ĐĂNG KÝ PHÒNG HỌC CSS */
+
+.page-title-bar {
+    background-color: #9cd2fd;
+    color: var(--primary-blue);
+    padding: 12px;
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    border-top: 1px solid var(--container-border);
+    border-bottom: 2px solid var(--container-border);
+    letter-spacing: 0.5px;
+}
+
+.booking-container {
+    background-color: #ffffff;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    background-color: #ffffff;
+}
+
+.booking-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #212529;
+}
+
+.status-legend {
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.status-empty {
+    background-color: #81abd6; /* Blueish color from image */
+}
+
+.status-busy {
+    background-color: #d1d5db; /* Gray color from image */
+}
+
+.booking-main-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 5px; /* Minimal gap between sidebar and content */
+    background-color: #f0f7fc; /* Small gap color */
+    flex: 1;
+}
+
+/* Sidebar Styling */
+.booking-sidebar {
+    background-color: #ffffff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    border-right: 1px solid #e0e0e0;
+}
+
+.sidebar-block {
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    padding: 15px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.block-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.input-field {
+    position: relative;
+    width: 100%;
+}
+
+.input-field select, 
+.input-field textarea {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #a0a0a0;
+    border-radius: 8px;
+    font-size: 15px;
+    appearance: none; /* Remove default arrow */
+    background-color: #ffffff;
+    color: #333;
+}
+
+.field-arrow {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #666;
+    font-size: 12px;
+}
+
+.textarea-field textarea {
+    height: 100px;
+    resize: none;
+}
+
+.btn-submit-booking {
+    background-color: #0b5aa9;
+    color: #ffffff;
+    border: none;
+    border-radius: 50px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+    margin-top: auto; /* Push to bottom */
+}
+
+.btn-submit-booking:hover {
+    background-color: #1976d2;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+/* Content / Table Styling */
+.booking-content {
+    background-color: #ffffff;
+    padding: 20px;
+}
+
+.timetable-wrapper {
+    overflow-x: auto;
+}
+
+.timetable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.timetable th {
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.timetable td {
+    padding: 5px;
+    text-align: center;
+}
+
+.time-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #333;
+    white-space: nowrap;
+    text-align: left !important;
+    padding-right: 15px !important;
+}
+
+.slot-btn {
+    width: 100%;
+    max-width: 90px;
+    height: 38px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.slot-btn:hover {
+    transform: scale(1.05);
+}
+
+.slot-btn.empty {
+    background-color: #81abd6;
+    color: #ffffff;
+}
+
+.slot-btn.busy {
+    background-color: #d1d5db;
+    color: #212529;
+}
+
+.row-divider td {
+    height: 40px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .booking-main-layout {
+        grid-template-columns: 1fr;
+    }
+    .booking-sidebar {
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+    }
+}
+
+@media (max-width: 600px) {
+    .booking-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .page-title-bar {
+        font-size: 18px;
+    }
+}

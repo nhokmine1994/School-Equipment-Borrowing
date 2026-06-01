@@ -1,0 +1,70 @@
+.kho-app {
+  padding-top: 25px;
+  padding-bottom: 25px;
+}
+
+.kho-filter-group {
+  margin-bottom: 12px;
+  font-size: 1.05rem;
+  color: #555;
+}
+
+.kho-filter-label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kho-filter-checkbox {
+  width: 1rem;
+  height: 1rem;
+}
+
+.kho-subject-title {
+  margin-top: 25px;
+}
+
+.kho-search-wrap {
+  margin-bottom: 25px;
+}
+
+.kho-search-input {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 1.05rem;
+  outline: none;
+  box-sizing: border-box;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s;
+}
+
+.kho-select-wrap {
+  margin-bottom: 25px;
+  display: flex;
+  gap: 15px;
+}
+
+.kho-select {
+  flex: 1;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 1.05rem;
+  outline: none;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+
+.borrow-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.borrow-empty {
+  color: #64748b;
+  font-size: 0.9rem;
+}
