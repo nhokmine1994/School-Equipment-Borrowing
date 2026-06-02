@@ -1,0 +1,523 @@
+﻿<?php
+session_start();
+$is_logged_in = !empty($_SESSION['user']) && !empty($_SESSION['user']['username']);
+$userSession = $is_logged_in && is_array($_SESSION['user']) ? $_SESSION['user'] : [];
+$username = $is_logged_in ? (string) ($userSession['username'] ?? '') : '';
+
+function seb_resolve_display_name(array $userSession): string
+{
+  $candidates = [
+    $userSession['display_name'] ?? null,
+    $userSession['full_name'] ?? null,
+    $userSession['fullName'] ?? null,
+    $userSession['FullName'] ?? null,
+    $userSession['ten_hien_thi'] ?? null,
+    $userSession['HoTen'] ?? null,
+    $userSession['fullname'] ?? null,
+    $userSession['name'] ?? null,
+    $userSession['username'] ?? null,
+  ];
+
+  foreach ($candidates as $candidate) {
+    $candidate = trim((string) $candidate);
+    if ($candidate !== '') {
+      return htmlspecialchars($candidate, ENT_QUOTES, 'UTF-8');
+    }
+  }
+
+  return '';
+}
+
+$displayName = $is_logged_in ? seb_resolve_display_name($userSession) : '';
+$userRole = strtolower(trim((string) ($userSession['role'] ?? '')));
+$canAccessAdmin = $userRole === 'admin';
+
+function seb_normalize_status($value)
+{
+  $text = mb_strtolower(trim((string) $value), 'UTF-8');
+  if ($text === '') {
+    return '';
+  }
+
+  return $text;
+}
+
+function seb_is_maintenance_status($status)
+{
+  $status = seb_normalize_status($status);
+  return strpos($status, 'bảo trì') !== false || strpos($status, 'bao tri') !== false || strpos($status, 'unavailable') !== false || strpos($status, 'ngừng') !== false || strpos($status, 'ngung') !== false || strpos($status, 'disabled') !== false;
+}
+
+function seb_is_active_borrow_status($status)
+{
+  $status = seb_normalize_status($status);
+  return in_array($status, array('approved', 'borrowed', 'dang_muon', 'Đang mượn'), true);
+}
+
+function seb_index_device_image_url($imagePath)
+{
+  if (empty($imagePath)) {
+    return 'https://via.placeholder.com/80?text=No+Image';
+  }
+
+  $imagePath = trim((string) $imagePath);
+  if (preg_match('/^(https?:\/\/|\/|\.\.\/|\.\/)/i', $imagePath)) {
+    return $imagePath;
+  }
+
+  return 'Images/devices/' . ltrim($imagePath, "/\\");
+}
+
+function seb_format_time_ago($dateObj)
+{
+  if (!$dateObj) {
+    return '';
+  }
+
+  if (is_object($dateObj) && method_exists($dateObj, 'getTimestamp')) {
+    $timestamp = $dateObj->getTimestamp();
+  } else {
+    $timestamp = strtotime((string) $dateObj);
+  }
+
+  if (!$timestamp) {
+    return '';
+  }
+
+  $now = time();
+  $diff = $now - $timestamp;
+
+  if ($diff < 60) {
+    return 'Vừa mới';
+  } elseif ($diff < 3600) {
+    $minutes = floor($diff / 60);
+    return $minutes . ' phút trước';
+  } elseif ($diff < 86400) {
+    $hours = floor($diff / 3600);
+    return $hours . ' giờ trước';
+  } elseif ($diff < 604800) {
+    $days = floor($diff / 86400);
+    return $days . ' ngày trước';
+  } else {
+    $weeks = floor($diff / 604800);
+    return $weeks . ' tuần trước';
+  }
+}
+
+function seb_load_json_stats($jsonPath)
+{
+  $stats = array(
+    'total_devices' => 0,
+    'maintenance_devices' => 0,
+    'borrowed_devices' => 0,
+  );
+
+  if (!is_file($jsonPath)) {
+    return $stats;
+  }
+
+  $content = file_get_contents($jsonPath);
+  $devices = json_decode($content, true);
+  if (!is_array($devices)) {
+    return $stats;
+  }
+
+  foreach ($devices as $device) {
+    $quantity = (int) ($device['quantity'] ?? $device['SoLuong'] ?? 0);
+    if ($quantity <= 0) {
+      $quantity = 1;
+    }
+
+    $stats['total_devices'] += $quantity;
+
+    if (seb_is_maintenance_status($device['status'] ?? $device['TinhTrang'] ?? '')) {
+      $stats['maintenance_devices'] += $quantity;
+    }
+  }
+
+  return $stats;
+}
+
+function seb_load_index_stats($conn)
+{
+  if (!function_exists('sqlsrv_query') || empty($conn)) {
+    return seb_load_json_stats(__DIR__ . '/data/devices.json');
+  }
+
+  require_once __DIR__ . '/components/seb_db.php';
+
+  return seb_load_index_dashboard_stats($conn);
+}
+
+$conn = null;
+if (function_exists('sqlsrv_connect')) {
+  require_once __DIR__ . '/connect.php';
+}
+
+$indexStats = seb_load_index_stats($conn);
+
+$recentBorrows = [];
+if (!empty($conn) && function_exists('sqlsrv_query')) {
+  require_once __DIR__ . '/components/seb_db.php';
+  $borrowRows = seb_fetch_recent_phieu_muon($conn, 9);
+
+  foreach ($borrowRows as $row) {
+    $imagePath = trim((string) ($row['image'] ?? ''));
+    $recentBorrows[] = [
+      'id' => $row['id'],
+      'name' => $row['name'],
+      'quantity' => $row['quantity'],
+      'username' => $row['username'],
+      'borrowStatus' => $row['borrowStatus'],
+      'soPhieu' => $row['soPhieuMuon'],
+      'timeAgo' => seb_format_time_ago($row['ngayMuon'] ?? null),
+      'image' => $imagePath,
+    ];
+  }
+}
+
+$maintenanceNotifications = [];
+if (!empty($conn) && function_exists('sqlsrv_query')) {
+  $maintenanceSql = "SELECT TOP 10 MaBaoTri, TieuDe, NoiDung, NgayCapNhat FROM BaoTriThongBao WHERE TrangThai = 1 ORDER BY ThuTuHienThi ASC, NgayCapNhat DESC";
+  
+  $maintenanceStmt = sqlsrv_query($conn, $maintenanceSql);
+  if ($maintenanceStmt !== false) {
+    while ($row = sqlsrv_fetch_array($maintenanceStmt, SQLSRV_FETCH_ASSOC)) {
+      $dateObj = $row['NgayCapNhat'] ?? null;
+      $formattedDate = '';
+      
+      if ($dateObj) {
+        if (is_object($dateObj) && method_exists($dateObj, 'format')) {
+          $formattedDate = $dateObj->format('d/m/Y');
+        } else {
+          $timestamp = strtotime((string) $dateObj);
+          $formattedDate = $timestamp ? date('d/m/Y', $timestamp) : '';
+        }
+      }
+      
+      $maintenanceNotifications[] = [
+        'id' => (int) ($row['MaBaoTri'] ?? 0),
+        'title' => (string) ($row['TieuDe'] ?? ''),
+        'content' => (string) ($row['NoiDung'] ?? ''),
+        'date' => $formattedDate,
+      ];
+    }
+  }
+}
+?>
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEB - Hệ thống mượn/trả thiết bị Lộc An</title>
+  <link rel="stylesheet" href="CSS/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+  <script>
+    window.__is_logged_in = <?php echo $is_logged_in ? 'true' : 'false'; ?>;
+    window.__display_name = <?php echo json_encode($displayName); ?>;
+    window.__user_role = <?php echo json_encode($userRole); ?>;
+    window.__username = <?php echo json_encode($username); ?>;
+  </script>
+  <div class="system-container">
+    <header class="header-banner">
+      <div class="header-logo-box">
+        <img src="Images/logo.png" alt="Logo Lộc An">
+      </div>
+      <div class="header-title-group">
+        <h2>TRƯỜNG TRUNG HỌC CƠ SỞ LỘC AN</h2>
+        <h1>HỆ THỐNG MƯỢN/TRẢ THIẾT BỊ (SEB)</h1>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn" id="loginBtn" <?php echo $is_logged_in ? 'style="display:none"' : ''; ?>><i class="far fa-user"></i></button>
+        <button class="icon-btn" id="registerBtn" <?php echo $is_logged_in ? 'style="display:none"' : ''; ?>><i class="fas fa-pencil-alt"></i></button>
+        
+        <!-- User Profile Dropdown (Hidden initially) -->
+        <div class="user-profile-menu" id="userProfileMenu" style="<?php echo $is_logged_in ? 'display: flex' : 'display: none'; ?>; position: relative;">
+          <button class="icon-btn avatar-btn" id="avatarBtn">
+            <img src="Images/avatar-demo.png" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+          </button>
+          <div class="dropdown-content" id="avatarDropdown" style="display: none; position: absolute; right: 0; top: 120%; min-width: 220px; background-color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.15); border-radius: 8px; z-index: 100; overflow: hidden; border: 1px solid #e0e0e0; flex-direction: column; text-align: left;">
+            <div style="padding: 10px 16px; background: #f5f5f5; border-bottom: 1px solid #e0e0e0; font-weight: 600; color: #333;">
+              <?php echo $displayName; ?>
+            </div>
+            <a href="#" class="dropdown-item"><i class="fas fa-id-card"></i> Thông tin cá nhân</a>
+            <a href="#" class="dropdown-item"><i class="fas fa-history"></i> Lịch sử mượn/trả</a>
+            <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Cài đặt</a>
+            <?php if ($canAccessAdmin): ?>
+            <a href="Page/admin_panel.php" class="dropdown-item"><i class="fas fa-user-shield"></i> Chế độ quản trị viên</a>
+            <?php endif; ?>
+            <div style="border-top: 1px solid #eee; margin: 4px 0;"></div>
+            <a href="Page/logout.php" class="dropdown-item" id="logoutBtn" data-seb-logout="1" style="color: #dc3545;"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 2. Navigation -->
+    <nav class="nav-bar" id="mainNav">
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Má»Ÿ menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links" id="navLinks">
+        <a href="index.php" class="nav-tab active">Trang chủ</a>
+        <a href="Page/kho_thiet_bi.php" class="nav-tab">Kho thiết bị</a>
+        <a href="Page/dang-ky-phong-hoc.php" class="nav-tab">Đăng ký phòng học</a>
+        <a href="Page/kho-ca-nhan.php" class="nav-tab">Kho cá nhân</a>
+        <a href="Page/news.php" class="nav-tab">Tin tức</a>
+        <a href="Page/about.php" class="nav-tab">Liên hệ</a>
+      </div>
+    </nav>
+
+    <!-- 3. Search Bar -->
+    <div class="search-container">
+      <div class="search-pill">
+        <i class="fas fa-search search-icon-left"></i>
+        <input type="text" placeholder="Tìm kiếm thiết bị">
+        <i class="fas fa-camera search-icon-right"></i>
+        <i class="fas fa-microphone search-icon-right"></i>
+      </div>
+    </div>
+
+    <!-- 4. Hero / Summary Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-title">THIẾT BỊ HIỆN CÓ</div>
+        <div class="stat-value"><?php echo number_format((int) $indexStats['total_devices']); ?></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">BẢO TRÌ</div>
+        <div class="stat-value"><?php echo number_format((int) $indexStats['maintenance_devices']); ?></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">ĐANG MƯỢN</div>
+        <div class="stat-value"><?php echo number_format((int) $indexStats['borrowed_devices']); ?></div>
+      </div>
+    </div>
+
+    <!-- 5. Main Equipment Grid ("Thiết bị mượn gần đây") -->
+    <section class="section-wrapper">
+      <div class="section-heading">
+        <i class="far fa-clock"></i>
+        Thiết bị mượn gần đây
+      </div>
+
+      <div class="equipment-container">
+        <div class="equipment-grid">
+          <?php if (empty($recentBorrows)): ?>
+          <div class="equipment-card">
+            <div class="equipment-img-box">
+              <img src="https://via.placeholder.com/80?text=No+Data" alt="Không có dữ liệu">
+            </div>
+            <div class="equipment-info">
+              <div class="equipment-name">Chưa có thiết bị mượn</div>
+              <div class="equipment-time">--</div>
+            </div>
+          </div>
+          <?php else: ?>
+            <?php foreach ($recentBorrows as $item): ?>
+          <!-- Dynamic Card -->
+          <div class="equipment-card">
+            <div class="equipment-img-box">
+              <?php
+                $cardImage = trim((string) ($item['image'] ?? ''));
+                if ($cardImage === '') {
+                  $cardImage = 'https://via.placeholder.com/80?text=' . rawurlencode((string) ($item['id'] ?? 'TB'));
+                }
+              ?>
+              <img src="<?php echo htmlspecialchars($cardImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item['name'], ENT_QUOTES, 'UTF-8'); ?>" onerror="this.src='https://via.placeholder.com/80?text=No+Image';">
+            </div>
+            <div class="equipment-info">
+              <div class="equipment-name"><?php echo htmlspecialchars($item['name'], ENT_QUOTES, 'UTF-8'); ?></div>
+              <div class="equipment-meta" style="font-size:12px;color:#64748b;">
+                Mã: <?php echo htmlspecialchars((string) ($item['id'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
+                <?php if (!empty($item['borrowStatus'])): ?>
+                  · <?php echo htmlspecialchars((string) $item['borrowStatus'], ENT_QUOTES, 'UTF-8'); ?>
+                <?php endif; ?>
+              </div>
+              <div class="equipment-time"><?php echo htmlspecialchars($item['timeAgo'], ENT_QUOTES, 'UTF-8'); ?></div>
+            </div>
+          </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </div>
+
+        <!-- See More Button -->
+        <div class="see-more-container">
+          <button class="btn-see-more">Xem thêm <i class="fas fa-chevron-down"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Maintenance / Updates Section -->
+    <section class="section-wrapper">
+      <div class="section-heading">
+        <i class="fas fa-tools"></i>
+        Thông tin bảo trì/cập nhật
+      </div>
+      <div class="maintenance-content">
+        <?php if (empty($maintenanceNotifications)): ?>
+        <div class="maintenance-item">
+          <i class="fas fa-paperclip"></i>
+          <span>Chưa có thông báo bảo trì</span>
+        </div>
+        <?php else: ?>
+          <?php foreach ($maintenanceNotifications as $notification): ?>
+        <div class="maintenance-item">
+          <i class="fas fa-paperclip"></i>
+          <span>
+            <strong style="color: #0D8ABC;">[Bảo trì]</strong>
+            <?php echo htmlspecialchars($notification['title'], ENT_QUOTES, 'UTF-8'); ?>
+            <?php if (!empty($notification['date'])): ?>
+              – <span style="color: #999; font-size: 13px;"><?php echo htmlspecialchars($notification['date'], ENT_QUOTES, 'UTF-8'); ?></span>
+            <?php endif; ?>
+          </span>
+        </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+
+        <!-- See More Button cho Bảo trì -->
+        <div class="see-more-container">
+          <button class="btn-see-more">Xem thêm <i class="fas fa-chevron-down"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-wrapper">
+      <div class="section-heading">
+        <i class="fas fa-bullhorn"></i>
+        Tin văn & Thành tựu
+      </div>
+      <div class="maintenance-content">
+        <div class="highlight-grid">
+          <article class="highlight-card">
+            <h4><i class="fas fa-newspaper"></i> Tin văn</h4>
+            <ul class="highlight-list">
+              <li>SEB hoàn tất tới ưu giao diện mobile, cải thiện trải nghiệm mượn/trả trên điện thoại.</li>
+              <li>Thêm bộ lọc theo trằng thái thiết bị để tra cứu nhanh trong giờ lên lớp.</li>
+              <li>Hoàn thiện trang Về dự án và Về chúng tôi với lượng điều hướng trực tiếp.</li>
+            </ul>
+          </article>
+
+          <article class="highlight-card">
+            <h4><i class="fas fa-award"></i> Chứng nhận nổi bật</h4>
+            <ul class="highlight-list">
+              <li>Top giải pháp ứng dụng CNTT trong quản lý thiết bị nội bộ năm 2026.</li>
+              <li>Được đánh giá cao về tính thực tiễn và chi phí triển khai thấp.</li>
+              <li>Đề xuất nhân rộng mô hình sang các phòng bộ môn và các trường lân cận.</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="partner-strip">
+          <p class="partner-title"><i class="fas fa-handshake"></i> Đơn vị đồng hành</p>
+          <div class="partner-logo-row">
+            <div class="partner-logo-item">
+              <img src="Images/nhataitro-1.png" alt="Nhà tài trợ 1">
+            </div>
+            <div class="partner-logo-item">
+              <img src="Images/nhataitro-2.jpg" alt="Nhà tài trợ 2">
+            </div>
+            <div class="partner-logo-item">
+              <img src="Images/nhataitro-3.png" alt="Nhà tài trợ 3">
+            </div>
+            <div class="partner-logo-item">
+              <img src="Images/nhataitro-4.png" alt="Nhà tài trợ 4">
+            </div>
+            <div class="partner-logo-item">
+              <img src="Images/nhataitro-5.png" alt="Nhà tài trợ 5">
+            </div>
+            <div class="partner-logo-item">
+              <img src="Images/nhataitro-6.png" alt="Nhà tài trợ 6">
+            </div>
+            <div class="partner-logo-item">
+              <img src="Images/logo.png" alt="Logo trường THCS Lộc An">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        Copyright 2026<br>
+        Website này là tài sản thuộc quyền sở hữu hợp pháp của SEB.<br>
+        Nội dung, hình ảnh và mã nguồn được bảo hộ theo quy định pháp luật hiện hành.<br>
+        Mọi thông tin chi tiết xin liên hệ<br>
+        Hotline: 0344655621
+      </div>
+      <div class="footer-tip">
+        <i class="far fa-lightbulb"></i>
+        Bạn có thể quét mã QR để mượn, trả và báo hỏng thiết bị nhanh chóng!
+      </div>
+    </footer>
+  </div>
+
+  <!-- 8. Modals for Login and Register -->
+  <div id="authModal" class="modal-overlay">
+    <div class="modal-content">
+      <span class="close-btn" id="closeModalBtn">&times;</span>
+
+      <!-- Login Form -->
+      <div id="loginFormContainer" class="auth-form-container">
+        <h2 class="auth-title">Đăng nhập</h2>
+        <form method="POST" action="Page/tai-khoan.php">
+          <div class="input-group">
+            <label for="loginName">Tên đăng nhập</label>
+            <input type="text" id="loginName" name="TaiKhoan" placeholder="Nhập tên đăng nhập" required>
+          </div>
+          <div class="input-group">
+            <label for="loginPass">Mật khẩu</label>
+            <input type="password" id="loginPass" name="MatKhau" placeholder="Nhập mật khẩu" required>
+          </div>
+          <button type="submit" name="login" value="1" class="submit-btn auth-submit">Đăng nhập</button>
+        </form>
+        <div class="auth-switch">
+          Chưa có tài khoản? <a href="#" id="switchToRegister">Đăng ký ngay</a>
+        </div>
+      </div>
+
+      <!-- Register Form -->
+      <div id="registerFormContainer" class="auth-form-container" style="display: none;">
+        <h2 class="auth-title">Đăng ký</h2>
+        <form id="serverRegisterForm" novalidate>
+          <div class="input-group">
+            <label for="regName">Tên đăng nhập</label>
+            <input type="text" id="regName" name="username" placeholder="Nhập tên đăng nhập" required>
+          </div>
+          <div class="input-group">
+            <label for="regEmail">Email</label>
+            <input type="email" id="regEmail" name="email" placeholder="Nhập email">
+          </div>
+          <div class="input-group">
+            <label for="regPass">Mật khẩu</label>
+            <input type="password" id="regPass" name="password" placeholder="Tạo mật khẩu" required>
+          </div>
+          <div class="input-group">
+            <label for="regPassConfirm">Xác nhận mật khẩu</label>
+            <input type="password" id="regPassConfirm" placeholder="Nhập lại mật khẩu" required>
+          </div>
+          <button type="submit" class="submit-btn auth-submit">Đăng ký</button>
+        </form>
+        <div class="auth-switch">
+          Đã có tài khoản? <a href="#" id="switchToLogin">Đăng nhập ngay</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <script src="Javascript/seb_api.js?v=20260520"></script>
+  <script src="Javascript/Java.js?v=20260520_logout"></script>
+</body>
+
+</html>

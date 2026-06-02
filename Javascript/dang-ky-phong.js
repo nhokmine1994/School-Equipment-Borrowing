@@ -1,8 +1,5 @@
 // ĐĂNG KÝ PHÒNG HỌC JS
 document.addEventListener('DOMContentLoaded', function () {
-    const ROOM_BOOKING_KEY = 'seb_room_bookings';
-    const AUTH_STORAGE_KEY = 'seb_demo_auth_user';
-
     function formatDate(date) {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -56,30 +53,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const SUBMIT_TEXT_DEFAULT = 'Gửi Yêu Cầu';
     const SUBMIT_TEXT_REQUIRE_AUTH = 'Đăng nhập/Đăng ký';
 
-    function getStoredBookings() {
+    async function fetchRoomBookings() {
+        if (typeof window.sebApi === 'undefined' || !getAuthUsername()) {
+            return [];
+        }
         try {
-            const raw = localStorage.getItem(ROOM_BOOKING_KEY);
-            const parsed = raw ? JSON.parse(raw) : [];
-            return Array.isArray(parsed) ? parsed : [];
+            const result = await window.sebApi.roomList();
+            return Array.isArray(result.items) ? result.items : [];
         } catch (error) {
-            console.warn('Không thể đọc dữ liệu đăng ký phòng:', error);
+            console.warn('Không tải được đăng ký phòng từ SQL Server:', error);
             return [];
         }
     }
 
-    function setStoredBookings(bookings) {
-        localStorage.setItem(ROOM_BOOKING_KEY, JSON.stringify(bookings));
-    }
-
     function getAuthUsername() {
-        try {
-            const raw = localStorage.getItem(AUTH_STORAGE_KEY);
-            if (!raw) return '';
-            const parsed = JSON.parse(raw);
-            return parsed && parsed.username ? String(parsed.username).trim() : '';
-        } catch (error) {
-            return '';
-        }
+        return window.__username || '';
     }
 
     function updateSubmitButtonAuthState() {
@@ -95,8 +83,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function promptAuthForBookingAction() {
-        window.dispatchEvent(new CustomEvent('seb:require-auth'));
-        updateSubmitButtonAuthState();
+        window.dispatchEvent(new CustomEvent('seb:require-auth', {
+            detail: {
+                keepLocked: false,
+                message: 'Vui lòng đăng nhập hoặc đăng ký để truy cập trang này.',
+            },
+        }));
     }
 
     function getSlotMeta(button) {
@@ -161,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function applyMyBookingsForCurrentRoom() {
+    async function applyMyBookingsForCurrentRoom() {
         resetSlotsToBaseState();
 
         const roomType = roomTypeSelect ? roomTypeSelect.value : '';
@@ -171,7 +163,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const authUsername = getAuthUsername().toLowerCase();
-        const bookings = getStoredBookings().filter((item) => item.roomType === roomType && item.roomNumber === roomNumber);
+        let bookings = [];
+        if (typeof window.sebApi !== 'undefined' && roomType && roomNumber) {
+            try {
+                const schedule = await window.sebApi.roomSchedule(roomType, roomNumber);
+                bookings = Array.isArray(schedule.items) ? schedule.items : [];
+            } catch (error) {
+                console.warn('Không tải lịch phòng:', error);
+            }
+        }
         const myBookedSlotKeys = new Set();
         const occupiedSlotKeys = new Set();
 
@@ -270,14 +270,11 @@ document.addEventListener('DOMContentLoaded', function () {
     applyMyBookingsForCurrentRoom();
     updateSubmitButtonAuthState();
 
-    window.addEventListener('storage', function (event) {
-        if (event.key === AUTH_STORAGE_KEY) {
-            updateSubmitButtonAuthState();
-            applyMyBookingsForCurrentRoom();
-        }
+    // Update UI when window gains focus (in case server-side login state changed)
+    window.addEventListener('focus', function () {
+        updateSubmitButtonAuthState();
+        applyMyBookingsForCurrentRoom();
     });
-
-    window.addEventListener('focus', updateSubmitButtonAuthState);
 
     window.addEventListener('seb:auth-changed', function () {
         updateSubmitButtonAuthState();
@@ -315,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 : roomNumber;
             const userNameLabel = userNameSelect && userNameSelect.selectedOptions[0] && userNameSelect.value
                 ? userNameSelect.selectedOptions[0].textContent.trim()
-                : 'Người dùng demo';
+                : (window.__username || 'Người dùng');
             const bookingOwner = authUsername || userNameLabel;
             const purpose = purposeInput && purposeInput.value.trim() ? purposeInput.value.trim() : 'Không có ghi chú';
 
@@ -335,20 +332,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            const bookings = getStoredBookings();
-            bookings.push({
-                bookingId: 'RB-' + Date.now(),
-                roomType,
-                roomTypeLabel,
-                roomNumber,
-                roomNumberLabel,
-                createdBy: bookingOwner,
-                userNameLabel,
-                purpose,
-                createdAt: new Date().toISOString(),
-                slots: slotDetails,
-            });
-            setStoredBookings(bookings);
+            if (typeof window.sebApi === 'undefined') {
+                alert('Lỗi: chưa tải module kết nối máy chủ (seb_api.js).');
+                return;
+            }
+
+            try {
+                await window.sebApi.roomCreate({
+                    bookingId: 'RB-' + Date.now(),
+                    roomType,
+                    roomTypeLabel,
+                    roomNumber,
+                    roomNumberLabel,
+                    createdBy: bookingOwner,
+                    userNameLabel,
+                    purpose,
+                    slots: slotDetails,
+                });
+            } catch (error) {
+                alert(error.message || 'Không lưu được yêu cầu đăng ký phòng.');
+                return;
+            }
 
             const roomKey = getCurrentRoomKey();
             if (roomKey) {

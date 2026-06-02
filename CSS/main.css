@@ -750,10 +750,12 @@ body {
   justify-content: center;
   z-index: 12000;
   padding: 16px;
+  pointer-events: none;
 }
 
 .seb-confirm-overlay.active {
   display: flex;
+  pointer-events: auto;
 }
 
 .seb-confirm-dialog {
@@ -871,6 +873,10 @@ body {
   background: rgba(0, 0, 0, 0.15);
   border-radius: 6px;
   pointer-events: none;
+}
+
+.page-content-hidden {
+  display: none !important;
 }
 
 /* =========================================
@@ -1307,6 +1313,7 @@ body {
   z-index: 1000;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
 
 .modal-content {

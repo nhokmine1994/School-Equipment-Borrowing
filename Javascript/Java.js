@@ -1,34 +1,89 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const AUTH_STORAGE_KEY = "seb_demo_auth_user";
-    const PROTECTED_PAGE_PATTERN = /kho-ca-nhan\.html$/i;
-    const PROTECTED_LINK_PATTERN = /kho-ca-nhan\.html(?:$|[?#])/i;
-    let pendingRedirect = "";
+    const PROTECTED_PAGE_PATTERN = /(kho-ca-nhan|dang-ky-phong-hoc)\.php$/i;
 
-    function getAuthUser() {
-        try {
-            const raw = localStorage.getItem(AUTH_STORAGE_KEY);
-            return raw ? JSON.parse(raw) : null;
-        } catch (error) {
-            console.warn("Không thể đọc trạng thái đăng nhập demo:", error);
-            return null;
+    function isPageSubRoute() {
+        return /\/Page\//i.test(window.location.pathname);
+    }
+
+    function buildRoute(fileName) {
+        return isPageSubRoute() ? fileName : `Page/${fileName}`;
+    }
+
+    function getLoginUrl(returnUrl) {
+        const base = buildRoute("tai-khoan.php");
+        if (!returnUrl) {
+            return base;
         }
+        return `${base}?return=${encodeURIComponent(returnUrl)}`;
     }
 
+    function getLogoutUrl() {
+        return buildRoute("logout.php");
+    }
+
+    // Use server-provided login state (injected by PHP) instead of demo localStorage
     function isLoggedIn() {
-        const authUser = getAuthUser();
-        return Boolean(authUser && authUser.username);
+        return Boolean(window.__is_logged_in);
     }
 
-    function setAuthUser(username) {
-        const authUser = {
-            username,
-            loginAt: new Date().toISOString(),
-        };
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authUser));
+    function getAuthDisplayName() {
+        return String(window.__display_name || window.__full_name || window.__username || '').trim();
+    }
+
+    function getAuthRole() {
+        return String(window.__user_role || window.__role || '').trim().toLowerCase();
+    }
+
+    function getAuthUsername() {
+        return String(window.__username || '').trim();
     }
 
     function isProtectedCurrentPage() {
         return PROTECTED_PAGE_PATTERN.test(window.location.pathname);
+    }
+
+    function getRequireAuthMessage() {
+        return "Vui lòng đăng nhập hoặc đăng ký để truy cập trang này.";
+    }
+
+    function syncProtectedPageVisibility() {
+        const protectedCurrentPage = isProtectedCurrentPage();
+        const shouldHideProtectedContent = protectedCurrentPage && !isLoggedIn();
+        const currentPath = window.location.pathname;
+
+        const authBanner = document.getElementById("auth-banner");
+        if (authBanner) {
+            authBanner.style.display = shouldHideProtectedContent ? "flex" : "none";
+        }
+
+        const hiddenTargets = [];
+
+        if (/\/kho-ca-nhan\.php(?:$|[?#])/i.test(currentPath)) {
+            const appWrapper = document.getElementById("app");
+            if (appWrapper) {
+                hiddenTargets.push(appWrapper);
+            }
+        }
+
+        if (/\/dang-ky-phong-hoc\.php(?:$|[?#])/i.test(currentPath)) {
+            const pageTitleBar = document.querySelector(".page-title-bar");
+            const bookingContainer = document.querySelector(".booking-container");
+            if (pageTitleBar) {
+                hiddenTargets.push(pageTitleBar);
+            }
+            if (bookingContainer) {
+                hiddenTargets.push(bookingContainer);
+            }
+        }
+
+        hiddenTargets.forEach((element) => {
+            element.classList.toggle("page-content-hidden", shouldHideProtectedContent);
+        });
+    }
+
+    function shouldEnableAuthModal() {
+        // Allow auth modal on all pages (previously disabled on kho_thiet_bi)
+        return true;
     }
 
     function ensureAuthModal() {
@@ -45,16 +100,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 <div id="loginFormContainer" class="auth-form-container">
                     <h2 class="auth-title">Đăng nhập</h2>
-                    <form>
+                    <form method="POST" action="${getLoginUrl(window.location.href)}">
                         <div class="input-group">
                             <label for="loginName">Tên đăng nhập</label>
-                            <input type="text" id="loginName" placeholder="Nhập tên đăng nhập">
+                            <input type="text" id="loginName" name="TaiKhoan" placeholder="Nhập tên đăng nhập" required>
                         </div>
                         <div class="input-group">
                             <label for="loginPass">Mật khẩu</label>
-                            <input type="password" id="loginPass" placeholder="Nhập mật khẩu">
+                            <input type="password" id="loginPass" name="MatKhau" placeholder="Nhập mật khẩu" required>
                         </div>
-                        <button type="submit" class="submit-btn auth-submit">Đăng nhập</button>
+                        <button type="submit" name="login" value="1" class="submit-btn auth-submit">Đăng nhập</button>
                     </form>
                     <div class="auth-switch">
                         Chưa có tài khoản? <a href="#" id="switchToRegister">Đăng ký ngay</a>
@@ -63,22 +118,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 <div id="registerFormContainer" class="auth-form-container" style="display: none;">
                     <h2 class="auth-title">Đăng ký</h2>
-                    <form>
+                    <form id="dynamicRegisterForm" novalidate>
                         <div class="input-group">
                             <label for="regName">Tên đăng nhập</label>
-                            <input type="text" id="regName" placeholder="Nhập tên đăng nhập">
+                            <input type="text" id="regName" name="username" placeholder="Nhập tên đăng nhập" required>
                         </div>
                         <div class="input-group">
                             <label for="regEmail">Email</label>
-                            <input type="email" id="regEmail" placeholder="Nhập email">
+                            <input type="email" id="regEmail" name="email" placeholder="Nhập email">
                         </div>
                         <div class="input-group">
+                            <label for="regPhone">SĐT</label>
+                            <input type="tel" id="regPhone" name="phone" placeholder="Nhập số điện thoại">
+                        </div>
+                                    <div class="input-group">
+                                        <label for="regMonHoc">Môn học</label>
+                                        <select id="regMonHoc" name="boMon">
+                                            <option value="">-- Chọn môn học --</option>
+                                        </select>
+                                    </div>
+                        <div class="input-group">
                             <label for="regPass">Mật khẩu</label>
-                            <input type="password" id="regPass" placeholder="Tạo mật khẩu">
+                            <input type="password" id="regPass" name="password" placeholder="Tạo mật khẩu" required>
                         </div>
                         <div class="input-group">
                             <label for="regPassConfirm">Xác nhận mật khẩu</label>
-                            <input type="password" id="regPassConfirm" placeholder="Nhập lại mật khẩu">
+                            <input type="password" id="regPassConfirm" placeholder="Nhập lại mật khẩu" required>
                         </div>
                         <button type="submit" class="submit-btn auth-submit">Đăng ký</button>
                     </form>
@@ -89,6 +154,34 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
         `;
         document.body.appendChild(authModal);
+
+        // Populate subject select inside dynamic modal from server-provided list
+        try {
+            const subjects = Array.isArray(window.__subjects) ? window.__subjects : [];
+            const select = document.getElementById('regMonHoc');
+            if (select && subjects.length) {
+                // Remove existing extra options (keep first placeholder)
+                select.innerHTML = '<option value="">-- Chọn môn học --</option>' + subjects.map(s => '<option value="' + (s || '') + '">' + s + '</option>').join('');
+            }
+        } catch (e) {
+            // silent
+        }
+
+        // If no subjects available via global var, try fetching from API
+        try {
+            const select = document.getElementById('regMonHoc');
+            const hasOptions = select && select.querySelectorAll('option').length > 1;
+            if (select && !hasOptions) {
+                const apiPath = isPageSubRoute() ? '../api/seb_api.php?action=subjects' : 'api/seb_api.php?action=subjects';
+                fetch(apiPath, { credentials: 'same-origin' })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data && data.ok && Array.isArray(data.subjects) && data.subjects.length) {
+                            select.innerHTML = '<option value="">-- Chọn môn học --</option>' + data.subjects.map(s => '<option value="' + (s || '') + '">' + s + '</option>').join('');
+                        }
+                    }).catch(() => { /* ignore */ });
+            }
+        } catch (e) { /* ignore */ }
     }
 
     function ensureConfirmPopup() {
@@ -114,6 +207,62 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.appendChild(overlay);
     }
 
+    function ensurePendingOverlay() {
+        if (document.getElementById('sebPendingOverlay')) return;
+        const overlay = document.createElement('div');
+        overlay.id = 'sebPendingOverlay';
+        overlay.className = 'seb-pending-overlay';
+        overlay.setAttribute('aria-hidden', 'true');
+        overlay.innerHTML = `
+            <div class="seb-pending-dialog" role="dialog" aria-modal="true">
+                <h3 class="seb-pending-title">Yêu cầu đã được gửi</h3>
+                <p class="seb-pending-message">Chúng tôi đã ghi nhận yêu cầu đăng ký của bạn. Vui lòng chờ quản trị viên duyệt. Bạn sẽ nhận được email khi được duyệt.</p>
+                <div class="seb-pending-actions">
+                    <button type="button" id="sebPendingClose" class="seb-pending-btn">Đóng</button>
+                </div>
+            </div>
+        `;
+        const style = document.createElement('style');
+        style.id = 'sebPendingStyle';
+        style.textContent = `
+            .seb-pending-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:1200}
+            .seb-pending-dialog{background:#fff;padding:20px 22px;border-radius:10px;max-width:420px;width:92%;box-shadow:0 10px 30px rgba(0,0,0,0.2);text-align:center}
+            .seb-pending-title{margin:0 0 8px;font-size:18px}
+            .seb-pending-message{color:#334155;margin:0 0 16px}
+            .seb-pending-actions{display:flex;justify-content:center}
+            .seb-pending-btn{background:#0b74de;color:#fff;border:none;padding:9px 14px;border-radius:8px;cursor:pointer}
+        `;
+        document.head.appendChild(style);
+        document.body.appendChild(overlay);
+        const closeBtn = document.getElementById('sebPendingClose');
+        if (closeBtn) closeBtn.addEventListener('click', () => {
+            // clear any pending auto-close timer
+            try { const t = parseInt(overlay.dataset.pendingTimeout || '0', 10); if (t) clearTimeout(t); } catch (e) {}
+            overlay.parentElement && overlay.parentElement.removeChild(overlay);
+            const s = document.getElementById('sebPendingStyle'); if (s && s.parentElement) s.parentElement.removeChild(s);
+        });
+    }
+
+    window.sebShowPendingApproval = function(message) {
+        ensurePendingOverlay();
+        const overlay = document.getElementById('sebPendingOverlay');
+        if (!overlay) return;
+        const msgEl = overlay.querySelector('.seb-pending-message');
+        if (msgEl && typeof message === 'string' && message.trim() !== '') msgEl.textContent = message;
+        overlay.style.display = 'flex';
+        overlay.setAttribute('aria-hidden', 'false');
+        // auto-close after 5 seconds
+        try {
+            const prev = parseInt(overlay.dataset.pendingTimeout || '0', 10);
+            if (prev) clearTimeout(prev);
+        } catch (e) {}
+        const tid = setTimeout(() => {
+            try { const ov = document.getElementById('sebPendingOverlay'); if (ov && ov.parentElement) ov.parentElement.removeChild(ov); } catch (e) {}
+            try { const s = document.getElementById('sebPendingStyle'); if (s && s.parentElement) s.parentElement.removeChild(s); } catch (e) {}
+        }, 5000);
+        try { overlay.dataset.pendingTimeout = String(tid); } catch (e) {}
+    };
+
     window.sebConfirm = function (message, title = "Xác nhận") {
         ensureConfirmPopup();
 
@@ -138,7 +287,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 overlay.setAttribute("aria-hidden", "true");
                 acceptBtn.removeEventListener("click", onAccept);
                 cancelBtn.removeEventListener("click", onCancel);
-                overlay.removeEventListener("click", onOverlayClick);
                 document.removeEventListener("keydown", onKeyDown);
             };
 
@@ -152,12 +300,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 resolve(false);
             };
 
-            const onOverlayClick = (event) => {
-                if (event.target === overlay) {
-                    onCancel();
-                }
-            };
-
             const onKeyDown = (event) => {
                 if (event.key === "Escape") {
                     onCancel();
@@ -166,7 +308,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             acceptBtn.addEventListener("click", onAccept);
             cancelBtn.addEventListener("click", onCancel);
-            overlay.addEventListener("click", onOverlayClick);
             document.addEventListener("keydown", onKeyDown);
         });
     };
@@ -209,9 +350,43 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function makeAvatarPlaceholder(username) {
-        const label = encodeURIComponent(String(username || "User").trim() || "User");
-        return `https://ui-avatars.com/api/?name=${label}&background=0D8ABC&color=fff`;
+    function getAvatarInitials(name) {
+        const normalized = String(name || 'User')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+            .trim();
+
+        if (!normalized) {
+            return 'U';
+        }
+
+        const parts = normalized.split(/\s+/).filter(Boolean);
+        if (parts.length === 1) {
+            return parts[0].slice(0, 2).toUpperCase();
+        }
+
+        const first = parts[0].charAt(0);
+        const last = parts[parts.length - 1].charAt(0);
+        return `${first}${last}`.toUpperCase();
+    }
+
+    function makeAvatarPlaceholder(name) {
+        const initials = getAvatarInitials(name || 'User');
+        const svg = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Avatar ${initials}">
+                <defs>
+                    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#0D8ABC" />
+                        <stop offset="100%" stop-color="#2563eb" />
+                    </linearGradient>
+                </defs>
+                <rect width="120" height="120" rx="60" fill="url(#g)" />
+                <text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle"
+                      fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="700">${initials}</text>
+            </svg>
+        `;
+        return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
     }
 
     function initScrollReveal() {
@@ -275,17 +450,21 @@ document.addEventListener("DOMContentLoaded", () => {
         menu.style.display = "none";
         menu.style.position = "relative";
 
+        const initialAvatarName = getAuthDisplayName() || getAuthUsername() || "User";
+
+        const isAdmin = getAuthRole() === 'admin';
+
         menu.innerHTML = `
             <button class="icon-btn avatar-btn" id="avatarBtn" aria-label="Avatar người dùng">
-                <img src="${makeAvatarPlaceholder("User")}" alt="Avatar User" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+                <img src="${makeAvatarPlaceholder(initialAvatarName)}" alt="Avatar ${initialAvatarName}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
             </button>
             <div class="dropdown-content" id="avatarDropdown" style="display: none; position: absolute; right: 0; top: 120%; min-width: 220px; background-color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.15); border-radius: 8px; z-index: 100; overflow: hidden; border: 1px solid #e0e0e0; flex-direction: column; text-align: left;">
                 <a href="#" class="dropdown-item"><i class="fas fa-id-card"></i> Thông tin cá nhân</a>
                 <a href="#" class="dropdown-item"><i class="fas fa-history"></i> Lịch sử mượn/trả</a>
                 <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Cài đặt</a>
-                <a href="#" class="dropdown-item"><i class="fas fa-user-shield"></i> Chế độ quản trị viên</a>
+                ${isAdmin ? '<a href="#" class="dropdown-item"><i class="fas fa-user-shield"></i> Chế độ quản trị viên</a>' : ''}
                 <div style="border-top: 1px solid #eee; margin: 4px 0;"></div>
-                <a href="#" class="dropdown-item" id="logoutBtn" style="color: #dc3545;"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                <a href="${getLogoutUrl()}" class="dropdown-item" id="logoutBtn" style="color: #dc3545;"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
             </div>
         `;
 
@@ -296,9 +475,24 @@ document.addEventListener("DOMContentLoaded", () => {
         avatarDropdown = menu.querySelector("#avatarDropdown");
         logoutBtn = menu.querySelector("#logoutBtn");
         avatarImage = avatarBtn ? avatarBtn.querySelector("img") : null;
+
+        const adminModeLink = avatarDropdown
+            ? avatarDropdown.querySelector('a.dropdown-item i.fa-user-shield')
+            : null;
+        if (adminModeLink && adminModeLink.parentElement) {
+            adminModeLink.parentElement.setAttribute('href', buildRoute('admin_panel.php'));
+        }
     }
 
     ensureAvatarMenu();
+
+    // Ensure existing static dropdowns also point to the real admin route.
+    if (avatarDropdown) {
+        const adminModeIcon = avatarDropdown.querySelector('a.dropdown-item i.fa-user-shield');
+        if (adminModeIcon && adminModeIcon.parentElement) {
+            adminModeIcon.parentElement.setAttribute('href', buildRoute('admin_panel.php'));
+        }
+    }
 
     function closeAvatarDropdown() {
         if (!avatarDropdown) {
@@ -322,11 +516,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (registerBtn) registerBtn.style.display = "none";
             userProfileMenu.style.display = "block";
 
-            const authUser = getAuthUser();
             if (avatarImage) {
-                avatarImage.src = makeAvatarPlaceholder(authUser && authUser.username ? authUser.username : "User");
-                avatarImage.alt = `Avatar ${authUser && authUser.username ? authUser.username : "User"}`;
+                const name = getAuthDisplayName() || getAuthUsername() || 'User';
+                avatarImage.src = makeAvatarPlaceholder(name);
+                avatarImage.alt = `Avatar ${name}`;
             }
+
+            bindLogoutButton();
         } else {
             if (loginBtn) loginBtn.style.display = "flex";
             if (registerBtn) registerBtn.style.display = "flex";
@@ -336,6 +532,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     updateHeaderAuthUi();
+
+    const authModalEnabled = shouldEnableAuthModal();
     
     const authModal = document.getElementById("authModal");
     const closeModalBtn = document.getElementById("closeModalBtn");
@@ -348,7 +546,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = loginFormContainer ? loginFormContainer.querySelector("form") : null;
     const registerForm = registerFormContainer ? registerFormContainer.querySelector("form") : null;
     const closeButtonInitialDisplay = closeModalBtn ? closeModalBtn.style.display : "";
-    let authLock = isProtectedCurrentPage() && !isLoggedIn();
+    let authLock = false;
 
     function setAuthLockState(isLocked) {
         authLock = isLocked;
@@ -357,51 +555,31 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function ensureDemoHints() {
-        if (loginFormContainer && !loginFormContainer.querySelector(".demo-auth-hint")) {
-            const hint = document.createElement("p");
-            hint.className = "demo-auth-hint";
-            hint.style.fontSize = "13px";
-            hint.style.color = "#64748b";
-            hint.style.marginTop = "8px";
-            hint.textContent = "Demo: nhập tài khoản và mật khẩu bất kỳ để sử dụng.";
-            loginFormContainer.appendChild(hint);
-        }
-
-        if (registerFormContainer && !registerFormContainer.querySelector(".demo-auth-hint")) {
-            const hint = document.createElement("p");
-            hint.className = "demo-auth-hint";
-            hint.style.fontSize = "13px";
-            hint.style.color = "#64748b";
-            hint.style.marginTop = "8px";
-            hint.textContent = "Demo: đăng ký nhanh bằng thông tin bất kỳ rồi dùng ngay.";
-            registerFormContainer.appendChild(hint);
-        }
-    }
-
-    function finishDemoAuth(username) {
-        setAuthUser(username);
-        updateHeaderAuthUi();
-        window.dispatchEvent(new CustomEvent("seb:auth-changed"));
-        setAuthLockState(false);
-        closeModal();
-
-        if (pendingRedirect) {
-            window.location.href = pendingRedirect;
-            return;
-        }
-
-        if (isProtectedCurrentPage()) {
-            window.location.reload();
-        }
-    }
+    // Demo client-side auth removed — server-side login is used exclusively.
 
     function openModal(type) {
-        if (!authModal || !loginFormContainer || !registerFormContainer) {
+        if (!authModalEnabled || !authModal || !loginFormContainer || !registerFormContainer) {
             return;
+        }
+
+        // Clear any previous inline login error when opening modal
+        try {
+            var prevErr = document.getElementById('loginError');
+            if (prevErr) {
+                prevErr.style.display = 'none';
+                prevErr.textContent = '';
+            }
+        } catch (e) {
+            // ignore
+        }
+
+        // Always keep return URL so user goes back to the current page after login.
+        if (loginForm) {
+            loginForm.setAttribute("action", getLoginUrl(window.location.href));
         }
 
         authModal.style.display = "flex";
+        authModal.style.pointerEvents = "auto";
         if (type === "login") {
             loginFormContainer.style.display = "block";
             registerFormContainer.style.display = "none";
@@ -410,6 +588,10 @@ document.addEventListener("DOMContentLoaded", () => {
             registerFormContainer.style.display = "block";
         }
     }
+
+    window.sebOpenAuthModal = function (type = "login") {
+        openModal(type === "register" ? "register" : "login");
+    };
 
     function closeModal() {
         if (!authModal) {
@@ -422,34 +604,51 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         authModal.style.display = "none";
+        authModal.style.pointerEvents = "none";
+        try {
+            var prevErr = document.getElementById('loginError');
+            if (prevErr) {
+                prevErr.style.display = 'none';
+                prevErr.textContent = '';
+            }
+        } catch (e) {
+            // ignore
+        }
     }
 
-    window.addEventListener("seb:require-auth", () => {
-        setAuthLockState(false);
+    window.addEventListener("seb:require-auth", (event) => {
+        const detail = event && event.detail ? event.detail : {};
+        const keepLocked = Boolean(detail.keepLocked);
+        const message = typeof detail.message === "string" && detail.message.trim() !== ""
+            ? detail.message
+            : getRequireAuthMessage();
+
+        setAuthLockState(keepLocked);
+        syncProtectedPageVisibility();
         openModal("login");
-        alert("Vui lòng đăng nhập hoặc đăng ký để gửi yêu cầu đăng ký phòng.");
+        if (typeof sebShowMessage === 'function') sebShowMessage(message, 'info'); else alert(message);
     });
 
     if (loginBtn) {
-        loginBtn.addEventListener("click", () => openModal("login"));
+        if (authModalEnabled) {
+            loginBtn.addEventListener("click", () => openModal("login"));
+        }
     }
 
     if (registerBtn) {
-        registerBtn.addEventListener("click", () => openModal("register"));
+        if (authModalEnabled) {
+            registerBtn.addEventListener("click", () => openModal("register"));
+        }
     }
 
     window.addEventListener("seb:auth-changed", () => {
         updateHeaderAuthUi();
-    });
-
-    window.addEventListener("storage", (event) => {
-        if (event.key === AUTH_STORAGE_KEY) {
-            updateHeaderAuthUi();
-        }
+        syncProtectedPageVisibility();
     });
 
     window.addEventListener("focus", () => {
         updateHeaderAuthUi();
+        syncProtectedPageVisibility();
     });
 
     if (avatarBtn && avatarDropdown) {
@@ -470,30 +669,49 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", async (event) => {
-            event.preventDefault();
-            const accepted = await window.sebConfirm("Bạn có chắc muốn đăng xuất không?", "Xác nhận đăng xuất");
-            if (!accepted) {
-                return;
-            }
-            localStorage.removeItem(AUTH_STORAGE_KEY);
-            closeAvatarDropdown();
-            updateHeaderAuthUi();
-            window.dispatchEvent(new CustomEvent("seb:auth-changed"));
-        });
+    function navigateToLogout() {
+        window.location.assign(getLogoutUrl());
     }
+
+    async function handleLogoutClick(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const accepted = typeof window.sebConfirm === 'function'
+            ? await window.sebConfirm("Bạn có chắc muốn đăng xuất không?", "Xác nhận đăng xuất")
+            : window.confirm("Bạn có chắc muốn đăng xuất không?");
+
+        if (!accepted) {
+            return;
+        }
+
+        closeAvatarDropdown();
+        navigateToLogout();
+    }
+
+    function bindLogoutButton() {
+        const btn = document.getElementById("logoutBtn");
+        if (!btn || btn.dataset.sebLogoutBound === "1") {
+            return btn;
+        }
+        btn.dataset.sebLogoutBound = "1";
+        btn.addEventListener("click", handleLogoutClick);
+        return btn;
+    }
+
+    bindLogoutButton();
 
     if (closeModalBtn) {
         closeModalBtn.addEventListener("click", closeModal);
     }
 
-    // click outside to close
-    window.addEventListener("click", (e) => {
-        if (e.target === authModal) {
-            closeModal();
-        }
-    });
+    if (authModalEnabled) {
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && authModal && authModal.style.display === "flex") {
+                closeModal();
+            }
+        });
+    }
 
     if (switchToRegister) {
         switchToRegister.addEventListener("click", (e) => {
@@ -511,136 +729,163 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (loginForm) {
         loginForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-
-            const usernameInput = document.getElementById("loginName");
-            const passwordInput = document.getElementById("loginPass");
-            const username = usernameInput ? usernameInput.value.trim() : "";
-            const password = passwordInput ? passwordInput.value.trim() : "";
-
-            if (!username || !password) {
-                alert("Vui lòng nhập tài khoản và mật khẩu bất kỳ để vào demo.");
-                return;
+            // If the form has action + POST, allow normal submit to server
+            const formAction = (loginForm.getAttribute('action') || '').trim();
+            const formMethod = (loginForm.getAttribute('method') || '').toLowerCase();
+            if (formAction !== '' && formMethod === 'post') {
+                return; // browser will submit to server
             }
 
-            finishDemoAuth(username);
-            alert("Đăng nhập demo thành công.");
+            // Otherwise redirect to server login page with return URL
+            e.preventDefault();
+            const current = window.location.href;
+            window.location.href = getLoginUrl(current);
         });
     }
 
     if (registerForm) {
-        registerForm.addEventListener("submit", (e) => {
+        registerForm.addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            const usernameInput = document.getElementById("regName");
-            const passwordInput = document.getElementById("regPass");
-            const username = usernameInput ? usernameInput.value.trim() : "";
-            const password = passwordInput ? passwordInput.value.trim() : "";
+            const username = (registerForm.querySelector('#regName')?.value || '').trim();
+            const email = (registerForm.querySelector('#regEmail')?.value || '').trim();
+            const phone = (registerForm.querySelector('#regPhone')?.value || '').trim();
+            const boMon = (registerForm.querySelector('#regMonHoc')?.value || '').trim();
+            const password = registerForm.querySelector('#regPass')?.value || '';
+            const confirm = registerForm.querySelector('#regPassConfirm')?.value || '';
 
             if (!username || !password) {
-                alert("Vui lòng nhập tài khoản và mật khẩu bất kỳ để đăng ký demo.");
+                if (typeof sebShowMessage === 'function') sebShowMessage('Vui lòng nhập tài khoản và mật khẩu.', 'warn'); else alert('Vui lòng nhập tài khoản và mật khẩu.');
+                return;
+            }
+            if (password !== confirm) {
+                if (typeof sebShowMessage === 'function') sebShowMessage('Mật khẩu xác nhận không khớp.', 'warn'); else alert('Mật khẩu xác nhận không khớp.');
+                return;
+            }
+            if (typeof window.sebApi === 'undefined') {
+                if (typeof sebShowMessage === 'function') sebShowMessage('Chưa tải module kết nối máy chủ (seb_api.js).', 'error'); else alert('Chưa tải module kết nối máy chủ (seb_api.js).');
                 return;
             }
 
-            finishDemoAuth(username);
-            alert("Đăng ký demo thành công.");
+            try {
+                await window.sebApi.register({ username, email, phone, password, fullName: username, boMon });
+                // Show confirmation and ensure modal is fully closed even if auth was previously locked
+                if (typeof window.sebShowPendingApproval === 'function') {
+                    window.sebShowPendingApproval('Yêu cầu đăng ký của bạn đã được gửi và đang chờ quản trị viên duyệt. Bạn sẽ được thông báo khi tài khoản được chấp nhận.');
+                } else if (typeof sebShowMessage === 'function') {
+                    sebShowMessage('Đã gửi yêu cầu đăng ký. Vui lòng chờ admin duyệt.', 'success');
+                } else {
+                    alert('Đã gửi yêu cầu đăng ký. Vui lòng chờ admin duyệt.');
+                }
+                if (typeof registerForm.reset === 'function') {
+                    registerForm.reset();
+                }
+                try {
+                    // clear any auth lock that might reopen the modal and sync UI
+                    setAuthLockState(false);
+                    syncProtectedPageVisibility();
+                } catch (e) { /* ignore */ }
+                // Force close modal
+                if (typeof closeModal === 'function') closeModal();
+            } catch (error) {
+                if (typeof sebShowMessage === 'function') sebShowMessage(error.message || 'Đăng ký thất bại.', 'error'); else alert(error.message || 'Đăng ký thất bại.');
+            }
         });
     }
 
-    const protectedLinks = document.querySelectorAll("a[href]");
-    protectedLinks.forEach((link) => {
-        const href = link.getAttribute("href") || "";
-        if (!PROTECTED_LINK_PATTERN.test(href)) {
-            return;
-        }
+    // Do not force redirect from navbar links to Tai-khoan.php.
+    // Protected pages handle unauthenticated users locally by showing auth modal.
 
-        link.addEventListener("click", (e) => {
-            if (isLoggedIn()) {
-                return;
-            }
-
-            e.preventDefault();
-            pendingRedirect = new URL(href, window.location.href).href;
-            setAuthLockState(false);
-            openModal("login");
-            alert("Vui lòng đăng nhập để truy cập chức năng này.");
-        });
-    });
-
-    ensureDemoHints();
     setAuthLockState(authLock);
+    syncProtectedPageVisibility();
 
-    // Show auth notification banner on kho-ca-nhan if not logged in
-    const authBanner = document.getElementById("auth-banner");
-    const appWrapper = document.getElementById("app");
-    
+    // If this page requires auth, show prompt but allow user to close popup.
     if (isProtectedCurrentPage() && !isLoggedIn()) {
-        if (authBanner) {
-            authBanner.style.display = "flex";
-        }
-        if (appWrapper) {
-            appWrapper.classList.add("page-overlay-locked");
-        }
-    } else {
-        if (authBanner) {
-            authBanner.style.display = "none";
-        }
-        if (appWrapper) {
-            appWrapper.classList.remove("page-overlay-locked");
-        }
+        window.dispatchEvent(new CustomEvent("seb:require-auth", {
+            detail: {
+                keepLocked: false,
+                message: getRequireAuthMessage(),
+            },
+        }));
     }
 
-    // Update banner visibility after login
-    const originalFinishDemoAuth = finishDemoAuth;
-    finishDemoAuth = function(username) {
-        originalFinishDemoAuth.call(this, username);
-        if (authBanner) {
-            authBanner.style.display = "none";
-        }
-        if (appWrapper) {
-            appWrapper.classList.remove("page-overlay-locked");
-        }
-    };
+    // Hamburger removed; nav uses horizontal swipe behavior. No JS needed here.
 
-    if (authLock) {
-        openModal("login");
-        alert("Trang này yêu cầu đăng nhập. Vui lòng nhập tài khoản bất kỳ để tiếp tục (demo).");
-    }
+    // --- NAV ACCESSIBILITY ENHANCEMENTS ---
+    function enhanceNavAccessibility() {
+        const nav = document.getElementById('mainNav');
+        const navLinks = document.getElementById('navLinks');
+        if (!nav || !navLinks) return;
 
-    // --- HAMBURGER MENU LOGIC ---
-    const hamburgerBtn = document.getElementById("hamburgerBtn");
-    const navLinks = document.getElementById("navLinks");
+        nav.setAttribute('role', 'navigation');
+        if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', 'Primary navigation');
 
-    if (hamburgerBtn && navLinks) {
-        hamburgerBtn.addEventListener("click", (e) => {
-            e.stopPropagation(); // Prettify click bubbling issues
-            hamburgerBtn.classList.toggle("open");
-            navLinks.classList.toggle("open");
-            
-            // Cập nhật thuộc tính aria để hỗ trợ tiếp cận (accessibility)
-            const isOpen = hamburgerBtn.classList.contains("open");
-            hamburgerBtn.setAttribute("aria-expanded", isOpen);
-        });
+        const links = Array.from(navLinks.querySelectorAll('.nav-tab'));
+        if (!links.length) return;
 
-        // Đóng menu khi click vào một link (hữu ích cho Mobile)
-        const links = navLinks.querySelectorAll(".nav-tab");
-        links.forEach(link => {
-            link.addEventListener("click", () => {
-                hamburgerBtn.classList.remove("open");
-                navLinks.classList.remove("open");
-                hamburgerBtn.setAttribute("aria-expanded", "false");
+        // Track last input modality so we only auto-center when keyboard navigation happens.
+        let lastInteractionWasKeyboard = false;
+        document.addEventListener('keydown', (ev) => {
+            // treat Tab, Arrow keys, Home/End and printable keys as keyboard navigation
+            const k = ev.key || '';
+            if (k === 'Tab' || k.startsWith('Arrow') || k === 'Home' || k === 'End' || k.length === 1) {
+                lastInteractionWasKeyboard = true;
+            }
+        }, { passive: true });
+        // Pointer (mouse/touch) interaction => disable keyboard centering for the next focus
+        document.addEventListener('pointerdown', () => { lastInteractionWasKeyboard = false; }, { passive: true });
+
+        links.forEach((a, idx) => {
+            // keep native link behavior but add ARIA markers
+            if (a.classList.contains('active')) {
+                a.setAttribute('aria-current', 'page');
+            } else {
+                a.removeAttribute('aria-current');
+            }
+
+            // ensure focusable
+            a.tabIndex = 0;
+
+            a.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    const next = links[(idx + 1) % links.length];
+                    next.focus();
+                    next.scrollIntoView({ inline: 'center', behavior: 'smooth' });
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    const prev = links[(idx - 1 + links.length) % links.length];
+                    prev.focus();
+                    prev.scrollIntoView({ inline: 'center', behavior: 'smooth' });
+                } else if (e.key === 'Home') {
+                    e.preventDefault();
+                    links[0].focus();
+                    links[0].scrollIntoView({ inline: 'center', behavior: 'smooth' });
+                } else if (e.key === 'End') {
+                    e.preventDefault();
+                    links[links.length - 1].focus();
+                    links[links.length - 1].scrollIntoView({ inline: 'center', behavior: 'smooth' });
+                }
+            });
+
+            a.addEventListener('focus', () => {
+                // Auto-center only when keyboard navigation was used to reach the element.
+                if (lastInteractionWasKeyboard) {
+                    try { a.scrollIntoView({ inline: 'center', behavior: 'smooth' }); } catch (e) { /* ignore */ }
+                }
             });
         });
 
-        // Đóng menu khi click ra ngoài
-        document.addEventListener("click", (e) => {
-            if (!hamburgerBtn.contains(e.target) && !navLinks.contains(e.target)) {
-                hamburgerBtn.classList.remove("open");
-                navLinks.classList.remove("open");
-                hamburgerBtn.setAttribute("aria-expanded", "false");
-            }
+        // update aria-current when navigation changes (server-side pages will reload, but support SPA-like behavior)
+        navLinks.addEventListener('click', (ev) => {
+            const t = ev.target.closest('.nav-tab');
+            if (!t) return;
+            links.forEach(l => l.removeAttribute('aria-current'));
+            t.setAttribute('aria-current', 'page');
         });
     }
+
+    try { enhanceNavAccessibility(); } catch (e) { /* fail silently */ }
 
     // --- SIDEBAR COLLAPSIBLE LOGIC (mobile) ---
     const collapsibleTitles = document.querySelectorAll(".collapsible-title");
