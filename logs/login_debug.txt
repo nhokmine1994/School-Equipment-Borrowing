@@ -1,0 +1,21 @@
+2026-06-01T11:14:53+02:00	LOGIN_SQL_ERROR	user=pchau5621	msg=[Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Invalid column name 'FullName'.
+2026-06-01T11:15:06+02:00	LOGIN_SQL_ERROR	user=pchau5621	msg=[Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Invalid column name 'FullName'.
+2026-06-01T11:20:55+02:00	LOGIN_SQL_ERROR	user=pchau5621	msg=[Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Invalid column name 'HoTen'.
+2026-06-01T11:21:04+02:00	LOGIN_SQL_ERROR	user=pchau5621	msg=[Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Invalid column name 'HoTen'.
+2026-06-01T11:22:37+02:00	LOGIN_COLUMNS	user=pchau5621	cols=TaiKhoan,HoVaTen,SoDienThoai,BoMon,MatKhau,LoaiTaiKhoan,Email
+2026-06-01T11:36:17+02:00	LOGIN_COLUMNS	user=Pchau621	cols=TaiKhoan,HoVaTen,SoDienThoai,BoMon,MatKhau,LoaiTaiKhoan,Email
+2026-06-01T14:04:42+02:00	LOGIN_COLUMNS	user=pchau621	cols=TaiKhoan,HoVaTen,SoDienThoai,BoMon,MatKhau,LoaiTaiKhoan,Email
+2026-06-01T14:40:36+02:00	LOGIN_COLUMNS	user=pchau5621	cols=TaiKhoan,HoVaTen,SoDienThoai,BoMon,MatKhau,LoaiTaiKhoan,Email
+2026-06-01T14:51:34+02:00	FAILED_LOGIN	user=pvanh123	stored_len=0
+2026-06-01T14:51:48+02:00	LOGIN_COLUMNS	user=pmphuc5621	cols=TaiKhoan,HoVaTen,SoDienThoai,BoMon,MatKhau,LoaiTaiKhoan,Email
+2026-06-01T14:52:28+02:00	FAILED_LOGIN	user=pchau5621	stored_len=60
+2026-06-01T14:54:45+02:00	FAILED_LOGIN	user=pchau5621	stored_len=60
+2026-06-01T14:54:57+02:00	FAILED_LOGIN	user=pvanh123	stored_len=0
+2026-06-01T14:55:10+02:00	FAILED_LOGIN	user=pvanh123	stored_len=0
+2026-06-01T14:57:48+02:00	FAILED_LOGIN	user=pvanh123	stored_len=0
+2026-06-01T15:00:33+02:00	FAILED_LOGIN	user=pchau5621	stored_len=60
+2026-06-01T15:00:43+02:00	LOGIN_COLUMNS	user=admin	cols=TaiKhoan,HoVaTen,SoDienThoai,BoMon,MatKhau,LoaiTaiKhoan,Email
+2026-06-01T15:15:39+02:00	LOGIN_COLUMNS	user=admin	cols=TaiKhoan,HoVaTen,SoDienThoai,BoMon,MatKhau,LoaiTaiKhoan,Email
+2026-06-01T16:25:25+02:00	LOGIN_COLUMNS	user=admin	cols=TaiKhoan,HoVaTen,SoDienThoai,BoMon,MatKhau,LoaiTaiKhoan,Email
+2026-06-01T16:26:35+02:00	LOGIN_COLUMNS	user=admin	cols=TaiKhoan,HoVaTen,SoDienThoai,BoMon,MatKhau,LoaiTaiKhoan,Email
+2026-06-01T18:07:09+02:00	LOGIN_COLUMNS	user=pchau5621	cols=TaiKhoan,HoVaTen,SoDienThoai,BoMon,MatKhau,LoaiTaiKhoan,Email

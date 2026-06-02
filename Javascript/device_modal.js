@@ -68,6 +68,44 @@ function renderSafeAccessories(container, accessories) {
     container.appendChild(list);
 }
 
+// Clear any unexpected highlights/marks that some browsers or extensions
+// may have injected into the modal HTML (e.g. find-in-page <mark> nodes
+// or inline background styles). This forcibly resets background to transparent.
+function clearModalHighlights(container) {
+    if (!container) return;
+    // Remove <mark> background
+    container.querySelectorAll('mark').forEach(m => {
+        try { m.style.background = 'transparent'; m.style.color = 'inherit'; } catch (e) {}
+    });
+    // Clear inline background styles on spans/labels
+    container.querySelectorAll('[style]').forEach(el => {
+        const s = el.getAttribute('style') || '';
+        if (/background|background-color|background-image/i.test(s)) {
+            try { el.style.background = 'transparent'; el.style.backgroundColor = 'transparent'; } catch (e) {}
+        }
+    });
+    // Remove common highlight classes
+    container.querySelectorAll('.highlight, .selected').forEach(el => {
+        el.classList.remove('highlight'); el.classList.remove('selected');
+        try { el.style.background = 'transparent'; } catch (e) {}
+    });
+    // Specifically target and clear schedule element
+    const scheduleEl = container.querySelector('#modal-schedule');
+    if (scheduleEl) {
+        try {
+            scheduleEl.style.background = 'transparent !important';
+            scheduleEl.style.backgroundColor = 'transparent';
+        } catch (e) {}
+    }
+    const scheduleLabel = container.querySelector('[for="modal-schedule"], .modal-form-group:has(#modal-schedule)');
+    if (scheduleLabel) {
+        try {
+            scheduleLabel.style.background = 'transparent !important';
+            scheduleLabel.style.backgroundColor = 'transparent';
+        } catch (e) {}
+    }
+}
+
 // Tạo và nhúng HTML Modal toàn cục vào Document Body
 function initDeviceModal() {
     if (document.getElementById('device-modal-overlay')) return;
@@ -75,19 +113,12 @@ function initDeviceModal() {
     const overlay = document.createElement('div');
     overlay.id = 'device-modal-overlay';
     overlay.className = 'device-modal-overlay';
-    
-    // Thu gọn popup khi nhấn vào vùng đệm màu đen bên ngoài
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            closeModal();
-        }
-    });
 
     overlay.innerHTML = `
         <div class="device-modal" id="device-modal">
-            <div class="modal-header">
+                <div class="modal-header">
                 <h2 id="modal-title">Chi tiết thiết bị</h2>
-                <button class="close-modal" onclick="closeModal()">&times;</button>
+                <button class="close-modal" onclick="window.closeDeviceModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="modal-left">
@@ -130,40 +161,67 @@ function initDeviceModal() {
 
                     <div class="modal-info-section" style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 0;">
                         <h3 style="border: none; margin-bottom: 15px; padding: 0;">Khởi tạo phiếu mượn</h3>
-                        <div style="display: flex; gap: 15px;">
-                            <div class="modal-form-group" style="flex: 2;">
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+                            <div class="modal-form-group" style="flex: 1 1 180px; min-width:160px;">
                                 <label for="modal-date">Ngày nhận mong đợi</label>
                                 <input type="date" id="modal-date" required>
                             </div>
-                            <div class="modal-form-group" style="flex: 1;">
+                            <div class="modal-form-group" style="flex: 1 1 180px; min-width:160px;">
+                                <label for="modal-return-date">Ngày trả</label>
+                                <input type="date" id="modal-return-date" required>
+                            </div>
+                            <div class="modal-form-group" style="flex: 0 0 110px; min-width:90px;">
                                 <label for="modal-qty">Số lượng</label>
-                                <input type="number" id="modal-qty" min="1" value="1" required>
+                                <input style="width:100%;" type="number" id="modal-qty" min="1" value="1" required>
                             </div>
                         </div>
-                        <div class="modal-form-group" style="margin-bottom: 0; margin-top: 10px;">
-                            <label>Lịch mượn gần đây (hệ thống):</label>
-                            <span style="font-size: 0.85rem; color: #10b981; font-weight: 500;" id="modal-schedule">Không có ai đặt trùng lịch hôm nay!</span>
+                        <div class="modal-form-group" style="margin-bottom: 0; margin-top: 10px; background: transparent !important;">
+                            <label style="background: transparent !important;">Lịch mượn gần đây (hệ thống):</label>
+                            <span style="font-size: 0.85rem; color: #10b981; font-weight: 500; background: transparent !important;" id="modal-schedule">Không có ai đặt trùng lịch hôm nay!</span>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn-cancel" onclick="closeModal()">Trở lại</button>
-                <button class="modal-btn-confirm" id="modal-btn-submit" onclick="submitModalBorrow()">Lập phiếu mượn ngay</button>
+                <button class="modal-btn-cancel" onclick="window.closeDeviceModal()">Trở lại</button>
+                <button class="modal-btn-confirm" id="modal-btn-submit" onclick="submitModalBorrow()">Đăng ký mượn</button>
             </div>
         </div>
     `;
     
     document.body.appendChild(overlay);
 
-    // Điền ngày hiện tại mặc định
+    clearModalHighlights(overlay);
+
+    // Chỉ cho phép đóng bằng ESC hoặc nút đóng trong modal.
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') {
+            return;
+        }
+
+        const activeOverlay = document.getElementById('device-modal-overlay');
+        if (activeOverlay && activeOverlay.classList.contains('active')) {
+            if (typeof window.closeDeviceModal === 'function') {
+                window.closeDeviceModal();
+            }
+        }
+    });
+
+    // Điền ngày hiện tại mặc định cho ngày nhận
     const today = new Date().toISOString().split('T')[0];
     const dateInput = document.getElementById('modal-date');
     if (dateInput) dateInput.value = today;
+    
+    // Điền ngày trả mặc định (7 ngày sau)
+    const returnDate = new Date();
+    returnDate.setDate(returnDate.getDate() + 7);
+    const returnDateStr = returnDate.toISOString().split('T')[0];
+    const returnDateInput = document.getElementById('modal-return-date');
+    if (returnDateInput) returnDateInput.value = returnDateStr;
 }
 
 // Global expose function (Sẵn sàng phục vụ nhiều trang)
-window.openModal = function(device) {
+window.openDeviceModal = function(device) {
     initDeviceModal(); // Lazy load UI only when needed
 
     document.getElementById('modal-title').textContent = device.name;
@@ -176,8 +234,8 @@ window.openModal = function(device) {
     statusEl.textContent = isAvail ? 'Sẵn sàng' : 'Không có sẵn';
     statusEl.style.color = isAvail ? '#10b981' : '#ef4444';
     
-    // Số lượng (Nếu mảng JSON chưa có data mô phỏng, mix số auto random logic)
-    const stock = device.quantity || Math.floor(Math.random() * 15) + 3;
+    // Số lượng phải phản ánh đúng dữ liệu từ DB, không tự sinh ngẫu nhiên
+    const stock = Number.isFinite(Number(device.quantity)) ? Number(device.quantity) : 0;
     document.getElementById('modal-stock').textContent = isAvail ? `Còn ${stock} cái` : 'Đã xuất hết (0 cái)';
     
     renderSafeModalImage(document.getElementById('modal-image'), device.image);
@@ -188,23 +246,26 @@ window.openModal = function(device) {
 
     // Validate Input form
     const qtyInput = document.getElementById('modal-qty');
-    qtyInput.max = isAvail ? stock : 0;
+    qtyInput.max = isAvail ? Math.max(stock, 1) : 0;
     qtyInput.value = isAvail ? 1 : 0;
+    qtyInput.disabled = !isAvail;
     
     const submitBtn = document.getElementById('modal-btn-submit');
     submitBtn.disabled = !isAvail;
-    submitBtn.textContent = isAvail ? 'Tạo phiếu mượn ngay' : 'Hàng chưa về kho';
-    submitBtn.setAttribute('data-device-id', device.id);
+    submitBtn.textContent = isAvail ? 'Đăng ký mượn' : 'Hàng chưa về kho';
+    submitBtn.setAttribute('data-device-id', String(device.dbId || device.id || ''));
 
     // Kích hoạt bật hiển thị Modal
     const overlay = document.getElementById('device-modal-overlay');
+    // Ensure any injected highlights are cleared right before showing
+    try { clearModalHighlights(overlay); } catch (e) {}
     overlay.classList.add('active');
-    
+
     // Khóa cuộn trang nền
     document.body.style.overflow = 'hidden';
 };
 
-window.closeModal = function() {
+window.closeDeviceModal = function() {
     const overlay = document.getElementById('device-modal-overlay');
     if (overlay) {
         overlay.classList.remove('active');
@@ -216,12 +277,50 @@ window.submitModalBorrow = function() {
     const deviceId = document.getElementById('modal-btn-submit').getAttribute('data-device-id');
     const qty = document.getElementById('modal-qty').value;
     const date = document.getElementById('modal-date').value;
+    const returnDate = document.getElementById('modal-return-date').value;
     
     if (qty < 1) {
-        alert('Vui lòng chọn số lượng hợp lệ!');
+        if (typeof sebShowMessage === 'function') sebShowMessage('Vui lòng chọn số lượng hợp lệ!', 'warn'); else alert('Vui lòng chọn số lượng hợp lệ!');
         return;
     }
     
-    alert(`🎉 Thành công! Phê duyệt mượn nội bộ:\n\n- Mã máy: ${deviceId}\n- Yêu cầu xuất: ${qty} cái\n- Hẹn nhận ngày: ${date}`);
-    closeModal();
+    if (!returnDate) {
+        if (typeof sebShowMessage === 'function') sebShowMessage('Vui lòng chọn ngày trả!', 'warn'); else alert('Vui lòng chọn ngày trả!');
+        return;
+    }
+    
+    if (new Date(returnDate) <= new Date(date)) {
+        if (typeof sebShowMessage === 'function') sebShowMessage('Ngày trả phải sau ngày nhận!', 'warn'); else alert('Ngày trả phải sau ngày nhận!');
+        return;
+    }
+    
+    // Send borrow request to API
+    const payload = {
+        maThietBi: deviceId,
+        soLuong: qty,
+        hanTra: returnDate
+    };
+    
+    fetch('../api/seb_api.php?action=borrow_request', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.ok) {
+            const msg = `Đã gửi yêu cầu mượn. Số phiếu: ${data.borrowId}. Quản trị viên sẽ duyệt.`;
+            if (typeof sebShowMessage === 'function') sebShowMessage(msg, 'success'); else alert(`✅ ${ data.message }\n\nSố phiếu: ${data.borrowId}\n\nQuản trị viên sẽ duyệt yêu cầu của bạn trong thời gian sớm nhất.`);
+            if (typeof window.closeDeviceModal === 'function') {
+                window.closeDeviceModal();
+            }
+        } else {
+            if (typeof sebShowMessage === 'function') sebShowMessage(data.error || 'Không gửi được yêu cầu.', 'error'); else alert(`❌ Lỗi: ${data.error || 'Không gửi được yêu cầu.'}`);
+        }
+    })
+    .catch(err => {
+        if (typeof sebShowMessage === 'function') sebShowMessage('Lỗi kết nối: ' + (err.message || ''), 'error'); else alert(`❌ Lỗi kết nối: ${err.message}`);
+    });
 };
