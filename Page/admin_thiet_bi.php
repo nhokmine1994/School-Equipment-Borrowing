@@ -107,6 +107,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $ten = trim($_POST['TenThietBi'] ?? '');
     $sl = (int) ($_POST['SoLuong'] ?? 0);
     $tinhtrang = trim($_POST['TinhTrang'] ?? 'Sẵn sàng');
+    $idActive = (int) ($_POST['IDActive'] ?? 2);
+    $idActive = (int) ($_POST['IDActive'] ?? 2);
     $danhmuc = trim($_POST['DanhMuc'] ?? '');
     $thongtin = trim($_POST['ThongTin'] ?? '');
     $phukien = trim($_POST['PhuKien'] ?? '');
@@ -122,8 +124,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
       $message = $imageUpload['message'];
       $messageType = 'danger';
     } else {
-      $sql = "INSERT INTO Kho (MaThietBi, TenThietBi, MaDanhMuc, SoLuong, TinhTrang, HinhAnh, ThongTin, PhuKien) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-      $params = array(&$ma, &$ten, &$danhmuc, &$sl, &$tinhtrang, &$hinh, &$thongtin, &$phukien);
+      $sql = "INSERT INTO Kho (MaThietBi, TenThietBi, MaDanhMuc, SoLuong, TinhTrang, HinhAnh, ThongTin, PhuKien, IDActive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      $params = array(&$ma, &$ten, &$danhmuc, &$sl, &$tinhtrang, &$hinh, &$thongtin, &$phukien, &$idActive);
       $stmt = sqlsrv_prepare($conn, $sql, $params);
       if ($stmt && sqlsrv_execute($stmt)) {
         $message = 'Thêm thiết bị thành công.';
@@ -147,6 +149,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $sl = (int) ($_POST['SoLuong'] ?? 0);
     $tinhtrang = trim($_POST['TinhTrang'] ?? 'Sẵn sàng');
     $danhmuc = trim($_POST['DanhMuc'] ?? '');
+    // Ensure IDActive is present; if not, fetch current value from DB or use default (2 = Active)
+    if (!isset($_POST['IDActive']) || $_POST['IDActive'] === '') {
+      $whereCol = $id !== '' ? 'ID' : 'MaThietBi';
+      $whereVal = $id !== '' ? $id : $ma;
+      $fetchSql = "SELECT IDActive FROM Kho WHERE [{$whereCol}] = ?";
+      $fetchStmt = sqlsrv_query($conn, $fetchSql, array(&$whereVal));
+      if ($fetchStmt) {
+        $fetchRow = sqlsrv_fetch_array($fetchStmt, SQLSRV_FETCH_ASSOC);
+        $idActive = isset($fetchRow['IDActive']) ? (int) $fetchRow['IDActive'] : 2;
+      } else {
+        $idActive = 2;
+      }
+    } else {
+      $idActive = (int) ($_POST['IDActive'] ?? 2);
+    }
     $currentHinh = trim($_POST['HinhAnhCurrent'] ?? '');
     $thongtin = trim($_POST['ThongTin'] ?? '');
     $phukien = trim($_POST['PhuKien'] ?? '');
@@ -162,8 +179,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     } else {
       $whereColumn = $id !== '' ? 'ID' : 'MaThietBi';
       $whereValue = $id !== '' ? $id : $ma;
-      $sql = "UPDATE Kho SET TenThietBi = ?, MaDanhMuc = ?, SoLuong = ?, TinhTrang = ?, HinhAnh = ?, ThongTin = ?, PhuKien = ? WHERE [{$whereColumn}] = ?";
-      $params = array(&$ten, &$danhmuc, &$sl, &$tinhtrang, &$hinh, &$thongtin, &$phukien, &$whereValue);
+      $sql = "UPDATE Kho SET TenThietBi = ?, MaDanhMuc = ?, SoLuong = ?, TinhTrang = ?, HinhAnh = ?, ThongTin = ?, PhuKien = ?, IDActive = ? WHERE [{$whereColumn}] = ?";
+      $params = array(&$ten, &$danhmuc, &$sl, &$tinhtrang, &$hinh, &$thongtin, &$phukien, &$idActive, &$whereValue);
       $stmt = sqlsrv_prepare($conn, $sql, $params);
 
       $updated = false;
@@ -192,7 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 function admin_device_status_class($status)
 {
     $status = mb_strtolower(trim((string) $status), 'UTF-8');
-    if (strpos($status, 'hỏng') !== false || strpos($status, 'hong') !== false || strpos($status, 'broken') !== false) {
+  if (strpos($status, 'hỏng') !== false || strpos($status, 'hong') !== false || strpos($status, 'hết') !== false || strpos($status, 'het') !== false || strpos($status, 'broken') !== false) {
         return 'admin-chip-danger';
     }
     if (strpos($status, 'bảo trì') !== false || strpos($status, 'bao tri') !== false || strpos($status, 'unavailable') !== false) {
@@ -251,6 +268,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $messageType = 'danger';
             }
         }
+        
+        if ($action === 'toggle_active') {
+          $id = trim($_POST['id'] ?? '');
+          $ma = trim($_POST['ma'] ?? '');
+          $active = (isset($_POST['active']) && ($_POST['active'] === '1' || $_POST['active'] === 'true')) ? true : false;
+          $whereColumn = $id !== '' ? 'ID' : 'MaThietBi';
+          $whereValue = $id !== '' ? $id : $ma;
+          $newStatus = $active ? 'Sẵn sàng' : 'Vô hiệu hóa';
+          $sql = "UPDATE Kho SET TinhTrang = ? WHERE [{$whereColumn}] = ?";
+          $params = array(&$newStatus, &$whereValue);
+          $stmt = sqlsrv_prepare($conn, $sql, $params);
+          $ok = false;
+          if ($stmt && sqlsrv_execute($stmt)) {
+            $rows = sqlsrv_rows_affected($stmt);
+            if ($rows !== false && $rows >= 0) $ok = true;
+          }
+          // If AJAX request, return JSON
+          if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => $ok, 'status_text' => $newStatus]);
+            exit;
+          }
+          if ($ok) {
+            $message = 'Cập nhật trạng thái thành công.';
+          } else {
+            $message = 'Cập nhật trạng thái thất bại.';
+            $messageType = 'danger';
+          }
+        }
     }
 }
 
@@ -267,24 +313,46 @@ if ($stmt) {
 $categoryMap = seb_load_category_map($conn);
 
 // Load device statuses directly from Kho.TinhTrang in SQL Server
-$deviceStatusOptions = [];
-$statusSql = "SELECT DISTINCT LTRIM(RTRIM(TinhTrang)) AS TinhTrang
-              FROM Kho
-              WHERE TinhTrang IS NOT NULL
-                AND LTRIM(RTRIM(TinhTrang)) <> ''
-              ORDER BY LTRIM(RTRIM(TinhTrang))";
-$statusStmt = sqlsrv_query($conn, $statusSql);
-if ($statusStmt) {
-  while ($statusRow = sqlsrv_fetch_array($statusStmt, SQLSRV_FETCH_ASSOC)) {
-    $statusValue = trim((string) ($statusRow['TinhTrang'] ?? ''));
-    if ($statusValue === '') {
-      continue;
-    }
-    $deviceStatusOptions[$statusValue] = $statusValue;
+// Standardize device status options to three canonical values
+$deviceStatusOptions = array(
+  'Sẵn sàng',
+  'Đang bảo trì',
+  'Hết'
+);
+
+// Mapping from DB status variants to canonical statuses
+$status_map = array(
+  // Sẵn sàng variants
+  'sẵn sàng' => 'Sẵn sàng', 'san sang' => 'Sẵn sàng', 'sang' => 'Sẵn sàng', 'available' => 'Sẵn sàng',
+  // Đang bảo trì variants
+  'đang bảo trì' => 'Đang bảo trì', 'bao tri' => 'Đang bảo trì', 'bảo trì' => 'Đang bảo trì', 'baotri' => 'Đang bảo trì',
+  // Hết / hỏng variants map to canonical 'Hết'
+  'hỏng' => 'Hết', 'hong' => 'Hết', 'het' => 'Hết', 'hết' => 'Hết', 'hết hàng' => 'Hết', 'het hang' => 'Hết', 'broken' => 'Hết'
+);
+
+function map_device_status($raw) {
+  global $status_map;
+  $s = trim(mb_strtolower((string)$raw, 'UTF-8'));
+  if ($s === '') return 'Sẵn sàng';
+  if (isset($status_map[$s])) return $status_map[$s];
+  // Try partial matches
+  foreach ($status_map as $k => $v) {
+    if (mb_stripos($s, $k, 0, 'UTF-8') !== false) return $v;
   }
+  // fallback: capitalize first letter
+  return mb_strtoupper(mb_substr($s, 0, 1, 'UTF-8'), 'UTF-8') . mb_substr($s, 1, null, 'UTF-8');
 }
-if (empty($deviceStatusOptions)) {
-  $deviceStatusOptions = [];
+
+// Load Active visibility options from dbo.Active
+$activeOptions = [];
+$activeSql = "SELECT IDActive, TinhTrangHoatDong FROM dbo.Active ORDER BY IDActive";
+$activeStmt = sqlsrv_query($conn, $activeSql);
+if ($activeStmt) {
+  while ($ar = sqlsrv_fetch_array($activeStmt, SQLSRV_FETCH_ASSOC)) {
+    $aid = (int) ($ar['IDActive'] ?? 0);
+    $alabel = trim((string) ($ar['TinhTrangHoatDong'] ?? ''));
+    if ($aid > 0) $activeOptions[$aid] = $alabel;
+  }
 }
 
 // Resolve category display name from MaDanhMuc
@@ -399,190 +467,143 @@ admin_render_page_intro(
           <p class="admin-card-note">Tìm kiếm nhanh, chỉnh sửa, upload ảnh hoặc xóa từng thiết bị.</p>
         </div>
         <div class="admin-toolbar">
-          <input id="deviceSearch" class="admin-input" style="width:280px;" placeholder="Tìm theo mã, tên, danh mục...">
-          <a class="admin-btn admin-btn-primary" href="#them-moi" style="text-decoration:none;display:inline-flex;align-items:center;">Thêm thiết bị mới</a>
+          <input id="deviceSearch" class="admin-input" style="width:220px;" placeholder="Tìm theo mã, tên, danh mục...">
+          <select id="filterStatus" class="admin-input" style="width:180px;margin-left:8px;">
+            <option value="all">Tất cả trạng thái</option>
+            <?php if (!empty($deviceStatusOptions)): foreach ($deviceStatusOptions as $sv): ?>
+              <option value="<?php echo htmlspecialchars(mb_strtolower($sv, 'UTF-8')); ?>"><?php echo htmlspecialchars($sv); ?></option>
+            <?php endforeach; endif; ?>
+          </select>
+          <select id="filterActive" class="admin-input" style="width:140px;margin-left:8px;">
+            <option value="all">Tất cả hoạt động</option>
+            <?php if (!empty($activeOptions)): foreach ($activeOptions as $aid => $alabel): ?>
+              <option value="<?php echo (int)$aid; ?>"><?php echo htmlspecialchars($alabel); ?></option>
+            <?php endforeach; endif; ?>
+          </select>
+          <a class="admin-btn admin-btn-primary" href="#them-moi" style="text-decoration:none;display:inline-flex;align-items:center;margin-left:8px;">Thêm thiết bị mới</a>
         </div>
       </div>
       <div class="admin-card-body">
         <?php if (empty($devices)): ?>
           <div class="admin-empty">Chưa có dữ liệu thiết bị.</div>
         <?php else: ?>
-          <div style="overflow-x: auto;">
-            <table class="admin-compact-table" style="font-size: 13px; width: 100%;">
-              <thead>
-                <tr>
-                  <th style="width: 8%; text-align: left;">ID</th>
-                  <th style="width: 15%; text-align: left;">Mã</th>
-                  <th style="width: 30%; text-align: left;">Tên thiết bị</th>
-                  <th style="width: 12%; text-align: center;">Số lượng</th>
-                  <th style="width: 18%; text-align: left;">Danh mục</th>
-                  <th style="width: 15%; text-align: center;">Trạng thái</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($devices as $d):
-                  $rowId = htmlspecialchars((string) ($d['ID'] ?? $d['IDThietBi'] ?? ''));
-                  $ma = htmlspecialchars($d['MaThietBi'] ?? $d['ID'] ?? '');
-                  $ten = htmlspecialchars($d['TenThietBi'] ?? $d['Ten'] ?? '');
-                  $sl = htmlspecialchars((string) ($d['SoLuong'] ?? '0'));
-                  $statusText = htmlspecialchars((string) ($d['TinhTrang'] ?? 'Sẵn sàng'));
-                  $chipClass = admin_device_status_class($d['TinhTrang'] ?? '');
-                  $categoryName = htmlspecialchars($d['TenDanhMuc'] ?? $d['DanhMuc'] ?? '');
-                  $selectedCategory = seb_resolve_category_display($d, $categoryMap)['code'];
-                  $detailRowId = md5((string) ($d['ID'] ?? $d['IDThietBi'] ?? $ma) . ':' . (string) ($d['MaThietBi'] ?? $d['ID'] ?? ''));
-                  $editPayload = [
-                    'id' => (string) ($d['ID'] ?? $d['IDThietBi'] ?? ''),
-                    'ma' => (string) ($d['MaThietBi'] ?? $d['ID'] ?? ''),
-                    'ten' => (string) ($d['TenThietBi'] ?? $d['Ten'] ?? ''),
-                    'soLuong' => (string) ($d['SoLuong'] ?? '0'),
-                    'tinhTrang' => (string) ($d['TinhTrang'] ?? 'Sẵn sàng'),
-                    'danhMuc' => (string) $selectedCategory,
-                    'hinhAnh' => (string) ($d['HinhAnh'] ?? $d['Anh'] ?? ''),
-                    'thongTin' => (string) ($d['ThongTin'] ?? ''),
-                    'phuKien' => (string) ($d['PhuKien'] ?? ''),
-                  ];
-                  $editPayloadJson = htmlspecialchars(json_encode($editPayload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8');
-                ?>
-                <tr class="device-item" data-search="<?php echo htmlspecialchars(mb_strtolower(trim(($ma . ' ' . $ten . ' ' . ($d['TenDanhMuc'] ?? $d['DanhMuc'] ?? '') . ' ' . ($d['ThongTin'] ?? '') . ' ' . ($d['PhuKien'] ?? ''))), 'UTF-8')); ?>" onclick='openDeviceEditModal(<?php echo $editPayloadJson; ?>)' style="cursor: pointer;">
-                  <td style="color: #64748b; font-size: 11px;"><?php echo $rowId ?: '---'; ?></td>
-                  <td style="color: #0D8ABC; font-weight: 600;"><?php echo $ma; ?></td>
-                  <td><?php echo $ten; ?></td>
-                  <td style="text-align: center;"><?php echo $sl; ?></td>
-                  <td><?php echo $categoryName; ?></td>
-                  <td style="text-align: center;">
-                    <span class="admin-chip <?php echo $chipClass; ?>" style="font-size: 12px;"><?php echo $statusText; ?></span>
-                    <button class="admin-btn-sm admin-btn-edit" onclick="event.stopPropagation(); toggleDeviceDetails('device-<?php echo $detailRowId; ?>')" title="Chi tiết" style="margin-left:8px; vertical-align:middle;">
-                      <i class="fas fa-chevron-down"></i>
-                    </button>
-                  </td>
-                </tr>
-                <tr id="device-<?php echo $detailRowId; ?>" class="device-details-row" style="display: none;">
-                  <td colspan="6" style="padding: 0; border: none;">
-                    <div class="device-details-content" style="padding: 20px; background: #f9f9f9; border-top: 1px solid #e0e0e0;">
-                      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                        <div>
-                          <p><strong>Thông tin:</strong><br><?php echo htmlspecialchars($d['ThongTin'] ?? 'N/A'); ?></p>
-                          <p><strong>Phụ kiện:</strong><br><?php echo htmlspecialchars($d['PhuKien'] ?? 'N/A'); ?></p>
-                        </div>
-                        <div>
-                          <?php 
-                            $img = htmlspecialchars($d['HinhAnh'] ?? $d['Anh'] ?? '');
-                            $imgPath = $img ? ('../Images/devices/' . $img) : '';
-                          ?>
-                          <?php if ($imgPath): ?>
-                            <img src="<?php echo $imgPath; ?>" alt="<?php echo $ten; ?>" style="max-width: 150px; max-height: 150px; border-radius: 6px;">
-                          <?php else: ?>
-                            <div style="width: 150px; height: 150px; background: #e0e0e0; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                              <i class="fas fa-image" style="font-size: 32px; color: #999;"></i>
-                            </div>
-                          <?php endif; ?>
-                        </div>
+          <div class="admin-media-list">
+            <?php foreach ($devices as $d):
+              $rowId = htmlspecialchars((string) ($d['ID'] ?? $d['IDThietBi'] ?? ''));
+              $ma = htmlspecialchars($d['MaThietBi'] ?? $d['ID'] ?? '');
+              $ten = htmlspecialchars($d['TenThietBi'] ?? $d['Ten'] ?? '');
+              $sl = htmlspecialchars((string) ($d['SoLuong'] ?? '0'));
+              $mappedStatus = map_device_status($d['TinhTrang'] ?? 'Sẵn sàng');
+              $statusText = htmlspecialchars((string) $mappedStatus);
+              $chipClass = admin_device_status_class($mappedStatus);
+              $categoryName = htmlspecialchars($d['TenDanhMuc'] ?? $d['DanhMuc'] ?? '');
+              $selectedCategory = seb_resolve_category_display($d, $categoryMap)['code'];
+              $detailRowId = 'device-' . md5((string) ($d['ID'] ?? $d['IDThietBi'] ?? $ma) . ':' . (string) ($d['MaThietBi'] ?? $d['ID'] ?? ''));
+              $img = htmlspecialchars($d['HinhAnh'] ?? $d['Anh'] ?? '');
+              $imgPath = $img ? ('../Images/devices/' . $img) : '';
+              $editPayload = [
+                'id' => (string) ($d['ID'] ?? $d['IDThietBi'] ?? ''),
+                'ma' => (string) ($d['MaThietBi'] ?? $d['ID'] ?? ''),
+                'ten' => (string) ($d['TenThietBi'] ?? $d['Ten'] ?? ''),
+                'soLuong' => (string) ($d['SoLuong'] ?? '0'),
+                'tinhTrang' => (string) $mappedStatus,
+                  'idActive' => (string) ($d['IDActive'] ?? '2'),
+                'danhMuc' => (string) $selectedCategory,
+                'hinhAnh' => (string) $img,
+                'thongTin' => (string) ($d['ThongTin'] ?? ''),
+                'phuKien' => (string) ($d['PhuKien'] ?? ''),
+              ];
+              $editPayloadJson = htmlspecialchars(json_encode($editPayload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8');
+            ?>
+            <?php $visibleFlag = ((int)($d['IDActive'] ?? 2) === 2); ?>
+            <article class="admin-device-card admin-device-card-mini<?php echo $visibleFlag ? '' : ' inactive'; ?>" data-search="<?php echo htmlspecialchars(mb_strtolower(trim(($ma . ' ' . $ten . ' ' . ($d['TenDanhMuc'] ?? $d['DanhMuc'] ?? '') . ' ' . ($d['ThongTin'] ?? '') . ' ' . ($d['PhuKien'] ?? ''))), 'UTF-8')); ?>" data-status="<?php echo htmlspecialchars(mb_strtolower((string)$mappedStatus, 'UTF-8')); ?>" data-idactive="<?php echo (int)($d['IDActive'] ?? 2); ?>" onclick='openDeviceEditModal(<?php echo $editPayloadJson; ?>)' style="cursor:pointer;">
+              <div class="admin-device-cover">
+                <?php if ($imgPath): ?>
+                  <img src="<?php echo $imgPath; ?>" alt="<?php echo $ten; ?>">
+                <?php else: ?>
+                  <i class="fas fa-box" style="font-size:36px;color:#7fa6c8"></i>
+                <?php endif; ?>
+              </div>
+              <div class="admin-device-body">
+                <h3 class="admin-device-title"><?php echo $ten; ?></h3>
+                <p class="admin-device-meta">Mã: <?php echo $ma; ?> | Số lượng: <?php echo $sl; ?></p>
+                <p class="admin-device-meta">Danh mục: <?php echo $categoryName; ?></p>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+                  <span class="admin-chip <?php echo $chipClass; ?>"><?php echo $statusText; ?></span>
+                  <?php if (!$visibleFlag): ?>
+                    <span class="admin-chip admin-chip-muted" style="background:#f3f4f6;color:#6b7280;"><?php echo htmlspecialchars($activeOptions[(int)($d['IDActive'] ?? 1)] ?? 'Inactive'); ?></span>
+                  <?php endif; ?>
+                  <!-- detail toggle removed; open edit modal by clicking the card -->
+                  <?php
+                    $statusLower = mb_strtolower((string)($d['TinhTrang'] ?? ''), 'UTF-8');
+                    $isInactive = (strpos($statusLower, 'vô hiệu') !== false || strpos($statusLower, 'vo hieu') !== false || strpos($statusLower, 'disable') !== false || strpos($statusLower, 'inactive') !== false);
+                  ?>
+                </div>
+                <div id="<?php echo $detailRowId; ?>" class="device-details-row" style="display:none;margin-top:12px;">
+                  <div class="device-details-content">
+                    <div style="display:grid;grid-template-columns:1fr 120px;gap:12px;">
+                      <div>
+                        <p><strong>Thông tin:</strong><br><?php echo htmlspecialchars($d['ThongTin'] ?? 'N/A'); ?></p>
+                        <p><strong>Phụ kiện:</strong><br><?php echo htmlspecialchars($d['PhuKien'] ?? 'N/A'); ?></p>
                       </div>
-
-                      <div class="admin-divider" style="margin: 16px 0;"></div>
-
-                      <!-- Edit Form -->
-                      <details style="margin-bottom: 12px;">
-                        <summary style="cursor: pointer; font-weight: 600; padding: 8px; background: #f0f0f0; border-radius: 4px;">
-                          <i class="fas fa-edit"></i> Chỉnh sửa
-                        </summary>
-                        <form method="post" enctype="multipart/form-data" class="admin-form-grid admin-form-grid-vertical" style="margin-top: 12px;">
-                          <input type="hidden" name="action" value="edit">
-                          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
-                          <input type="hidden" name="ID" value="<?php echo htmlspecialchars((string) ($d['ID'] ?? $d['IDThietBi'] ?? '')); ?>">
-                          <input type="hidden" name="MaThietBi" value="<?php echo $ma; ?>">
-                          <input type="hidden" name="HinhAnhCurrent" value="<?php echo htmlspecialchars((string) ($d['HinhAnh'] ?? $d['Anh'] ?? '')); ?>">
-
-                          <?php $currentImage = trim((string) ($d['HinhAnh'] ?? $d['Anh'] ?? '')); ?>
-                          <div class="admin-field admin-col-12">
-                            <label>Ảnh thiết bị</label>
-                            <div class="admin-actions" style="align-items:center; padding:10px 12px; border:1px dashed #93c5fd; border-radius:8px; background:#f8fbff;">
-                              <input class="admin-input" type="file" name="HinhAnhFile" id="editHinhAnhFile" accept="image/*" style="display:none;">
-                              <label for="editHinhAnhFile" class="admin-btn admin-btn-soft" style="display:inline-flex; align-items:center; cursor:pointer;">
-                                Chọn ảnh
-                              </label>
-                              <span id="editHinhAnhFileName" style="font-size:12px; color:#6b7280;">Chưa chọn file</span>
-                            </div>
-                            <div style="font-size:12px; color:#6b7280; margin-top:6px;">Để trống nếu không đổi ảnh. File mới sẽ lưu trong Images/devices/.</div>
-                          </div>
-
-                          <?php if ($currentImage !== ''): ?>
-                            <div class="admin-field admin-col-12">
-                              <label>Ảnh hiện tại</label>
-                              <div style="display:flex; align-items:center; gap:12px; padding:10px 12px; border:1px solid #cfe0f5; border-radius:8px; background:#f8fbff;">
-                                <img src="../Images/devices/<?php echo htmlspecialchars($currentImage); ?>" alt="<?php echo $ten; ?>" style="width:56px; height:56px; object-fit:cover; border-radius:8px; border:1px solid #dbe7f3;">
-                                <div style="font-size:13px; color:#334155;">
-                                  <div style="font-weight:700;"><?php echo htmlspecialchars($currentImage); ?></div>
-                                  <div style="color:#64748b; font-size:12px;">Chọn file mới nếu muốn thay ảnh này.</div>
-                                </div>
-                              </div>
-                            </div>
-                          <?php endif; ?>
-
-                          <div class="admin-field admin-col-12">
-                            <label>Danh mục</label>
-                            <select class="admin-input" name="DanhMuc">
-                              <option value="">-- Chọn danh mục --</option>
-                              <?php foreach ($categoryMap as $categoryCode => $categoryLabel): ?>
-                                <option value="<?php echo htmlspecialchars($categoryCode); ?>" <?php echo $selectedCategory === $categoryCode ? 'selected' : ''; ?>><?php echo htmlspecialchars($categoryLabel); ?></option>
-                              <?php endforeach; ?>
-                            </select>
-                          </div>
-
-                          <div class="admin-field admin-col-12">
-                            <label>Mã thiết bị</label>
-                            <input class="admin-input" value="<?php echo $ma; ?>" disabled>
-                            <div style="font-size:12px; color:#6b7280; margin-top:6px;">Mã thiết bị được giữ nguyên theo bản ghi hiện tại.</div>
-                          </div>
-
-                          <div class="admin-field admin-col-12">
-                            <label>Tên thiết bị</label>
-                            <input class="admin-input" name="TenThietBi" value="<?php echo $ten; ?>">
-                          </div>
-
-                          <div class="admin-field admin-col-12">
-                            <label>Số lượng</label>
-                            <input class="admin-input" name="SoLuong" type="number" min="0" value="<?php echo $sl; ?>">
-                          </div>
-
-                          <div class="admin-field admin-col-12">
-                            <label>Trạng thái</label>
-                            <select class="admin-input" name="TinhTrang">
-                              <option value="Sẵn sàng" <?php echo (isset($d['TinhTrang']) && $d['TinhTrang'] === 'Sẵn sàng') ? 'selected' : ''; ?>>Sẵn sàng</option>
-                              <option value="Đang bảo trì" <?php echo (isset($d['TinhTrang']) && $d['TinhTrang'] === 'Đang bảo trì') ? 'selected' : ''; ?>>Đang bảo trì</option>
-                              <option value="Hỏng" <?php echo (isset($d['TinhTrang']) && $d['TinhTrang'] === 'Hỏng') ? 'selected' : ''; ?>>Hỏng</option>
-                            </select>
-                          </div>
-
-                          <div class="admin-field admin-col-12">
-                            <label>Phụ kiện</label>
-                            <input class="admin-input" name="PhuKien" value="<?php echo htmlspecialchars($d['PhuKien'] ?? ''); ?>">
-                          </div>
-
-                          <div class="admin-field admin-col-12">
-                            <label>Thông tin</label>
-                            <textarea class="admin-textarea" name="ThongTin"><?php echo htmlspecialchars($d['ThongTin'] ?? ''); ?></textarea>
-                          </div>
-                          <div class="admin-col-12 admin-actions">
-                            <button class="admin-btn admin-btn-soft" type="submit">Lưu chỉnh sửa</button>
-                          </div>
-                        </form>
-                      </details>
-
-                      <!-- Delete -->
-                      <form method="post" onsubmit="return confirm('Xóa thiết bị <?php echo htmlspecialchars($ten); ?>?')" class="admin-actions">
-                        <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
-                        <input type="hidden" name="id" value="<?php echo htmlspecialchars((string) ($d['ID'] ?? $d['IDThietBi'] ?? '')); ?>">
-                        <input type="hidden" name="ma" value="<?php echo $ma; ?>">
-                        <button class="admin-btn admin-btn-danger" type="submit">Xóa thiết bị</button>
-                      </form>
+                      <div>
+                        <?php if ($imgPath): ?>
+                          <img src="<?php echo $imgPath; ?>" alt="<?php echo $ten; ?>" style="width:120px;height:120px;object-fit:cover;border-radius:6px;">
+                        <?php else: ?>
+                          <div style="width:120px;height:120px;background:#e0e0e0;border-radius:6px;display:flex;align-items:center;justify-content:center;"><i class="fas fa-image" style="font-size:28px;color:#999;"></i></div>
+                        <?php endif; ?>
+                      </div>
                     </div>
-                  </td>
-                </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
+                    <div class="admin-divider" style="margin:12px 0;"></div>
+                    <details style="margin-bottom:12px;">
+                      <summary style="cursor:pointer;padding:8px;background:#f0f0f0;border-radius:4px;">Chỉnh sửa</summary>
+                      <form method="post" enctype="multipart/form-data" class="admin-form-grid admin-form-grid-vertical" style="margin-top:12px;">
+                        <input type="hidden" name="action" value="edit">
+                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                        <input type="hidden" name="ID" value="<?php echo htmlspecialchars((string) ($d['ID'] ?? $d['IDThietBi'] ?? '')); ?>">
+                        <input type="hidden" name="MaThietBi" value="<?php echo $ma; ?>">
+                        <input type="hidden" name="HinhAnhCurrent" value="<?php echo htmlspecialchars((string) ($d['HinhAnh'] ?? $d['Anh'] ?? '')); ?>">
+                        <div class="admin-field admin-col-12">
+                          <label>Tên thiết bị</label>
+                          <input class="admin-input" name="TenThietBi" value="<?php echo $ten; ?>">
+                        </div>
+                        <div class="admin-field admin-col-3">
+                          <label>Số lượng</label>
+                          <input class="admin-input" name="SoLuong" type="number" min="0" value="<?php echo $sl; ?>">
+                        </div>
+                        <div class="admin-field admin-col-3">
+                          <label>Trạng thái</label>
+                          <select class="admin-input" name="TinhTrang">
+                            <option value="Sẵn sàng" <?php echo (isset($d['TinhTrang']) && $d['TinhTrang'] === 'Sẵn sàng') ? 'selected' : ''; ?>>Sẵn sàng</option>
+                            <option value="Đang bảo trì" <?php echo (isset($d['TinhTrang']) && $d['TinhTrang'] === 'Đang bảo trì') ? 'selected' : ''; ?>>Đang bảo trì</option>
+                            <option value="Hết" <?php echo (isset($d['TinhTrang']) && $d['TinhTrang'] === 'Hết') ? 'selected' : ''; ?>>Hết</option>
+                          </select>
+                        </div>
+                        <div class="admin-field admin-col-12">
+                          <label>Phụ kiện</label>
+                          <input class="admin-input" name="PhuKien" value="<?php echo htmlspecialchars($d['PhuKien'] ?? ''); ?>">
+                        </div>
+                        <div class="admin-field admin-col-12">
+                          <label>Thông tin</label>
+                          <textarea class="admin-textarea" name="ThongTin"><?php echo htmlspecialchars($d['ThongTin'] ?? ''); ?></textarea>
+                        </div>
+                        <div class="admin-actions" style="margin-top:8px;">
+                          <button class="admin-btn admin-btn-soft" type="submit">Lưu chỉnh sửa</button>
+                        </div>
+                      </form>
+                    </details>
+                    <form method="post" onsubmit="return confirm('Xóa thiết bị <?php echo htmlspecialchars($ten); ?>?')" class="admin-actions">
+                      <input type="hidden" name="action" value="delete">
+                      <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                      <input type="hidden" name="id" value="<?php echo htmlspecialchars((string) ($d['ID'] ?? $d['IDThietBi'] ?? '')); ?>">
+                      <input type="hidden" name="ma" value="<?php echo $ma; ?>">
+                      <button class="admin-btn admin-btn-danger" type="submit">Xóa thiết bị</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </article>
+            <?php endforeach; ?>
           </div>
         <?php endif; ?>
       </div>
@@ -622,16 +643,26 @@ admin_render_page_intro(
               <label>Số lượng</label>
               <input class="admin-input" name="SoLuong" type="number" min="0" value="1">
             </div>
-            <div class="admin-field admin-col-3">
-              <label>Trạng thái</label>
-              <select class="admin-input" name="TinhTrang" id="addTinhTrang">
-                <?php if (!empty($deviceStatusOptions)): ?>
-                  <?php foreach ($deviceStatusOptions as $statusValue): ?>
-                    <option value="<?php echo htmlspecialchars($statusValue); ?>"><?php echo htmlspecialchars($statusValue); ?></option>
-                  <?php endforeach; ?>
-                <?php endif; ?>
-              </select>
-            </div>
+                <div class="admin-field admin-col-3">
+                  <label>Trạng thái</label>
+                  <select class="admin-input" name="TinhTrang" id="addTinhTrang">
+                    <?php if (!empty($deviceStatusOptions)): ?>
+                      <?php foreach ($deviceStatusOptions as $statusValue): ?>
+                        <option value="<?php echo htmlspecialchars($statusValue); ?>"><?php echo htmlspecialchars($statusValue); ?></option>
+                      <?php endforeach; ?>
+                    <?php endif; ?>
+                  </select>
+                </div>
+                <div class="admin-field admin-col-3">
+                  <label>Hiển thị</label>
+                  <select class="admin-input" name="IDActive" id="addIDActive">
+                    <?php if (!empty($activeOptions)): ?>
+                      <?php foreach ($activeOptions as $aid => $alabel): ?>
+                        <option value="<?php echo (int)$aid; ?>" <?php echo ((int)$aid === 2) ? 'selected' : ''; ?>><?php echo htmlspecialchars($alabel); ?></option>
+                      <?php endforeach; ?>
+                    <?php endif; ?>
+                  </select>
+                </div>
             <div class="admin-field admin-col-3">
               <label>Ảnh thiết bị</label>
               <div class="admin-actions" style="align-items:center; padding:8px 10px; border:1px dashed #e6eefc; border-radius:8px; background:#fff;">
@@ -699,6 +730,16 @@ admin_render_page_intro(
                 </select>
               </div>
               <div class="admin-field admin-col-3">
+                <label>Hiển thị</label>
+                <select class="admin-input" name="IDActive" id="editIDActive">
+                  <?php if (!empty($activeOptions)): ?>
+                    <?php foreach ($activeOptions as $aid => $alabel): ?>
+                      <option value="<?php echo (int)$aid; ?>"><?php echo htmlspecialchars($alabel); ?></option>
+                    <?php endforeach; ?>
+                  <?php endif; ?>
+                </select>
+              </div>
+              <div class="admin-field admin-col-3">
                 <label>Danh mục</label>
                 <select class="admin-input" name="DanhMuc" id="editDanhMuc">
                   <option value="">-- Chọn danh mục --</option>
@@ -755,6 +796,7 @@ admin_render_page_intro(
 
   <script>
     const deviceEditModal = document.getElementById('deviceEditModal');
+    const deviceCsrfToken = <?php echo json_encode($csrf_token); ?>;
     const editID = document.getElementById('editID');
     const editMaThietBi = document.getElementById('editMaThietBi');
     const editMaThietBiDisplay = document.getElementById('editMaThietBiDisplay');
@@ -786,6 +828,8 @@ admin_render_page_intro(
       if (editTenThietBi) editTenThietBi.value = device.ten || '';
       if (editSoLuong) editSoLuong.value = device.soLuong || 0;
       if (editTinhTrang) editTinhTrang.value = device.tinhTrang || 'Sẵn sàng';
+        const editIDActive = document.getElementById('editIDActive');
+        if (editIDActive) editIDActive.value = device.idActive || '2';
       if (editDanhMuc) editDanhMuc.value = device.danhMuc || '';
       if (editThongTin) editThongTin.value = device.thongTin || '';
       if (editPhuKien) editPhuKien.value = device.phuKien || '';
@@ -903,9 +947,13 @@ admin_render_page_intro(
       }
     }
 
-    // Search functionality
+    // Activation is handled inside the edit form; external toggle removed.
+
+    // Search + filters functionality
     const deviceSearch = document.getElementById('deviceSearch');
-    const deviceItems = Array.from(document.querySelectorAll('.device-item'));
+    const statusFilter = document.getElementById('filterStatus');
+    const activeFilter = document.getElementById('filterActive');
+    const deviceItems = Array.from(document.querySelectorAll('.device-item, .admin-device-card'));
 
     // Add-form file input listener
     const addHinhAnhFile = document.getElementById('addHinhAnhFile');
@@ -918,21 +966,33 @@ admin_render_page_intro(
       });
     }
 
-    if (deviceSearch) {
-      deviceSearch.addEventListener('input', () => {
-        const term = deviceSearch.value.trim().toLowerCase();
-        deviceItems.forEach((item) => {
-          const haystack = String(item.getAttribute('data-search') || '');
-          item.style.display = !term || haystack.includes(term) ? '' : 'none';
-          
-          // Hide details row when parent row is hidden
-          const nextRow = item.nextElementSibling;
-          if (nextRow && nextRow.classList.contains('device-details-row')) {
-            nextRow.style.display = 'none';
-          }
-        });
+    function filterDevices() {
+      const term = deviceSearch ? deviceSearch.value.trim().toLowerCase() : '';
+      const statusVal = statusFilter ? statusFilter.value : 'all';
+      const activeVal = activeFilter ? activeFilter.value : 'all';
+      deviceItems.forEach((item) => {
+        const haystack = String(item.getAttribute('data-search') || '');
+        const status = String(item.getAttribute('data-status') || '').toLowerCase();
+        const active = String(item.getAttribute('data-idactive') || '');
+
+        const matchesSearch = !term || haystack.includes(term);
+        const matchesStatus = (statusVal === 'all') || (status === statusVal);
+        const matchesActive = (activeVal === 'all') || (active === activeVal);
+
+        const show = matchesSearch && matchesStatus && matchesActive;
+        item.style.display = show ? '' : 'none';
+
+        // Hide details row when parent row is hidden
+        const nextRow = item.nextElementSibling;
+        if (nextRow && nextRow.classList.contains('device-details-row')) {
+          nextRow.style.display = 'none';
+        }
       });
     }
+
+    if (deviceSearch) deviceSearch.addEventListener('input', filterDevices);
+    if (statusFilter) statusFilter.addEventListener('change', filterDevices);
+    if (activeFilter) activeFilter.addEventListener('change', filterDevices);
 
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {

@@ -130,18 +130,13 @@
 
     .member-name {
       display: block;
-      font-family: var(--font-body);
       font-size: 14px;
-      font-weight: 700;
-      line-height: 1.35;
-      letter-spacing: 0;
+      font-weight: 800;
       color: #0f4d8f;
       text-transform: uppercase;
       text-align: center;
       padding: 10px 8px;
       min-height: 58px;
-      text-rendering: optimizeLegibility;
-      -webkit-font-smoothing: antialiased;
     }
 
     .member-detail {
@@ -285,32 +280,25 @@
         justify-content: flex-start;
         overflow-x: auto;
         overflow-y: visible;
-        align-items: flex-start;
-        padding: 16px 8px 24px 8px;
+        padding-bottom: 16px;
         -webkit-overflow-scrolling: touch;
       }
 
       .member-card {
         width: 170px;
         min-width: 170px;
-        flex-shrink: 0;
-      }
-
-      .member-name {
-        font-size: 13px;
-        min-height: 52px;
       }
 
       .member-card + .member-card {
-        margin-left: -24px;
+        margin-left: -38px;
       }
 
       .member-card.active {
-        transform: translateX(-10px) translateY(0) scale(1.02);
+        transform: translateX(-14px) translateY(-18px) scale(1.04);
       }
 
       .member-card.active:hover {
-        transform: translateX(-10px) translateY(0) scale(1.03);
+        transform: translateX(-14px) translateY(-20px) scale(1.05);
       }
 
       .member-photo {
@@ -375,7 +363,7 @@
       <div class="nav-links" id="navLinks">
         <a href="../index.html" class="nav-tab">Trang chủ</a>
         <a href="kho_thiet_bi.html" class="nav-tab">Kho thiết bị</a>
-        <a href="dang-ky-phong-hoc.html" class="nav-tab">Đăng ký phòng học</a>
+        <a href="#" class="nav-tab">Đăng ký phòng học</a>
         <a href="kho-ca-nhan.html" class="nav-tab">Kho cá nhân</a>
         <a href="news.html" class="nav-tab">Tin tức</a>
         <a href="about.html" class="nav-tab active">Liên hệ</a>
