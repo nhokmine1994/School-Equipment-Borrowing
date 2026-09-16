@@ -1,0 +1,36 @@
+-- One-time migration from legacy admin notification schema to the new schema.
+-- Run this manually in SQL Server if your database still uses the old table/column names.
+
+IF OBJECT_ID('dbo.ThongBaoAdmin', 'U') IS NULL AND OBJECT_ID('dbo.AdminNotifications', 'U') IS NOT NULL
+BEGIN
+    EXEC sp_rename 'dbo.AdminNotifications', 'ThongBaoAdmin';
+END
+GO
+
+IF COL_LENGTH('dbo.ThongBaoAdmin', 'NotificationID') IS NOT NULL
+    EXEC sp_rename 'dbo.ThongBaoAdmin.NotificationID', 'MaThongBao', 'COLUMN';
+GO
+
+IF COL_LENGTH('dbo.ThongBaoAdmin', 'Type') IS NOT NULL
+    EXEC sp_rename 'dbo.ThongBaoAdmin.Type', 'LoaiThongBao', 'COLUMN';
+GO
+
+IF COL_LENGTH('dbo.ThongBaoAdmin', 'Title') IS NOT NULL
+    EXEC sp_rename 'dbo.ThongBaoAdmin.Title', 'TieuDe', 'COLUMN';
+GO
+
+IF COL_LENGTH('dbo.ThongBaoAdmin', 'Message') IS NOT NULL
+    EXEC sp_rename 'dbo.ThongBaoAdmin.Message', 'LoiNhan', 'COLUMN';
+GO
+
+IF COL_LENGTH('dbo.ThongBaoAdmin', 'LinkUrl') IS NOT NULL
+    EXEC sp_rename 'dbo.ThongBaoAdmin.LinkUrl', 'Link', 'COLUMN';
+GO
+
+IF COL_LENGTH('dbo.ThongBaoAdmin', 'CreatedAt') IS NOT NULL
+    EXEC sp_rename 'dbo.ThongBaoAdmin.CreatedAt', 'ThoiGianTao', 'COLUMN';
+GO
+
+IF COL_LENGTH('dbo.ThongBaoAdmin', 'IsRead') IS NOT NULL
+    EXEC sp_rename 'dbo.ThongBaoAdmin.IsRead', 'TrangThai', 'COLUMN';
+GO

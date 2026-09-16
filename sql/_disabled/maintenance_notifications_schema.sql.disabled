@@ -1,0 +1,31 @@
+-- SQL schema for maintenance notifications (BaoTriThongBao)
+-- Run this script in SQL Server Management Studio or your SQL tool
+
+-- Drop table if it exists (optional, comment this out if you want to keep existing data)
+-- DROP TABLE IF EXISTS BaoTriThongBao;
+
+-- Create table
+CREATE TABLE BaoTriThongBao (
+    MaBaoTri INT IDENTITY(1,1) PRIMARY KEY,
+    TieuDe NVARCHAR(255) NOT NULL,
+    NoiDung NVARCHAR(1000) NULL,
+    NgayTao DATETIME NOT NULL DEFAULT GETDATE(),
+    NgayCapNhat DATETIME NOT NULL DEFAULT GETDATE(),
+    TrangThai INT NOT NULL DEFAULT 1,
+    ThuTuHienThi INT DEFAULT 0
+);
+
+-- Insert sample data only if table is empty
+IF NOT EXISTS(SELECT 1 FROM BaoTriThongBao WHERE 1=1)
+BEGIN
+    INSERT INTO BaoTriThongBao (TieuDe, NoiDung, ThuTuHienThi, TrangThai)
+    VALUES 
+        (N'Phòng máy PM102 bảo trì định kỳ 20/12/2025', N'Phòng máy PM102 tạm ngừng hoạt động để bảo trì toàn bộ hệ thống', 1, 1),
+        (N'Bổ sung máy chiếu cho phòng hội nghị HN108', N'Thêm thiết bị trình chiếu mới vào phòng hội nghị HN108', 2, 1),
+        (N'Hoàn thành sửa chữa tivi phòng học PH305', N'Sửa chữa xong tivi phòng học PH305, đã sẵn sàng sử dụng', 3, 1);
+    PRINT 'Inserted sample data successfully';
+END;
+
+-- Verify table was created
+SELECT 'BaoTriThongBao table is ready' as Status;
+SELECT COUNT(*) as 'Total Records' FROM BaoTriThongBao;

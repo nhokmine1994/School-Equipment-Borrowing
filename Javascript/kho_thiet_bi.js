@@ -21,67 +21,93 @@ function escapeJsSingleQuoted(value) {
         .replace(/'/g, "\\'");
 }
 
-function getStoredArray(key) {
-    try {
-        const raw = localStorage.getItem(key);
-        const parsed = raw ? JSON.parse(raw) : [];
-        return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-        console.warn('Không thể đọc dữ liệu localStorage cho key:', key, error);
-        return [];
+function requireSebApi() {
+    if (typeof window.sebApi === 'undefined') {
+        throw new Error('Thiếu seb_api.js — không thể gọi SQL Server.');
     }
+    return window.sebApi;
+}
+
+function requireAuthForAction() {
+    if (!getAuthUsername()) {
+        window.dispatchEvent(new CustomEvent('seb:require-auth', {
+            detail: {
+                keepLocked: false,
+                message: 'Vui lòng đăng nhập để thực hiện thao tác này.',
+            },
+        }));
+        return false;
+    }
+    return true;
 }
 
 function getSafeImageMarkup(imageHtml) {
     if (typeof imageHtml !== 'string' || imageHtml.trim() === '') {
-        return '<div style="width: 100%; height: 100%; background: #f1f5f9;"></div>';
+           return '<div class="device-placeholder"></div>';
     }
 
-    const template = document.createElement('template');
-    template.innerHTML = imageHtml.trim();
-    const img = template.content.querySelector('img');
+    const rawValue = imageHtml.trim();
+    let src = rawValue;
+    let alt = 'Thiết bị';
 
-    if (!img) {
-        return '<div style="width: 100%; height: 100%; background: #f1f5f9;"></div>';
+    if (rawValue.toLowerCase().includes('<img')) {
+        const template = document.createElement('template');
+        template.innerHTML = rawValue;
+        const img = template.content.querySelector('img');
+
+        if (!img) {
+            return '<div style="width: 100%; height: 100%; background: #f1f5f9;"></div>';
+        }
+
+        src = (img.getAttribute('src') || '').trim();
+        alt = img.getAttribute('alt') || 'Thiết bị';
     }
 
-    const src = (img.getAttribute('src') || '').trim();
     const isTrustedSrc = /^(https?:\/\/|\/|\.\.?\/)/i.test(src);
     if (!isTrustedSrc) {
-        return '<div style="width: 100%; height: 100%; background: #f1f5f9;"></div>';
+           return '<div class="device-placeholder"></div>';
     }
 
-    const alt = escapeHtml(img.getAttribute('alt') || 'Thiết bị');
     const safeSrc = escapeHtml(src);
-    return `<img src="${safeSrc}" alt="${alt}" style="width: 100%; height: 100%; object-fit: cover; display: block;" />`;
+    const safeAlt = escapeHtml(alt);
+    return `<img src="${safeSrc}" alt="${safeAlt}" style="width: 100%; height: 100%; object-fit: cover; display: block;" />`;
 }
 
 function renderCard(device) {
-    const isUnavailable = device.status === 'unavailable';
+    // Determine unavailable by checking both normalized `status` and original `statusLabel`
+    const _statusRaw = String((device.status || device.statusLabel || '')).toLowerCase();
+    const isUnavailable = /hết|het|hết hàng|unavailable|ngưng|ngung|hỏng|hong|bao tri|bảo trì/u.test(_statusRaw);
     const statusText = isUnavailable ? 'Bảo trì / Hết hàng' : 'Sẵn sàng';
     const statusClass = isUnavailable ? 'unavailable' : 'available';
-    const deviceId = String(device.id || '');
-    const safeDeviceIdForJs = escapeJsSingleQuoted(deviceId);
-    const safeDeviceId = escapeHtml(deviceId);
+    const deviceDbId = String(device.dbId || device.id || '');
+    const deviceCode = String(device.id || device.dbId || '');
+    const safeDeviceIdForJs = escapeJsSingleQuoted(deviceDbId);
+    const safeDeviceCode = escapeHtml(deviceCode);
     const safeName = escapeHtml(device.name || 'Thiết bị');
     const safeCategory = escapeHtml(device.category || '');
     const safeSubject = escapeHtml(device.subject || '');
     const safeStatus = escapeHtml(device.status || '');
+    const safeStatusLabel = escapeHtml(device.statusLabel || (isUnavailable ? 'Bảo trì / Hết hàng' : 'Sẵn sàng'));
+    const safeQuantity = escapeHtml(device.quantity ?? '');
+    const safeDescription = escapeHtml(device.description || '');
     const safeImage = getSafeImageMarkup(device.image);
 
     // Disable button attributes
-    const btnState = isUnavailable ? 'disabled' : '';
-    const btnText = isUnavailable ? 'Chờ nhập kho' : 'Mượn';
+    const qtyNum = Number(device.quantity ?? 0) || 0;
+    const btnState = isUnavailable || qtyNum === 0 ? 'disabled' : '';
+    const btnText = isUnavailable ? 'Chờ nhập kho' : (qtyNum === 0 ? 'HẾT' : 'Mượn');
 
-    const isPersonalPage = window.location.pathname.includes('kho-ca-nhan.html');
+    const isPersonalPage = window.location.pathname.includes('kho-ca-nhan.php');
+    // Ensure buttons find the device reliably by id/code using helper in the script
     let actionsHtml = '';
-
     if (isPersonalPage) {
-        actionsHtml = `<button class="btn-borrow" style="width: 100%; margin: 0; display: block;" ${btnState} onclick="handleBorrow('${safeDeviceIdForJs}')">${btnText}</button>`;
+        actionsHtml = `<div class="action-controls"><button class="btn-borrow" style="width: 100%; margin: 0; display: block;" ${btnState} onclick="handleBorrow('${safeDeviceIdForJs}')">${btnText}</button></div>`;
     } else {
         actionsHtml = `
-            <button class="btn-borrow" ${btnState} onclick="handleBorrow('${safeDeviceIdForJs}')">${btnText}</button>
-            <button class="btn-add" onclick="handleAdd('${safeDeviceIdForJs}')">Thêm</button>
+            <div class="action-controls">
+                <button class="btn-borrow" ${btnState} onclick="handleBorrow('${safeDeviceIdForJs}')">${btnText}</button>
+                <button class="btn-add" onclick="handleAdd('${safeDeviceIdForJs}')">Thêm</button>
+            </div>
         `;
     }
 
@@ -94,9 +120,11 @@ function renderCard(device) {
             <div class="device-image" style="cursor: pointer;" onclick="window.openDeviceModalById('${safeDeviceIdForJs}')" title="Nhấn để xem cấu hình chi tiết">${safeImage}</div>
             <div class="device-info">
                 <h3 style="cursor: pointer; color: #2563eb; transition: color 0.2s;" onmouseover="this.style.color='#1d4ed8'" onmouseout="this.style.color='#2563eb'" onclick="window.openDeviceModalById('${safeDeviceIdForJs}')" title="Nhấn để xem cấu hình chi tiết">${safeName}</h3>
-                <p><strong>Mã TB:</strong> ${safeDeviceId}</p>
+                <p><strong>ID thiết bị:</strong> ${safeDeviceCode}</p>
+                <p><strong>Số lượng:</strong> ${safeQuantity || '---'}</p>
                 <p><strong>Môn học:</strong> ${safeSubject || 'Chung'}</p>
-                <p><strong>Trạng thái:</strong> <span class="status ${statusClass}">${statusText}</span></p>
+                ${safeDescription ? `<p><strong>Thông tin:</strong> ${safeDescription}</p>` : ''}
+                <p><strong>Trạng thái:</strong> <span class="status ${statusClass}">${safeStatusLabel}</span></p>
             </div>
             <div class="device-actions">
                 ${actionsHtml}
@@ -105,47 +133,94 @@ function renderCard(device) {
     `;
 }
 
-function handleBorrow(id) {
-    const device = allDevices.find(d => d.id === id);
+// Helper to find device by id robustly.
+function findDeviceById(id) {
+    if (!id) return null;
+    const sid = String(id);
+    return allDevices.find(d => String(d.dbId || d.id || '') === sid || String(d.id || d.dbId || '') === sid || String(d.code || d.id || '') === sid) || null;
+}
+
+async function handleBorrow(id) {
+    const device = findDeviceById(id);
     if (!device) return;
+    if (!requireAuthForAction()) return;
 
-    let borrowHistory = getStoredArray('borrowHistory');
-    const borrowRecord = {
-        ...device,
-        borrowDate: new Date().toISOString(),
-    };
-    borrowHistory.push(borrowRecord);
-    localStorage.setItem('borrowHistory', JSON.stringify(borrowHistory));
-
-    alert('Đã ghi nhận mượn thiết bị: ' + device.name);
-
-    const isPersonalPage = window.location.pathname.includes('kho-ca-nhan.html');
-    if (isPersonalPage) {
-        let myDevices = getStoredArray('myDevices');
-        myDevices = myDevices.filter(d => d.id !== id);
-        localStorage.setItem('myDevices', JSON.stringify(myDevices));
-
-        allDevices = myDevices;
-        applyFilters();
+    // Extra guard: prevent borrow if device is unavailable according to label/status
+    const _statusRaw = String((device.status || device.statusLabel || '')).toLowerCase();
+    const isUnavailable = /hết|het|hết hàng|unavailable|ngưng|ngung|hỏng|hong|bao tri|bảo trì/u.test(_statusRaw);
+    const qtyNum = Number(device.quantity ?? 0) || 0;
+    if (isUnavailable || qtyNum === 0) {
+        if (typeof sebShowMessage === 'function') {
+            sebShowMessage('Thiết bị hiện không thể mượn (Hết hoặc đang bảo trì).', 'error');
+        } else {
+            alert('Thiết bị hiện không thể mượn (Hết hoặc đang bảo trì).');
+        }
+        return;
     }
 
-    if (typeof window.renderBorrowHistorySidebar === 'function') {
-        window.renderBorrowHistorySidebar();
+    // Nếu trang hiện tại KHÔNG phải là trang kho cá nhân, ưu tiên mở Modal chi tiết
+    // để người dùng chọn số lượng / ngày trả. Modal sẽ gọi API khi người dùng Submit.
+    const isPersonalPage = window.location.pathname.includes('kho-ca-nhan.php');
+    if (!isPersonalPage && typeof window.openDeviceModal === 'function') {
+        try {
+            window.openDeviceModal(device);
+        } catch (err) {
+            console.warn('Không thể mở modal thiết bị:', err);
+            // fallback: nếu modal không mở được, gửi yêu cầu mượn nhanh như cũ
+        }
+        return;
+    }
+
+    // Ở trang kho cá nhân (hoặc khi không có modal), gửi yêu cầu mượn ngay lập tức
+    try {
+        const api = requireSebApi();
+        const result = await api.borrowCreate({ maThietBi: String(device.dbId || device.id || id), soLuong: 1 });
+        if (typeof sebShowMessage === 'function') {
+            sebShowMessage(result.message || ('Đã gửi yêu cầu mượn: ' + device.name + '. Chờ quản trị viên duyệt.'), 'success');
+        } else {
+            alert(result.message || ('Đã gửi yêu cầu mượn: ' + device.name + '. Chờ quản trị viên duyệt.'));
+        }
+
+        if (isPersonalPage) {
+            await loadPersonalDevices();
+            applyFilters();
+        }
+
+        if (typeof window.renderBorrowHistorySidebar === 'function') {
+            await window.renderBorrowHistorySidebar();
+        }
+    } catch (error) {
+        if (typeof sebShowMessage === 'function') {
+            sebShowMessage(error.message || 'Không gửi được yêu cầu mượn.', 'error');
+        } else {
+            alert(error.message || 'Không gửi được yêu cầu mượn.');
+        }
     }
 }
 
-function handleAdd(id) {
-    const device = allDevices.find(d => d.id === id);
+async function handleAdd(id) {
+    const device = findDeviceById(id);
     if (!device) return;
+    if (!requireAuthForAction()) return;
 
-    let myDevices = getStoredArray('myDevices');
-    if (!myDevices.find(d => d.id === id)) {
-        myDevices.push(device);
-        localStorage.setItem('myDevices', JSON.stringify(myDevices));
-        alert('Đã thêm thiết bị vào kho cá nhân: ' + device.name);
-    } else {
-        alert('Thiết bị này đã có trong kho cá nhân!');
+    try {
+        const api = requireSebApi();
+        const result = await api.personalAdd({ maThietBi: String(device.dbId || device.id || id) });
+        if (result.duplicate) {
+            if (typeof sebShowMessage === 'function') sebShowMessage(result.message || 'Thiết bị này đã có trong kho cá nhân!', 'info'); else alert(result.message || 'Thiết bị này đã có trong kho cá nhân!');
+        } else {
+            if (typeof sebShowMessage === 'function') sebShowMessage(result.message || ('Đã thêm vào kho cá nhân (SQL Server): ' + device.name), 'success'); else alert(result.message || ('Đã thêm vào kho cá nhân (SQL Server): ' + device.name));
+        }
+    } catch (error) {
+        if (typeof sebShowMessage === 'function') sebShowMessage(error.message || 'Không thêm được vào kho cá nhân.', 'error'); else alert(error.message || 'Không thêm được vào kho cá nhân.');
     }
+}
+
+async function loadPersonalDevices() {
+    const api = requireSebApi();
+    const result = await api.personalList();
+    allDevices = Array.isArray(result.items) ? result.items : [];
+    return allDevices;
 }
 
 function renderPage(page) {
@@ -304,27 +379,37 @@ function renderSkeleton() {
 }
 
 function getAuthUsername() {
-    try {
-        const raw = localStorage.getItem('seb_demo_auth_user');
-        if (!raw) return '';
-        const parsed = JSON.parse(raw);
-        return parsed && parsed.username ? String(parsed.username).trim() : '';
-    } catch (error) {
-        return '';
+    if (window && typeof window.__username === 'string') {
+        return window.__username.trim();
     }
+    return '';
 }
 
-window.renderBorrowHistorySidebar = function () {
+window.renderBorrowHistorySidebar = async function () {
     const listEl = document.getElementById('borrow-history-list');
     if (!listEl) return;
 
-    const borrowHistory = getStoredArray('borrowHistory');
+    if (!getAuthUsername()) {
+        listEl.innerHTML = '<li style="color: #64748b; font-size: 0.9rem;">Đăng nhập để xem lịch sử mượn.</li>';
+        return;
+    }
+
+    let borrowHistory = [];
+    try {
+        const api = requireSebApi();
+        const result = await api.borrowList();
+        borrowHistory = Array.isArray(result.items) ? result.items : [];
+    } catch (error) {
+        listEl.innerHTML = '<li style="color: #ef4444; font-size: 0.9rem;">Không tải được lịch sử mượn.</li>';
+        return;
+    }
+
     if (borrowHistory.length === 0) {
         listEl.innerHTML = '<li style="color: #64748b; font-size: 0.9rem;">Chưa có lịch sử mượn.</li>';
         return;
     }
 
-    const recent = [...borrowHistory].reverse().slice(0, 5);
+    const recent = borrowHistory.slice(0, 5);
     listEl.innerHTML = recent.map(item => {
         const dateObj = new Date(item.borrowDate);
         const date = dateObj.toLocaleDateString('vi-VN');
@@ -351,7 +436,7 @@ window.renderBorrowHistorySidebar = function () {
     }).join('');
 };
 
-window.renderMyRoomBookings = function () {
+window.renderMyRoomBookings = async function () {
     const listEl = document.getElementById('my-room-bookings-list');
     if (!listEl) return;
 
@@ -359,11 +444,20 @@ window.renderMyRoomBookings = function () {
     const dayFilterEl = document.getElementById('my-room-filter-day');
     const keywordFilterEl = document.getElementById('my-room-filter-keyword');
 
-    const allBookings = getStoredArray('seb_room_bookings');
-    const authUsername = getAuthUsername().toLowerCase();
-    const userBookings = authUsername
-        ? allBookings.filter(item => String(item.createdBy || '').toLowerCase() === authUsername)
-        : allBookings;
+    let userBookings = [];
+    if (!getAuthUsername()) {
+        listEl.innerHTML = '<div class="my-room-empty">Đăng nhập để xem lịch đăng ký phòng.</div>';
+        return;
+    }
+
+    try {
+        const api = requireSebApi();
+        const result = await api.roomList();
+        userBookings = Array.isArray(result.items) ? result.items : [];
+    } catch (error) {
+        listEl.innerHTML = '<div class="my-room-empty">Không tải được lịch phòng từ máy chủ.</div>';
+        return;
+    }
 
     if (roomFilterEl) {
         const roomOptions = Array.from(new Set(userBookings.map((booking) => {
@@ -420,7 +514,7 @@ window.renderMyRoomBookings = function () {
     listEl.innerHTML = sorted.map((booking) => {
         const roomTypeLabel = escapeHtml(booking.roomTypeLabel || booking.roomType || 'Phòng học');
         const roomNumberLabel = escapeHtml(booking.roomNumberLabel || booking.roomNumber || '---');
-        const userNameLabel = escapeHtml(booking.userNameLabel || booking.createdBy || 'Người dùng demo');
+        const userNameLabel = escapeHtml(booking.userNameLabel || booking.createdBy || window.__username || 'Người dùng');
         const purpose = escapeHtml(booking.purpose || 'Không có ghi chú');
         const createdAt = booking.createdAt ? new Date(booking.createdAt) : null;
         const createdText = createdAt && !Number.isNaN(createdAt.getTime())
@@ -479,7 +573,7 @@ window.bindMyRoomBookingEvents = function () {
         keywordFilterEl.addEventListener('input', debounce(() => window.renderMyRoomBookings(), 200));
     }
 
-    section.addEventListener('click', (event) => {
+    section.addEventListener('click', async (event) => {
         const cancelBtn = event.target.closest('.my-room-cancel-btn');
         if (!cancelBtn) {
             return;
@@ -495,11 +589,13 @@ window.bindMyRoomBookingEvents = function () {
             return;
         }
 
-        const bookings = getStoredArray('seb_room_bookings');
-        const nextBookings = bookings.filter((booking) => String(booking.bookingId || '') !== bookingId);
-        localStorage.setItem('seb_room_bookings', JSON.stringify(nextBookings));
-
-        window.renderMyRoomBookings();
+        try {
+            const api = requireSebApi();
+            await api.roomCancel({ bookingId });
+            await window.renderMyRoomBookings();
+        } catch (error) {
+            alert(error.message || 'Không hủy được lịch phòng.');
+        }
     });
 };
 
@@ -511,27 +607,52 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             await new Promise(resolve => setTimeout(resolve, 600));
 
-            const isPersonalPage = window.location.pathname.includes('kho-ca-nhan.html');
+            const isPersonalPage = window.location.pathname.includes('kho-ca-nhan.php');
 
             if (isPersonalPage) {
-                allDevices = getStoredArray('myDevices');
+                if (!getAuthUsername()) {
+                    allDevices = [];
+                } else {
+                    await loadPersonalDevices();
+                }
                 if (typeof window.renderBorrowHistorySidebar === 'function') {
-                    window.renderBorrowHistorySidebar();
+                    await window.renderBorrowHistorySidebar();
                 }
                 if (typeof window.renderMyRoomBookings === 'function') {
                     if (typeof window.bindMyRoomBookingEvents === 'function') {
                         window.bindMyRoomBookingEvents();
                     }
-                    window.renderMyRoomBookings();
+                    await window.renderMyRoomBookings();
                 }
             } else {
                 if (!Array.isArray(window.DEVICES_DATA)) {
                     throw new Error('Thiếu dữ liệu DEVICES_DATA trong JS');
                 }
-                allDevices = window.DEVICES_DATA;
+                // Hide inactive devices for normal users (IDActive != 2). Admins should see all.
+                try {
+                    const role = (window.__user_role || '').toLowerCase();
+                    if (role === 'admin' || role === 'superadmin' || role === 'administrator') {
+                        allDevices = window.DEVICES_DATA;
+                    } else {
+                        allDevices = window.DEVICES_DATA.filter(d => {
+                            const isActive = Number(d.idActive || 2) === 2;
+                            const status = String(d.status || '').toLowerCase();
+                            const isUnavailable = (status === 'unavailable' || status === 'het' || status === 'hết' || status === 'hết hàng');
+                            return isActive && !isUnavailable;
+                        });
+                    }
+                } catch (e) {
+                    allDevices = window.DEVICES_DATA.filter(d => Number(d.idActive || 2) === 2);
+                }
             }
 
             applyFilters();
+            // Populate filter checkboxes dynamically from data so categories/subjects stay in sync
+            try {
+                populateFiltersFromData(allDevices);
+            } catch (err) {
+                console.warn('Không thể populate filters:', err);
+            }
             setupFilters();
         } catch (err) {
             console.error('Lỗi khi tải danh sách thiết bị:', err);
@@ -542,10 +663,41 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Hàm Bridge để tương tác chéo giúp mở Modal cho thiết bị
 window.openDeviceModalById = function (id) {
-    const device = allDevices.find(d => d.id === id);
-    if (device && typeof window.openModal === 'function') {
-        window.openModal(device);
+    const device = allDevices.find(d => String(d.dbId || d.id) === String(id));
+    if (device && typeof window.openDeviceModal === 'function') {
+        window.openDeviceModal(device);
     } else {
         console.warn("Hệ thống cảnh báo: Modal Component chưa tải kịp hoặc mã ID bị sai!");
     }
 };
+
+// Populate category and subject filter containers from provided devices array
+function populateFiltersFromData(devices) {
+    if (!Array.isArray(devices)) return;
+
+    const categoryContainer = document.getElementById('category-filters');
+    const subjectContainer = document.getElementById('subject-filters');
+
+    const categories = Array.from(new Set(devices.map(d => String(d.category || '').trim()).filter(Boolean)));
+    const subjects = Array.from(new Set(devices.map(d => String(d.subject || '').trim()).filter(Boolean)));
+
+    if (categoryContainer) {
+        categoryContainer.innerHTML = categories.map(cat => `
+            <div class="filter-group kho-filter-group">
+                <label class="kho-filter-label">
+                    <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="${escapeHtml(cat)}" data-type="category"> ${escapeHtml(cat)}
+                </label>
+            </div>
+        `).join('');
+    }
+
+    if (subjectContainer) {
+        subjectContainer.innerHTML = subjects.map(sub => `
+            <div class="filter-group kho-filter-group">
+                <label class="kho-filter-label">
+                    <input type="checkbox" class="filter-checkbox kho-filter-checkbox" value="${escapeHtml(sub)}" data-type="subject"> ${escapeHtml(sub === 'Chung' ? 'Khác / Dùng chung' : sub)}
+                </label>
+            </div>
+        `).join('');
+    }
+}

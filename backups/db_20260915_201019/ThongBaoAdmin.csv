@@ -1,0 +1,11 @@
+MaThongBao,LoaiThongBao,TieuDe,LoiNhan,Link,ThoiGianTao,TrangThai
+1,new_user,"Tài khoản mới","Đã tạo tài khoản pchau6212 (teacher).",admin_users.php,"2026-05-20 18:25:58",0
+2,device,"Thiết bị được cập nhật","Đã cập nhật thiết bị Loa kéo Dalton TS-15G850X (TB-AT-001).",admin_thiet_bi.php,"2026-05-20 19:48:03",0
+3,device,"Thiết bị được cập nhật","Đã cập nhật thiết bị Loa kéo Dalton TS-15G850X (TB-AT-001).",admin_thiet_bi.php,"2026-05-20 19:48:08",0
+4,device,"Thiết bị được cập nhật","Đã cập nhật thiết bị Laptop Dell Latitude 5420 (TB-PC-001).",admin_thiet_bi.php,"2026-05-22 18:08:12",0
+5,new_user,"Tài khoản mới","Đã tạo tài khoản pvanh5621 (teacher).",admin_users.php,"2026-05-22 18:09:06",0
+6,device,"Thiết bị được cập nhật","Đã cập nhật thiết bị Bộ thước hình học (TB-DH-003).",admin_thiet_bi.php,"2026-05-22 18:12:47",0
+7,device,"Thiết bị được cập nhật","Đã cập nhật thiết bị Bộ tranh bản đồ Việt Nam (TB-DH-005).",admin_thiet_bi.php,"2026-05-22 18:13:01",0
+1004,borrow,"Yêu cầu mượn đã duyệt","Đơn mượn #PM-20260915195103-8188 đã được xử lý.",admin_borrows.php,"2026-09-16 00:52:44",0
+1005,new_user,"Tài khoản đã duyệt","Đã duyệt tài khoản e2e_temp_admin_01.",admin_users.php,"2026-09-16 00:53:35",0
+1006,new_user,"Tài khoản đã duyệt","Đã duyệt tài khoản e2e_temp_admin_02.",admin_users.php,"2026-09-16 00:53:49",0

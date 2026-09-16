@@ -1,0 +1,30 @@
+RewriteEngine On
+
+# 1. File/directory thực sự tồn tại → serve trực tiếp
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# 2. Serve build assets từ dist/assets (KHÔNG nằm trong pass-through block)
+RewriteRule ^assets/(.*)$ dist/assets/$1 [END,QSA]
+
+# 3. Pass-through static resources KHÔNG rewrite thành SPA
+RewriteCond %{REQUEST_URI} ^/api/ [OR]
+RewriteCond %{REQUEST_URI} ^/dist/ [OR]
+RewriteCond %{REQUEST_URI} ^/Page/ [OR]
+RewriteCond %{REQUEST_URI} ^/components/ [OR]
+RewriteCond %{REQUEST_URI} ^/CSS/ [OR]
+RewriteCond %{REQUEST_URI} ^/Javascript/ [OR]
+RewriteCond %{REQUEST_URI} ^/Images/ [OR]
+RewriteCond %{REQUEST_URI} ^/Audio/ [OR]
+RewriteCond %{REQUEST_URI} ^/video/ [OR]
+RewriteCond %{REQUEST_URI} ^/data/ [OR]
+RewriteCond %{REQUEST_URI} ^/src/ [OR]
+RewriteCond %{REQUEST_URI} ^/vendor/ [OR]
+RewriteCond %{REQUEST_URI} ^/sql/ [OR]
+RewriteCond %{REQUEST_URI} ^/tools/
+RewriteRule ^ - [L]
+
+# 4. SPA catch-all
+RewriteRule ^$ index.php [L,QSA]
+RewriteRule ^(.*)$ index.php [L,QSA]

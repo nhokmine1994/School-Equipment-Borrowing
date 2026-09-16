@@ -1,0 +1,163 @@
+{
+  "name": "Hệ thống SEB - Quản lý Mượn/Trả Thiết bị",
+  "children": [
+    {
+      "name": "Giao diện & Tính năng người dùng",
+      "children": [
+        {
+          "name": "Trang chủ",
+          "children": [
+            {
+              "name": "Thống kê thiết bị"
+            },
+            {
+              "name": "Tin tức & Thành tựu"
+            },
+            {
+              "name": "Đơn vị đồng hành"
+            }
+          ]
+        },
+        {
+          "name": "Kho thiết bị",
+          "children": [
+            {
+              "name": "Danh mục sản phẩm"
+            },
+            {
+              "name": "Tìm kiếm thiết bị"
+            },
+            {
+              "name": "Đăng ký mượn"
+            }
+          ]
+        },
+        {
+          "name": "Đăng ký phòng học",
+          "children": [
+            {
+              "name": "Lịch trống theo buổi"
+            },
+            {
+              "name": "Thông tin người dùng"
+            },
+            {
+              "name": "Mục đích sử dụng"
+            }
+          ]
+        },
+        {
+          "name": "Kho cá nhân",
+          "children": [
+            {
+              "name": "Lịch sử mượn gần đây"
+            },
+            {
+              "name": "Phòng học của tôi"
+            },
+            {
+              "name": "Trạng thái thiết bị"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Quản trị hệ thống (Admin)",
+      "children": [
+        {
+          "name": "Quản lý dữ liệu",
+          "children": [
+            {
+              "name": "Quản lý thiết bị"
+            },
+            {
+              "name": "Quản lý người dùng"
+            },
+            {
+              "name": "Duyệt mượn/trả"
+            }
+          ]
+        },
+        {
+          "name": "Cấu hình & Bảo mật",
+          "children": [
+            {
+              "name": "Hợp nhất Session"
+            },
+            {
+              "name": "Stored Procedure"
+            },
+            {
+              "name": "CSRF Token"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Kiến trúc kỹ thuật",
+      "children": [
+        {
+          "name": "Frontend",
+          "children": [
+            {
+              "name": "React JS"
+            },
+            {
+              "name": "Vite Build"
+            },
+            {
+              "name": "Redux Store"
+            }
+          ]
+        },
+        {
+          "name": "Backend",
+          "children": [
+            {
+              "name": "PHP API"
+            },
+            {
+              "name": "SQL Server"
+            },
+            {
+              "name": "Apache/htaccess"
+            }
+          ]
+        },
+        {
+          "name": "Cơ sở dữ liệu",
+          "children": [
+            {
+              "name": "Bảng TinhTrangDuyet"
+            },
+            {
+              "name": "Bảng PhieuMuon"
+            },
+            {
+              "name": "Migration Script"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Lộ trình phát triển",
+      "children": [
+        {
+          "name": "Smart Borrowing (Q1-Q2)"
+        },
+        {
+          "name": "AI Assistant (Q2-Q3)"
+        },
+        {
+          "name": "Omni Notifications (Q3-Q4)"
+        },
+        {
+          "name": "Multi-School Platform"
+        }
+      ]
+    }
+  ]
+}
