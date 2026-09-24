@@ -129,6 +129,11 @@ admin_render_page_intro(
 );
 ?>
 
+<div class="admin-toolbar" style="margin: 16px 0;">
+    <a class="admin-btn admin-btn-primary" href="admin_export.php?type=stats"><i class="fas fa-file-excel"></i> Xuất thống kê Excel</a>
+    <a class="admin-btn admin-btn-soft" href="admin_export.php"><i class="fas fa-file-export"></i> Trung tâm xuất file</a>
+</div>
+
 <section class="admin-grid-4">
     <article class="admin-card admin-stat">
         <p class="admin-stat-label">Tổng người dùng</p>

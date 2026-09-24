@@ -66,6 +66,7 @@ function admin_render_nav(string $active = ''): void
         'maintenance' => ['admin_bao_tri.php', 'Bảo trì'],
         'stats' => ['admin_thong_ke.php', 'Thống kê'],
         'news' => ['admin_tin_tuc.php', 'Tin tức'],
+        'exports' => ['admin_export.php', 'Xuất file'],
     ];
 
     echo '<nav class="nav-bar admin-nav-bar" aria-label="Menu quản trị">';
