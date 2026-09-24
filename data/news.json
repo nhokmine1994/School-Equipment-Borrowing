@@ -1,0 +1,121 @@
+{
+  "banner": {
+    "articles": "42",
+    "topics": "5",
+    "views": "1.2K"
+  },
+  "featured": {
+    "category": "su-kien",
+    "label": "Nổi bật",
+    "image": "Images/news_khaigiang.jpg",
+    "title": "Lễ khai giảng năm học 2025–2026 và ra mắt chính thức Hệ thống SEB",
+    "excerpt": "Trường THCS Lộc An long trọng tổ chức lễ khai giảng năm học mới đồng thời chính thức ra mắt Hệ thống Mượn/Trả Thiết Bị (SEB) — giải pháp quản lý thông minh giúp giáo viên và học sinh dễ dàng đăng ký, theo dõi và trả thiết bị học tập mọi lúc, mọi nơi.",
+    "date": "05/09/2025",
+    "readTime": "5 phút đọc",
+    "views": "1,240 lượt xem"
+  },
+  "articles": [
+    {
+      "category": "bao-tri",
+      "image": "Images/news_baotri.jpg",
+      "title": "Bảo trì định kỳ phòng máy PM102 — Tháng 12/2025",
+      "excerpt": "Phòng máy PM102 tạm ngừng hoạt động từ 18–20/12/2025 để bảo trì toàn bộ hệ thống máy tính và làm mới thiết bị ngoại vi.",
+      "date": "15/12/2025",
+      "readTime": "2 phút"
+    },
+    {
+      "category": "thiet-bi-moi",
+      "image": "Images/news_maychieu.jpg",
+      "title": "Bổ sung 5 máy chiếu Epson EB-X41 cho phòng hội nghị HN108",
+      "excerpt": "Nhằm phục vụ giảng dạy và hội họp, trường trang bị thêm 5 máy chiếu Epson EB-X41. Đặt lịch qua hệ thống SEB.",
+      "date": "10/12/2025",
+      "readTime": "3 phút"
+    },
+    {
+      "category": "thong-bao",
+      "image": "Images/news_quydinh.jpg",
+      "title": "Quy định mới về mượn thiết bị — Áp dụng từ 01/01/2026",
+      "excerpt": "Kể từ 01/01/2026, thời hạn mượn tối đa là 7 ngày/lượt. Có thể gia hạn thêm 3 ngày nếu không có người đặt trước.",
+      "date": "28/12/2025",
+      "readTime": "4 phút"
+    },
+    {
+      "category": "thiet-bi-moi",
+      "image": "Images/news_kinhhienvi.jpg",
+      "title": "Tiếp nhận 10 kính hiển vi Olympus CX23 cho phòng thí nghiệm",
+      "excerpt": "Trường vừa tiếp nhận 10 kính hiển vi điện tử từ dự án phòng lab. Tất cả đã được dán nhãn QR và cập nhật lên SEB.",
+      "date": "20/12/2025",
+      "readTime": "3 phút"
+    },
+    {
+      "category": "bao-tri",
+      "image": "Images/news_tivi.jpg",
+      "title": "Hoàn thành sửa chữa tivi Samsung 55\" phòng học PH305",
+      "excerpt": "Sau 3 ngày bảo dưỡng, tivi PH305 đã hoạt động bình thường và sẵn sàng phục vụ giảng dạy. Trạng thái cập nhật trên SEB.",
+      "date": "22/12/2025",
+      "readTime": "2 phút"
+    },
+    {
+      "category": "su-kien",
+      "image": "Images/news_giaovien.jpg",
+      "title": "Hội thi Giáo viên giỏi cấp huyện — Trường Lộc An đăng cai",
+      "excerpt": "Trường THCS Lộc An vinh dự đăng cai Hội thi Giáo viên giỏi ngày 15/01/2026. Đăng ký thiết bị hỗ trợ qua SEB.",
+      "date": "02/01/2026",
+      "readTime": "3 phút"
+    },
+    {
+      "category": "thong-bao",
+      "image": "Images/news_qrcode.jpg",
+      "title": "Hướng dẫn dùng mã QR để mượn/trả thiết bị tức thì",
+      "excerpt": "SEB nay hỗ trợ quét QR trực tiếp trên thiết bị để mượn, trả và báo hỏng mà không cần đăng nhập thủ công.",
+      "date": "05/01/2026",
+      "readTime": "5 phút"
+    },
+    {
+      "category": "thiet-bi-moi",
+      "image": "Images/news_laptop.jpg",
+      "title": "20 laptop Dell XPS 13 bổ sung vào kho tháng 1/2026",
+      "excerpt": "Nhà trường tiếp nhận 20 laptop Dell XPS 13 từ ngân sách đầu tư. Tất cả đã kiểm tra, dán nhãn QR và cập nhật SEB.",
+      "date": "08/01/2026",
+      "readTime": "3 phút"
+    },
+    {
+      "category": "su-kien",
+      "image": "Images/news_taphuans.jpg",
+      "title": "Tập huấn sử dụng hệ thống SEB toàn thể giáo viên",
+      "excerpt": "Nhà trường tổ chức tập huấn SEB ngày 10/01/2026. Toàn thể giáo viên vui lòng đăng ký tham dự qua email nội bộ.",
+      "date": "09/01/2026",
+      "readTime": "2 phút"
+    },
+    {
+      "category": "thong-bao",
+      "gradient": "gradient-thong-bao",
+      "icon": "fas fa-file-alt",
+      "title": "Cập nhật phần mềm quản lý kho — Phiên bản 2.1",
+      "excerpt": "Hệ thống SEB vừa cập nhật phiên bản 2.1 với nhiều cải tiến về tốc độ tra cứu thiết bị và giao diện quản lý kho.",
+      "date": "12/01/2026",
+      "readTime": "3 phút",
+      "extra": true
+    },
+    {
+      "category": "bao-tri",
+      "gradient": "gradient-bao-tri",
+      "icon": "fas fa-wrench",
+      "title": "Lịch bảo trì định kỳ Quý 1/2026 toàn trường",
+      "excerpt": "Phòng Thiết bị thông báo lịch bảo trì định kỳ tất cả thiết bị trong Quý 1/2026, bắt đầu từ ngày 15/01/2026.",
+      "date": "13/01/2026",
+      "readTime": "2 phút",
+      "extra": true
+    },
+    {
+      "category": "su-kien",
+      "gradient": "gradient-su-kien",
+      "icon": "fas fa-star",
+      "title": "Trường Lộc An đạt giải Nhất cuộc thi Đổi mới sáng tạo",
+      "excerpt": "Hệ thống SEB mang lại thành tích xuất sắc khi nhận giải Nhất cuộc thi Đổi mới sáng tạo trong quản lý trường học cấp tỉnh.",
+      "date": "20/01/2026",
+      "readTime": "4 phút",
+      "extra": true
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "intro": "Nhóm phát triển SEB gồm các thành viên phụ trách quản lý dự án, phân tích nghiệp vụ, phát triển phần mềm và thiết kế giao diện. Chúng tôi xây dựng giải pháp này để giúp nhà trường số hóa quy trình mượn thiết bị, giảm tải cho giáo viên và nâng cao hiệu quả quản lý kho.",
+  "members": [
+    {
+      "name": "PHẠM CÔNG HẬU",
+      "role": "PROJECT MANAGER",
+      "phone": "0344655621",
+      "email": "525000458@lachong.edu.vn",
+      "image": "Images/conghau-avatar.jpg",
+      "note": "Điều phối tiến độ và định hướng tổng thể dự án SEB."
+    },
+    {
+      "name": "ĐẶNG BẮC NAM",
+      "role": "BUSINESS ANALYST",
+      "phone": "0378047778",
+      "email": "dangbacnamlhu@gmail.com",
+      "image": "Images/nam.png",
+      "note": "Phân tích nghiệp vụ và chuẩn hóa quy trình mượn trả thiết bị."
+    },
+    {
+      "name": "LÒ VĂN DUẪN",
+      "role": "SOFTWARE DEVELOPER",
+      "phone": "0947478016",
+      "email": "minhduan29s4@gmail.com",
+      "image": "Images/duan.png",
+      "note": "Phát triển chức năng cốt lõi và tối ưu hiệu năng hệ thống."
+    },
+    {
+      "name": "NGUYỄN THỊ BÍCH HẰNG",
+      "role": "UI/UX DESIGNER",
+      "phone": "0976543210",
+      "email": "hangbich045@gmail.com",
+      "image": "Images/hang.png",
+      "note": "Thiết kế trải nghiệm và giao diện trực quan, thân thiện người dùng."
+    }
+  ]
+}

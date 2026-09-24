@@ -1,0 +1,22 @@
+# Local dependencies and generated tooling output
+node_modules/
+vendor/phpmailer/phpmailer/test/
+vendor/phpmailer/phpmailer/examples/
+
+# Local runtime/debug data
+logs/
+backups/
+*.log
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

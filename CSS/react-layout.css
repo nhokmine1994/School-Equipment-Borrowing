@@ -1,0 +1,100 @@
+/* Shared layout rules for the React pages. Loaded after page-specific legacy CSS. */
+html,
+body,
+#root {
+  width: 100%;
+  max-width: none;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.system-container,
+.legacy-page {
+  width: 100%;
+  max-width: none;
+  min-height: 100dvh;
+}
+
+.legacy-page > .header-banner,
+.legacy-page > .nav-bar,
+.legacy-page > .search-container,
+.legacy-page > .stats-row,
+.legacy-page > .section-wrapper,
+.legacy-page > .news-page-banner,
+.legacy-page > .news-filter-bar,
+.legacy-page > .booking-container,
+.legacy-page > .kho-app,
+.legacy-page > .footer {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+}
+
+.legacy-page > .footer {
+  margin-top: auto;
+}
+
+/* Let card grids use the available viewport instead of leaving a fixed-width gap. */
+.legacy-page .equipment-grid,
+.legacy-page .page-grid {
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)) !important;
+}
+
+.legacy-page .equipment-card,
+.legacy-page .device-card,
+.legacy-page .page-card,
+.legacy-page .content,
+.legacy-page .booking-content {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.legacy-page img,
+.legacy-page video,
+.legacy-page iframe {
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .legacy-page .equipment-grid,
+  .legacy-page .page-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .legacy-page .news-page-banner {
+    flex-wrap: wrap;
+  }
+
+  .legacy-page .news-banner-text {
+    min-width: min(100%, 240px);
+  }
+
+  .legacy-page .news-banner-stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 480px) {
+  .legacy-page .equipment-grid,
+  .legacy-page .page-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .legacy-page .news-page-banner {
+    gap: 12px;
+    padding: 18px 16px;
+  }
+
+  .legacy-page .news-banner-icon {
+    font-size: 34px;
+  }
+
+  .legacy-page .news-banner-text h2 {
+    font-size: 19px;
+  }
+}

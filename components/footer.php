@@ -1,0 +1,6 @@
+<footer class="site-footer">
+  <div class="footer-container">
+    <p>© 2026 SEB. Bản quyền thuộc về Hệ thống mượn/trả thiết bị.</p>
+    <p>Liên hệ: hotline <strong>0344 655 621</strong> để được hỗ trợ nhanh nhất.</p>
+  </div>
+</footer>

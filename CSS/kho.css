@@ -1,0 +1,949 @@
+/* Combined styles for kho pages: layout + cards + modal */
+
+/* ===== From kho-body.css ===== */
+.kho-app {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 20px;
+    padding: 20px;
+    min-height: 80vh;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+    .kho-app {
+        grid-template-columns: 1fr;
+    }
+
+    .action-controls {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 8px;
+    }
+
+    .action-controls .btn-borrow,
+    .action-controls .btn-add {
+        width: auto;
+        flex: 1 1 0;
+    }
+}
+
+.sidebar {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.sidebar h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    color: #333;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li {
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f3f5;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.2s;
+}
+
+.sidebar li:hover {
+    color: #4CAF50;
+}
+
+.content {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.content h1 {
+    margin-top: 0;
+    color: #2c3e50;
+    margin-bottom: 25px;
+}
+
+.equipment-grid {
+    display: grid;
+    /* auto-FILL giữ nguyên cột dù ít item — tránh 1 thiết bị phình full-width */
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 300px)) !important;
+    justify-content: start !important;
+    gap: 20px;
+    align-items: stretch;
+}
+
+.equipment-grid > * {
+    min-width: 0;
+}
+
+@media (max-width: 992px) {
+    .equipment-grid {
+        grid-template-columns: repeat(auto-fill, minmax(210px, 280px));
+    }
+
+    .kho-app > * {
+        min-width: 0;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .equipment-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: start !important;
+        gap: 10px;
+    }
+}
+
+.equipment-card {
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.equipment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.equipment-image {
+    width: 100%;
+    height: 150px;
+    background-color: #f1f5f9;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.equipment-card h3 {
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin: 0 0 10px 0;
+}
+
+.equipment-card p {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin: 0 0 15px 0;
+    flex-grow: 1;
+}
+
+.equipment-card button {
+    background-color: #10b981;
+    color: #ffffff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    width: 100%;
+    transition: background-color 0.2s ease;
+}
+
+.equipment-card button:hover {
+    background-color: #059669;
+}
+
+/* ===== From kho-card.css ===== */
+.device-card {
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    min-height: 360px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.device-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.device-image {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background-color: #f1f5f9;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    overflow: hidden;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.device-info {
+    text-align: left;
+    margin-bottom: 15px;
+    flex-grow: 1;
+}
+
+.device-info h3 {
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin: 0 0 5px 0;
+    line-height: 1.35;
+    min-height: 44px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.device-info p {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin: 0 0 5px 0;
+    word-break: break-word;
+}
+
+.device-info .status {
+    font-weight: 600;
+}
+
+.device-info .status.available {
+    color: #10b981;
+}
+
+.device-info .status.unavailable {
+    color: #ef4444;
+}
+
+.device-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+    flex-wrap: wrap;
+}
+
+.action-controls {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+}
+
+.action-controls .btn-borrow,
+.action-controls .btn-add {
+    flex: 1 1 0;
+}
+
+.device-actions button {
+    flex: 1 1 120px;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    min-width: 0;
+}
+
+.device-actions button:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.btn-borrow {
+    background-color: #10b981;
+    color: #ffffff;
+}
+
+.btn-borrow:hover:not(:disabled) {
+    background-color: #059669;
+}
+
+.btn-borrow:disabled {
+    background-color: #cbd5e1;
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+.btn-add {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+.btn-add:hover {
+    background-color: #2563eb;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 35px;
+    margin-bottom: 20px;
+}
+
+.pagination .page-btn {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background-color: #fff;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #475569;
+    transition: all 0.2s ease;
+}
+
+.pagination .page-btn:hover:not(:disabled) {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+.pagination .page-btn.active {
+    background-color: #10b981;
+    border-color: #10b981;
+    color: #fff;
+}
+
+.pagination .page-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    background-color: #f8fafc;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    border: 2px dashed #cbd5e1;
+    color: #64748b;
+}
+
+.empty-state h3 {
+    margin: 0 0 10px 0;
+    color: #334155;
+    font-size: 1.4rem;
+}
+
+.skeleton-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 380px;
+    box-sizing: border-box;
+}
+
+.skeleton-shimmer {
+    animation: shimmer 1.5s infinite linear;
+    background: #f1f5f9;
+    background-image: linear-gradient(90deg, #f1f5f9 0px, #e2e8f0 40px, #f1f5f9 80px);
+    background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.skeleton-img {
+    height: 150px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.skeleton-text {
+    height: 14px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.skeleton-text.title {
+    height: 20px;
+    width: 75%;
+    margin-bottom: 15px;
+}
+
+.skeleton-text.short {
+    width: 50%;
+}
+
+.skeleton-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 10px;
+}
+
+.skeleton-btn {
+    height: 35px;
+    border-radius: 6px;
+    flex: 1;
+}
+
+/* ===== From kho-modal.css ===== */
+.device-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.65);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.device-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.device-modal {
+    background-color: #ffffff;
+    width: 90%;
+    max-width: 850px;
+    max-height: 90vh;
+    border-radius: 12px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.device-modal-overlay.active .device-modal {
+    transform: translateY(0) scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-bottom: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #0f172a;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: #64748b;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0px 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.close-modal:hover {
+    background-color: #e2e8f0;
+    color: #ef4444;
+}
+
+.modal-body {
+    padding: 30px;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+@media (max-width: 768px) {
+    .modal-body {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+.modal-image-container {
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f1f5f9;
+    aspect-ratio: 4/3;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.modal-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.modal-info-section {
+    margin-bottom: 25px;
+}
+
+.modal-info-section h3 {
+    font-size: 1.15rem;
+    color: #334155;
+    margin-top: 0;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 8px;
+}
+
+.modal-detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.modal-detail-label {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.modal-detail-value {
+    color: #0f172a;
+    font-weight: 600;
+    text-align: right;
+}
+
+.modal-desc {
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.modal-accessories ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.modal-form-group {
+    margin-bottom: 15px;
+}
+
+.modal-form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #334155;
+}
+
+.modal-form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #0f172a;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.modal-form-group input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.modal-footer {
+    padding: 20px 30px;
+    border-top: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.modal-btn-cancel {
+    padding: 10px 20px;
+    background-color: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    color: #475569;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+
+.modal-btn-cancel:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+.modal-btn-confirm {
+    padding: 10px 24px;
+    background-color: #3b82f6;
+    border: none;
+    border-radius: 6px;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 1rem;
+}
+
+.modal-btn-confirm:hover:not(:disabled) {
+    background-color: #2563eb;
+}
+
+.modal-btn-confirm:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+}
+
+/* Forcefully override any yellow background on the schedule label section */
+#modal-schedule,
+#modal-schedule-label,
+.modal-form-group:has(#modal-schedule) {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+/* Sidebar collapsible on mobile */
+.toggle-icon {
+    display: none;
+    transition: transform 0.3s;
+}
+
+.collapsible-title.active .toggle-icon {
+    transform: rotate(180deg);
+}
+
+@media (max-width: 768px) {
+    .toggle-icon {
+        display: inline-block;
+    }
+
+    .collapsible-title {
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .collapsible-content {
+        display: none;
+        overflow: hidden;
+    }
+
+    .collapsible-title.active+.collapsible-content {
+        display: block;
+    }
+
+    .sidebar {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+}
+
+/* === Extra Mobile Optimization: <= 450px === */
+@media (max-width: 450px) {
+    .kho-app {
+        padding: 8px;
+        gap: 12px;
+    }
+
+    .sidebar {
+        padding: 12px;
+        margin-bottom: 10px;
+    }
+
+    .sidebar h3 {
+        font-size: 1rem;
+        padding-bottom: 8px;
+        margin-bottom: 10px;
+    }
+
+    .content {
+        padding: 12px;
+    }
+
+    .content h1 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+
+    .equipment-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    /* Shrink the card contents */
+    .device-card,
+    .equipment-card {
+        padding: 12px;
+    }
+
+    .device-image,
+    .equipment-image {
+        aspect-ratio: 16 / 9;
+        min-height: 180px;
+        margin-bottom: 12px;
+    }
+
+    .device-info h3,
+    .equipment-card h3 {
+        font-size: 1rem;
+        margin-bottom: 4px;
+    }
+
+    .device-info p,
+    .equipment-card p {
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+
+    .device-actions {
+        gap: 8px;
+    }
+
+    .action-controls {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 8px;
+    }
+
+    .action-controls .btn-borrow,
+    .action-controls .btn-add {
+        width: auto;
+        flex: 1 1 0;
+    }
+
+    .device-actions button,
+    .equipment-card button {
+        padding: 8px;
+        font-size: 0.85rem;
+    }
+
+    .kho-select-wrap {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .kho-select,
+    .kho-search-input {
+        width: 100%;
+        padding: 10px;
+        font-size: 0.95rem;
+    }
+
+    /* Mobile fixes: remove large fixed card height, stack buttons and cap image height */
+    .device-card, .equipment-card {
+        min-height: auto;
+    }
+
+    .device-image {
+        max-height: 260px;
+        height: 210px;
+    }
+
+    .device-actions {
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+    .device-actions button {
+        width: auto;
+    }
+}
+
+/* Additional tighter mobile adjustments to reduce empty image space and spacing */
+@media (max-width: 420px) {
+    .device-image, .equipment-image {
+        max-height: 220px !important;
+        height: 200px !important;
+    }
+
+    .device-card, .equipment-card {
+        padding: 10px !important;
+        gap: 6px;
+    }
+
+    .device-info h3 {
+        min-height: 0 !important;
+        font-size: 1rem;
+        margin-bottom: 6px;
+    }
+
+    .device-info p {
+        margin-bottom: 6px;
+    }
+
+    .equipment-grid {
+        gap: 12px;
+    }
+}
+
+/* Stronger overrides for very small narrow mobiles */
+@media (max-width: 380px) {
+    .device-card, .equipment-card {
+        min-height: auto !important;
+        height: auto !important;
+        padding: 8px !important;
+    }
+
+    .skeleton-card {
+        height: auto !important;
+        padding: 10px !important;
+    }
+
+    .device-image, .equipment-image {
+        height: 100px !important;
+        max-height: 100px !important;
+        aspect-ratio: auto !important;
+        padding: 0 !important;
+        margin-bottom: 8px !important;
+    }
+
+    .device-info {
+        margin-top: 6px !important;
+    }
+
+    .device-info h3 {
+        font-size: 0.98rem !important;
+        line-height: 1.2 !important;
+    }
+
+    .device-actions {
+        gap: 6px !important;
+    }
+
+    .kho-search-wrap { margin-bottom: 8px; }
+}
+
+/* Enforce tighter image sizes for narrow mobile to avoid large empty placeholders */
+@media (max-width: 420px) {
+    .device-card, .equipment-card { min-height: 0 !important; }
+    /* make parent flexible and cap children so placeholders/images cannot force large height */
+    .device-image, .equipment-image {
+        height: auto !important;
+        max-height: 120px !important;
+        overflow: hidden !important;
+        display: block !important;
+    }
+    .device-image > img, .device-image > div, .equipment-image > img, .equipment-image > div {
+        width: 100% !important;
+        height: auto !important;
+        max-height: 120px !important;
+        object-fit: cover !important;
+        display: block !important;
+    }
+    .device-info { margin-top: 8px !important; }
+}
+
+/* placeholder class used by JS to avoid inline height styles */
+.device-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #f1f5f9;
+    display: block;
+}
+
+@media (max-width: 420px) {
+    .device-placeholder { height: 90px !important; max-height: 90px !important; }
+}
+
+/* Final strong mobile overrides to eliminate leftover blank spacing */
+@media (max-width: 420px) {
+    .content .equipment-grid .device-card,
+    .content .equipment-grid .equipment-card,
+    .device-card, .equipment-card {
+        min-height: 0 !important;
+        height: auto !important;
+        padding: 8px !important;
+        box-sizing: border-box !important;
+    }
+
+    .device-card .device-image,
+    .equipment-card .equipment-image,
+    .device-placeholder {
+        height: 90px !important;
+        max-height: 90px !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+        display: block !important;
+        padding: 0 !important;
+        margin-bottom: 8px !important;
+    }
+
+    .device-card .device-image > img,
+    .device-card .device-image > div,
+    .equipment-card .equipment-image > img,
+    .equipment-card .equipment-image > div {
+        height: 90px !important;
+        max-height: 90px !important;
+        width: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+    }
+
+    .skeleton-card {
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 10px !important;
+    }
+
+    .device-info { margin-top: 6px !important; }
+}
