@@ -9,6 +9,7 @@ export default function ChangePasswordPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.app.user);
+  const mustChange = Boolean(user?.must_change_password);
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
@@ -32,9 +33,9 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <LegacyPageShell title="Đổi mật khẩu bắt buộc" icon="fas fa-lock">
+    <LegacyPageShell title="Đổi mật khẩu" icon="fas fa-lock">
       <div className="page-card" style={{ maxWidth: 560, margin: '0 auto' }}>
-        <PageNotice tone="info">Đây là lần đăng nhập đầu tiên sau khi cấp mật khẩu tạm. Bạn phải đổi mật khẩu trước khi tiếp tục sử dụng hệ thống.</PageNotice>
+        <PageNotice tone="info">{mustChange ? 'Đây là lần đăng nhập đầu tiên sau khi cấp mật khẩu tạm. Bạn phải đổi mật khẩu trước khi tiếp tục sử dụng hệ thống.' : 'Bạn có thể đổi mật khẩu tài khoản tại đây.'}</PageNotice>
         <form className="page-form" onSubmit={submit}>
           {error ? <PageNotice tone="error">{error}</PageNotice> : null}
           <label htmlFor="newPassword">Mật khẩu mới</label>

@@ -67,6 +67,7 @@ export default function SettingsPage() {
         <section className="page-card settings-card">
           <div className="settings-card-heading"><i className="fas fa-display" /><div><h2>Hiển thị</h2><p>Lưu theo từng tài khoản trên trình duyệt này.</p></div></div>
           <label className="settings-toggle"><span><strong>Chế độ gọn</strong><small>Thu gọn khoảng cách giữa các nội dung.</small></span><input type="checkbox" checked={preferences.compactView} onChange={() => updatePreference('compactView')} /></label>
+          <Link className="settings-inline-link" to="/change-password"><i className="fas fa-key" /> Đổi mật khẩu</Link>
         </section>
 
         <section className="page-card settings-card settings-help-card">
