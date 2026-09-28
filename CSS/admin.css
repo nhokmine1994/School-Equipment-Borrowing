@@ -123,7 +123,7 @@ body.admin-theme {
 
 /* Admin navigation: compact left rail with labels revealed on hover. */
 .admin-container .admin-nav-bar {
-  position: fixed;
+  position: fixed !important;
   top: 90px;
   left: 0;
   bottom: 0;
@@ -139,8 +139,8 @@ body.admin-theme {
 }
 
 .admin-container .admin-nav-bar .nav-links {
-  display: flex;
-  flex-direction: column;
+  display: flex !important;
+  flex-direction: column !important;
   align-items: center;
   gap: 9px;
   width: 100%;
@@ -152,7 +152,7 @@ body.admin-theme {
 .admin-container .admin-nav-bar .nav-tab {
   position: relative;
   display: inline-flex;
-  flex: 0 0 46px;
+  flex: 0 0 46px !important;
   align-items: center;
   justify-content: center;
   width: 46px;
