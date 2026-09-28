@@ -4,6 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage';
+import ChangePasswordPage from '../pages/ChangePasswordPage';
 import DashboardPage from '../pages/DashboardPage';
 import DevicesPage from '../pages/DevicesPage';
 import BorrowPage from '../pages/BorrowPage';
@@ -26,6 +27,10 @@ export default function AppRoutes() {
   const location = useLocation();
   const authStatus = useSelector((state) => state.app.authStatus);
   const user = useSelector((state) => state.app.user);
+
+  if (authStatus === 'authenticated' && user?.must_change_password && location.pathname !== '/change-password') {
+    return <Navigate to="/change-password" replace />;
+  }
 
   if (authStatus === 'loading' && location.pathname !== '/') {
     return (
@@ -63,6 +68,7 @@ export default function AppRoutes() {
         <Route path="/personal" element={<PersonalPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/change-password" element={<ChangePasswordPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

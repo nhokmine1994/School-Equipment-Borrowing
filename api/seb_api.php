@@ -63,6 +63,7 @@ function seb_api_resolve_user_payload($user)
         'type' => (string) ($user['type'] ?? ''),
         'name' => $display,
         'display_name' => $display,
+        'must_change_password' => !empty($user['must_change_password']),
     ];
 }
 
@@ -150,10 +151,34 @@ switch ($action) {
             'role' => $roleValue,
             'type' => 'regular_user',
             'display_name' => $displayName,
+            'must_change_password' => (bool) ($row['MustChangePassword'] ?? false),
         ];
         $user = $_SESSION['user'];
 
         seb_json_response(['ok' => true, 'user' => seb_api_resolve_user_payload($user)]);
+
+    case 'password_change':
+        if ($method !== 'POST') {
+            seb_json_response(['ok' => false, 'error' => 'Method not allowed'], 405);
+        }
+        $username = seb_require_login_json();
+        $body = array_merge($_POST, seb_read_json_body());
+        $password = (string) ($body['password'] ?? '');
+        $confirm = (string) ($body['passwordConfirm'] ?? $body['password_confirm'] ?? '');
+        $passwordError = seb_validate_password_policy($password);
+        if ($passwordError !== '') {
+            seb_json_response(['ok' => false, 'error' => $passwordError], 400);
+        }
+        if ($password !== $confirm) {
+            seb_json_response(['ok' => false, 'error' => 'Mật khẩu nhập lại không khớp.'], 400);
+        }
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = sqlsrv_query($conn, 'UPDATE TaiKhoan SET MatKhau = ?, MustChangePassword = 0 WHERE TaiKhoan = ?', [$hash, $username]);
+        if (!$stmt) {
+            seb_json_response(['ok' => false, 'error' => seb_sql_error_message('Không đổi được mật khẩu.')], 500);
+        }
+        $_SESSION['user']['must_change_password'] = false;
+        seb_json_response(['ok' => true, 'message' => 'Đổi mật khẩu thành công.']);
 
     case 'dashboard_summary':
         $stats = function_exists('seb_load_index_dashboard_stats') ? seb_load_index_dashboard_stats($conn) : [];

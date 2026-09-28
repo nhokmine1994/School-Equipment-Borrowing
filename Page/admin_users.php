@@ -45,8 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $messageType = 'danger';
             } else {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
-                $sql = "INSERT INTO TaiKhoan (TaiKhoan, MatKhau, LoaiTaiKhoan, HoVaTen, SoDienThoai, Email, BoMon) VALUES (?, ?, ?, ?, ?, ?, ?)";
-                $params = array(&$username, &$hash, &$role, &$fullname, &$phone, &$email, &$boMon);
+                $mustChangePassword = 0;
+                $sql = "INSERT INTO TaiKhoan (TaiKhoan, MatKhau, LoaiTaiKhoan, HoVaTen, SoDienThoai, Email, BoMon, MustChangePassword) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                $params = array(&$username, &$hash, &$role, &$fullname, &$phone, &$email, &$boMon, &$mustChangePassword);
                 $stmt = sqlsrv_prepare($conn, $sql, $params);
                 if ($stmt && sqlsrv_execute($stmt)) {
                     $message = 'Tạo tài khoản thành công.';
@@ -125,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               } else {
                 $hash = password_hash($temporaryPassword, PASSWORD_DEFAULT);
                 sqlsrv_begin_transaction($conn);
-                $updateUser = sqlsrv_query($conn, 'UPDATE TaiKhoan SET MatKhau = ? WHERE TaiKhoan = ?', [$hash, $request['TaiKhoan']]);
+                $updateUser = sqlsrv_query($conn, 'UPDATE TaiKhoan SET MatKhau = ?, MustChangePassword = 1 WHERE TaiKhoan = ?', [$hash, $request['TaiKhoan']]);
                 $updateRequest = $updateUser ? sqlsrv_query($conn, "UPDATE MatKhauResetRequest SET TrangThai = N'approved', AdminXuLy = ?, NgayXuLy = SYSUTCDATETIME() WHERE MaYeuCau = ? AND TrangThai = N'pending'", [$adminName, $requestId]) : false;
                 if ($updateUser && $updateRequest && sqlsrv_commit($conn)) {
                   $message = 'Đã xác minh và gửi mật khẩu tạm thời qua email.';

@@ -165,6 +165,20 @@ export const api = {
     return { success: true, message: payload?.message || 'Yêu cầu đã được gửi.' };
   },
 
+  changePassword: async (password, passwordConfirm) => {
+    const response = await fetch(`${API_BASE}?action=password_change`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ password, passwordConfirm }),
+    });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) {
+      return { success: false, error: payload?.error || 'Không đổi được mật khẩu.' };
+    }
+    return { success: true, message: payload?.message || 'Đổi mật khẩu thành công.' };
+  },
+
   createBorrowRequest: async (body) => {
     try {
       const response = await fetch(`${API_BASE}?action=borrow_request`, {

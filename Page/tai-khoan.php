@@ -113,12 +113,16 @@ if(isset($_POST['login']))
             'role' => $roleValue,
             'type' => 'regular_user',
             'display_name' => $displayName,
+            'must_change_password' => !empty($row['MustChangePassword']),
         ];
 
         $returnFromPost = isset($_POST['return']) ? $_POST['return'] : '';
         $returnFromGet = isset($_GET['return']) ? $_GET['return'] : '';
         $redirectTo = resolveSafeReturnUrl($returnFromPost ?: $returnFromGet);
 
+        if (!empty($row['MustChangePassword'])) {
+            $redirectTo = '../change-password';
+        }
         header('Location: ' . $redirectTo);
         exit;
     }
