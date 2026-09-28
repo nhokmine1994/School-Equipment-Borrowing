@@ -8,6 +8,7 @@ import DevicesPage from '../pages/DevicesPage';
 import BorrowPage from '../pages/BorrowPage';
 import RoomsPage from '../pages/RoomsPage';
 import ProfilePage from '../pages/ProfilePage';
+import SettingsPage from '../pages/SettingsPage';
 import PersonalPage from '../pages/PersonalPage';
 import NewsPage from '../pages/NewsPage';
 import AboutPage from '../pages/AboutPage';
@@ -59,6 +60,7 @@ export default function AppRoutes() {
         <Route path="/rooms" element={<RoomsPage />} />
         <Route path="/personal" element={<PersonalPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

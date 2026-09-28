@@ -105,9 +105,9 @@ export default function LegacyHeader() {
                 <Link to="/borrow" className="dropdown-item" onClick={() => setMenuOpen(false)}>
                   <i className="fas fa-history" /> Lịch sử mượn/trả
                 </Link>
-                <a href="#settings" className="dropdown-item">
+                <Link to="/settings" className="dropdown-item" onClick={() => setMenuOpen(false)}>
                   <i className="fas fa-cog" /> Cài đặt
-                </a>
+                </Link>
                 {userRole === 'admin' ? (
                   <a href="Page/admin_panel.php" className="dropdown-item">
                     <i className="fas fa-user-shield" /> Chế độ quản trị viên
