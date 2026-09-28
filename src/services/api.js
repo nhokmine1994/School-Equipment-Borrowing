@@ -151,6 +151,20 @@ export const api = {
     }
   },
 
+  requestPasswordReset: async (phone, email) => {
+    const response = await fetch(`${API_BASE}?action=password_reset_request`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ phone, email }),
+    });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) {
+      return { success: false, error: payload?.error || 'Không gửi được yêu cầu.' };
+    }
+    return { success: true, message: payload?.message || 'Yêu cầu đã được gửi.' };
+  },
+
   createBorrowRequest: async (body) => {
     try {
       const response = await fetch(`${API_BASE}?action=borrow_request`, {

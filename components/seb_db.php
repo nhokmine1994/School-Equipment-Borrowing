@@ -263,6 +263,28 @@ function seb_fetch_bo_mon_list($conn)
     return array_values(array_unique($list));
 }
 
+function seb_validate_password_policy(string $password): string
+{
+    if (strlen($password) < 8) {
+        return 'Mật khẩu phải có ít nhất 8 ký tự.';
+    }
+    if (!preg_match('/[A-Z]/', $password)) {
+        return 'Mật khẩu phải có ít nhất một chữ viết hoa.';
+    }
+    if (!preg_match('/[0-9]/', $password)) {
+        return 'Mật khẩu phải có ít nhất một chữ số.';
+    }
+    if (!preg_match('/[^A-Za-z0-9]/', $password)) {
+        return 'Mật khẩu phải có ít nhất một ký tự đặc biệt.';
+    }
+    return '';
+}
+
+function seb_generate_temporary_password(): string
+{
+    return 'SeB!' . random_int(100000, 999999) . 'A';
+}
+
 function seb_borrow_status_aliases() {
     return [
         'pending' => ['pending', 'pending approval', 'chờ duyệt', 'dang cho', 'đang chờ', 'waiting', '3'],

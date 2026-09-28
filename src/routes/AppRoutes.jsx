@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
+import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import DashboardPage from '../pages/DashboardPage';
 import DevicesPage from '../pages/DevicesPage';
 import BorrowPage from '../pages/BorrowPage';
@@ -47,6 +48,7 @@ export default function AppRoutes() {
         path="/login"
         element={authStatus === 'authenticated' && user?.username ? <Navigate to="/dashboard" replace /> : <LoginPage />}
       />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
       <Route
         element={

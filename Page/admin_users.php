@@ -3,6 +3,8 @@ include '../connect.php';
 require_once 'admin_auth.php';
 require_admin();
 seb_require_admin_connection($conn, 'Quản lý người dùng');
+require_once __DIR__ . '/../components/seb_db.php';
+require_once __DIR__ . '/../components/mail_helper.php';
 
 $message = '';
 $messageType = 'success';
@@ -16,16 +18,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $action = $_POST['action'] ?? '';
 
         if ($action === 'add') {
-            $username = trim($_POST['username'] ?? '');
+            $phone = trim($_POST['phone'] ?? '');
+            $username = $phone;
             $password = (string) ($_POST['password'] ?? '');
+            $passwordConfirm = (string) ($_POST['password_confirm'] ?? '');
             $role = trim($_POST['role'] ?? 'user');
             $fullname = trim($_POST['fullname'] ?? '');
-            $phone = trim($_POST['phone'] ?? '');
             $email = trim($_POST['email'] ?? '');
             $boMon = trim($_POST['boMon'] ?? '');
 
-            if ($username === '' || $password === '') {
-                $message = 'Vui lòng nhập username và password.';
+            $passwordError = seb_validate_password_policy($password);
+            if (!preg_match('/^0\d{9,10}$/', $phone)) {
+                $message = 'Số điện thoại phải gồm 10 hoặc 11 chữ số và được dùng làm tài khoản.';
+                $messageType = 'danger';
+            } elseif ($passwordError !== '') {
+                $message = $passwordError;
+                $messageType = 'danger';
+            } elseif ($password !== $passwordConfirm) {
+                $message = 'Mật khẩu nhập lại không khớp.';
+                $messageType = 'danger';
+            } elseif ($fullname === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $message = 'Họ và tên và email hợp lệ là bắt buộc.';
+                $messageType = 'danger';
+            } elseif (!in_array($role, ['teacher', 'staff', 'user'], true)) {
+                $message = 'Vai trò tài khoản không hợp lệ.';
                 $messageType = 'danger';
             } else {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
@@ -80,29 +96,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($action === 'reset_password') {
-          $username = trim($_POST['username'] ?? '');
-          if ($username === '') {
-            $message = 'Thiếu username để reset mật khẩu.';
+          $message = 'Mật khẩu chỉ được cấp lại qua yêu cầu quên mật khẩu đã được xác minh.';
+          $messageType = 'danger';
+        }
+
+        if ($action === 'approve_reset' || $action === 'reject_reset') {
+          $requestId = (int) ($_POST['reset_request_id'] ?? 0);
+          $adminName = (string) ($_SESSION['user']['username'] ?? 'admin');
+          if ($requestId <= 0) {
+            $message = 'Thiếu mã yêu cầu quên mật khẩu.';
             $messageType = 'danger';
+          } elseif ($action === 'reject_reset') {
+            $stmt = sqlsrv_query($conn, "UPDATE MatKhauResetRequest SET TrangThai = N'rejected', AdminXuLy = ?, GhiChuAdmin = ?, NgayXuLy = SYSUTCDATETIME() WHERE MaYeuCau = ? AND TrangThai = N'pending'", [$adminName, trim((string) ($_POST['ghi_chu'] ?? '')), $requestId]);
+            $message = $stmt ? 'Đã từ chối yêu cầu quên mật khẩu.' : 'Từ chối yêu cầu thất bại.';
+            $messageType = $stmt ? 'success' : 'danger';
           } else {
-            try {
-              $temp = bin2hex(random_bytes(4));
-            } catch (Exception $e) {
-              $temp = substr(md5(uniqid('', true)), 0, 8);
-            }
-            $hash = password_hash($temp, PASSWORD_DEFAULT);
-            $sql = "UPDATE TaiKhoan SET MatKhau = ? WHERE TaiKhoan = ?";
-            $params = array(&$hash, &$username);
-            $stmt = sqlsrv_prepare($conn, $sql, $params);
-            if ($stmt && sqlsrv_execute($stmt)) {
-              $message = 'Đã reset mật khẩu tạm cho ' . $username . '. Mật khẩu tạm thời: ' . $temp;
-              add_admin_notification($conn, 'user', 'Reset mật khẩu', 'Đã reset mật khẩu cho ' . $username . '.', 'admin_users.php');
-            } else {
-              $message = 'Reset mật khẩu thất bại.';
+            $requestStmt = sqlsrv_query($conn, "SELECT r.*, tk.HoVaTen FROM MatKhauResetRequest r INNER JOIN TaiKhoan tk ON tk.TaiKhoan = r.TaiKhoan WHERE r.MaYeuCau = ? AND r.TrangThai = N'pending'", [$requestId]);
+            $request = $requestStmt ? sqlsrv_fetch_array($requestStmt, SQLSRV_FETCH_ASSOC) : null;
+            if (!$request) {
+              $message = 'Yêu cầu không tồn tại hoặc đã được xử lý.';
               $messageType = 'danger';
-              $errs = sqlsrv_errors();
-              if ($errs) {
-                $message .= ' SQLERR: ' . htmlspecialchars(print_r($errs, true));
+            } else {
+              $temporaryPassword = seb_generate_temporary_password();
+              $mailResult = seb_send_password_reset_email((string) $request['EmailXacThuc'], (string) ($request['HoVaTen'] ?? $request['TaiKhoan']), $temporaryPassword);
+              if (empty($mailResult['ok'])) {
+                $message = $mailResult['error'] ?? 'Không gửi được email, chưa cập nhật mật khẩu.';
+                $messageType = 'danger';
+              } else {
+                $hash = password_hash($temporaryPassword, PASSWORD_DEFAULT);
+                sqlsrv_begin_transaction($conn);
+                $updateUser = sqlsrv_query($conn, 'UPDATE TaiKhoan SET MatKhau = ? WHERE TaiKhoan = ?', [$hash, $request['TaiKhoan']]);
+                $updateRequest = $updateUser ? sqlsrv_query($conn, "UPDATE MatKhauResetRequest SET TrangThai = N'approved', AdminXuLy = ?, NgayXuLy = SYSUTCDATETIME() WHERE MaYeuCau = ? AND TrangThai = N'pending'", [$adminName, $requestId]) : false;
+                if ($updateUser && $updateRequest && sqlsrv_commit($conn)) {
+                  $message = 'Đã xác minh và gửi mật khẩu tạm thời qua email.';
+                  add_admin_notification($conn, 'password_reset', 'Đã duyệt quên mật khẩu', 'Đã xử lý yêu cầu của ' . $request['TaiKhoan'] . '.', 'admin_users.php');
+                } else {
+                  sqlsrv_rollback($conn);
+                  $message = 'Không cập nhật được mật khẩu sau khi gửi email.';
+                  $messageType = 'danger';
+                }
               }
             }
           }
@@ -186,6 +218,14 @@ if (empty($subjects)) {
   $subjects = ['Tin học', 'Toán', 'Vật lý', 'Hóa học', 'Sinh học', 'Ngữ văn'];
 }
 
+$resetRequests = [];
+$resetStmt = sqlsrv_query($conn, "SELECT r.MaYeuCau, r.TaiKhoan, r.EmailXacThuc, r.SoDienThoai, r.NgayTao, tk.HoVaTen FROM MatKhauResetRequest r LEFT JOIN TaiKhoan tk ON tk.TaiKhoan = r.TaiKhoan WHERE r.TrangThai = N'pending' ORDER BY r.NgayTao ASC");
+if ($resetStmt) {
+  while ($row = sqlsrv_fetch_array($resetStmt, SQLSRV_FETCH_ASSOC)) {
+    $resetRequests[] = $row;
+  }
+}
+
 $totalUsers = count($users);
 $pendingUsers = count(array_filter($users, function ($item) {
   return strtolower(trim((string) ($item['LoaiTaiKhoan'] ?? ''))) === 'pending';
@@ -250,6 +290,45 @@ admin_render_page_intro(
     <?php if ($message): ?>
       <div class="admin-flash <?php echo $messageType === 'danger' ? 'admin-flash-danger' : ''; ?>"><?php echo htmlspecialchars($message); ?></div>
     <?php endif; ?>
+
+    <section class="admin-card" style="margin-top:16px;">
+      <div class="admin-card-head">
+        <div>
+          <h2 class="admin-card-title"><i class="fas fa-key"></i> Duyệt quên mật khẩu</h2>
+          <p class="admin-card-note">Xác minh số điện thoại và email trước khi hệ thống sinh mật khẩu tạm thời gửi qua email.</p>
+        </div>
+      </div>
+      <div class="admin-card-body">
+        <?php if (empty($resetRequests)): ?>
+          <div class="admin-empty">Không có yêu cầu quên mật khẩu đang chờ.</div>
+        <?php else: ?>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Tài khoản</th><th>Họ tên</th><th>Số điện thoại</th><th>Email</th><th>Ngày gửi</th><th>Hành động</th></tr></thead>
+              <tbody>
+              <?php foreach ($resetRequests as $request): ?>
+                <tr>
+                  <td><?php echo htmlspecialchars((string) $request['TaiKhoan']); ?></td>
+                  <td><?php echo htmlspecialchars((string) ($request['HoVaTen'] ?? '')); ?></td>
+                  <td><?php echo htmlspecialchars((string) $request['SoDienThoai']); ?></td>
+                  <td><?php echo htmlspecialchars((string) $request['EmailXacThuc']); ?></td>
+                  <td><?php echo htmlspecialchars((string) ($request['NgayTao'] ?? '')); ?></td>
+                  <td>
+                    <form method="post" style="display:inline-flex;gap:6px;align-items:center;">
+                      <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                      <input type="hidden" name="reset_request_id" value="<?php echo (int) $request['MaYeuCau']; ?>">
+                      <button class="admin-btn admin-btn-success" type="submit" name="action" value="approve_reset">Duyệt &amp; gửi email</button>
+                      <button class="admin-btn admin-btn-danger" type="submit" name="action" value="reject_reset">Từ chối</button>
+                    </form>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        <?php endif; ?>
+      </div>
+    </section>
 
         <style>
           .admin-device-modal {
@@ -377,12 +456,6 @@ admin_render_page_intro(
                         </form>
                       <?php endif; ?>
                       <?php if ($username !== 'admin'): ?>
-                        <form method="post" onsubmit="return confirm('Reset mật khẩu cho tài khoản này?')" style="display:inline-block;margin-left:8px;">
-                          <input type="hidden" name="action" value="reset_password">
-                          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
-                          <input type="hidden" name="username" value="<?php echo $username; ?>">
-                          <button class="admin-btn admin-btn-warning" type="submit">Reset mật khẩu</button>
-                        </form>
                         <form method="post" onsubmit="return confirm('Xóa tài khoản này?')" style="display:inline-block;margin-left:8px;">
                           <input type="hidden" name="action" value="delete">
                           <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
@@ -417,20 +490,25 @@ admin_render_page_intro(
 
               <div class="admin-form-grid">
                 <div class="admin-field admin-col-12">
-                  <label>Username</label>
-                  <input class="admin-input" name="username" required>
+                  <label>Số điện thoại / tài khoản</label>
+                  <input class="admin-input" name="phone" type="tel" inputmode="numeric" pattern="0[0-9]{9,10}" placeholder="0xxxxxxxxx" required>
                 </div>
                 <div class="admin-field admin-col-12">
-                  <label>Password</label>
-                  <input class="admin-input" name="password" type="password" required>
+                  <label>Mật khẩu</label>
+                  <input class="admin-input" name="password" type="password" minlength="8" pattern="(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}" required>
+                  <small>Ít nhất 8 ký tự, gồm chữ hoa, số và ký tự đặc biệt.</small>
                 </div>
                 <div class="admin-field admin-col-12">
-                  <label>Họ tên</label>
-                  <input class="admin-input" name="fullname">
+                  <label>Nhập lại mật khẩu</label>
+                  <input class="admin-input" name="password_confirm" type="password" minlength="8" required>
+                </div>
+                <div class="admin-field admin-col-12">
+                  <label>Họ và tên</label>
+                  <input class="admin-input" name="fullname" required>
                 </div>
                 <div class="admin-field admin-col-12">
                   <label>Email</label>
-                  <input class="admin-input" name="email" type="email">
+                  <input class="admin-input" name="email" type="email" required>
                 </div>
                 <div class="admin-field admin-col-12">
                   <label>Môn học</label>
@@ -444,9 +522,9 @@ admin_render_page_intro(
                 <div class="admin-field admin-col-12">
                   <label>Role</label>
                   <select class="admin-select" name="role">
-                    <option value="user">user - người dùng bình thường</option>
-                    <option value="teacher">teacher - giáo viên</option>
-                    <option value="admin">admin - quản trị viên</option>
+                    <option value="teacher">Giáo viên</option>
+                    <option value="staff">Nhân viên</option>
+                    <option value="user">Người dùng khác</option>
                   </select>
                 </div>
               </div>
@@ -505,10 +583,11 @@ admin_render_page_intro(
                 <div class="admin-field admin-col-4">
                   <label>Role</label>
                   <select class="admin-input" name="role" id="editRole">
-                    <option value="pending">pending</option>
-                    <option value="user">user</option>
-                    <option value="teacher">teacher</option>
-                    <option value="admin">admin</option>
+                   <option value="pending">pending</option>
+                   <option value="user">user</option>
+                   <option value="teacher">teacher</option>
+                   <option value="staff">staff</option>
+                   <option value="admin">admin</option>
                   </select>
                 </div>
                 <div class="admin-field admin-col-12">

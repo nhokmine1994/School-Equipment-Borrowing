@@ -116,7 +116,10 @@ document.addEventListener("DOMContentLoaded", () => {
                             <input type="password" id="loginPass" name="MatKhau" placeholder="Nhập mật khẩu" required>
                         </div>
                         <button type="submit" name="login" value="1" class="submit-btn auth-submit">Đăng nhập</button>
-                    </form>
+                        </form>
+                    <div class="auth-switch">
+                        <a href="${window.location.pathname.startsWith('/SEB') ? '/SEB' : ''}/forgot-password">Quên mật khẩu?</a>
+                    </div>
                     <div class="auth-switch">
                         Chưa có tài khoản? <a href="#" id="switchToRegister">Đăng ký ngay</a>
                     </div>

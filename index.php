@@ -577,6 +577,9 @@ if (!empty($conn) && function_exists('sqlsrv_query')) {
             <input type="password" id="loginPass" name="MatKhau" placeholder="Nhập mật khẩu" required>
           </div>
           <div id="loginError" style="display:none;color:#b00020;margin-top:8px;font-size:0.95rem;"></div>
+          <div style="margin-top:10px;text-align:right;font-size:0.9rem;">
+            <a href="forgot-password" style="color:#1265a5;font-weight:600;">Quên mật khẩu?</a>
+          </div>
           <button type="submit" name="login" value="1" class="submit-btn auth-submit">Đăng nhập</button>
         </form>
         <div class="auth-switch">

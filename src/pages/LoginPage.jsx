@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { api } from '../services/api';
 import { setAuthStatus, setUser } from '../store/slices/appSlice';
@@ -51,6 +51,7 @@ export default function LoginPage() {
           <input id="username" value={username} onChange={(event) => setUsername(event.target.value)} required />
           <label htmlFor="password">Mật khẩu</label>
           <input id="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required />
+          <Link to="/forgot-password" style={{ color: '#1265a5', fontSize: 13, fontWeight: 600 }}>Quên mật khẩu?</Link>
           <button className="page-action" type="submit" disabled={loading}>{loading ? 'Đang đăng nhập...' : 'Đăng nhập'}</button>
         </form>
       </div>

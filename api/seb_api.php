@@ -495,6 +495,42 @@ switch ($action) {
         $subjects = seb_fetch_subjects_list($conn);
         seb_json_response(['ok' => true, 'subjects' => $subjects]);
 
+    case 'password_reset_request':
+        if ($method !== 'POST') {
+            seb_json_response(['ok' => false, 'error' => 'Method not allowed'], 405);
+        }
+        $body = array_merge($_POST, seb_read_json_body());
+        $phone = trim((string) ($body['phone'] ?? $body['username'] ?? $body['TaiKhoan'] ?? ''));
+        $email = trim((string) ($body['email'] ?? ''));
+        if (!preg_match('/^0\d{9,10}$/', $phone) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            seb_json_response(['ok' => false, 'error' => 'Vui lòng nhập đúng số điện thoại và email đã đăng ký.'], 400);
+        }
+
+        $accountStmt = sqlsrv_query(
+            $conn,
+            'SELECT TOP 1 TaiKhoan, HoVaTen FROM TaiKhoan WHERE TaiKhoan = ? AND SoDienThoai = ? AND LOWER(LTRIM(RTRIM(Email))) = LOWER(LTRIM(RTRIM(?)))',
+            [$phone, $phone, $email]
+        );
+        $account = $accountStmt ? sqlsrv_fetch_array($accountStmt, SQLSRV_FETCH_ASSOC) : null;
+        if (!$account) {
+            seb_json_response(['ok' => false, 'error' => 'Thông tin không khớp với tài khoản.'], 400);
+        }
+
+        $pendingStmt = sqlsrv_query($conn, "SELECT TOP 1 MaYeuCau FROM MatKhauResetRequest WHERE TaiKhoan = ? AND TrangThai = N'pending'", [$phone]);
+        if ($pendingStmt && sqlsrv_fetch_array($pendingStmt, SQLSRV_FETCH_ASSOC)) {
+            seb_json_response(['ok' => true, 'message' => 'Yêu cầu đã được gửi và đang chờ quản trị viên xác minh.']);
+        }
+
+        $insert = sqlsrv_query(
+            $conn,
+            'INSERT INTO MatKhauResetRequest (TaiKhoan, EmailXacThuc, SoDienThoai) VALUES (?, ?, ?)',
+            [$phone, $email, $phone]
+        );
+        if (!$insert) {
+            seb_json_response(['ok' => false, 'error' => seb_sql_error_message('Không tạo được yêu cầu quên mật khẩu.')], 500);
+        }
+        seb_json_response(['ok' => true, 'message' => 'Yêu cầu đã được gửi và đang chờ quản trị viên xác minh.']);
+
     case 'register':
         if ($method !== 'POST') {
             seb_json_response(['ok' => false, 'error' => 'Method not allowed'], 405);
