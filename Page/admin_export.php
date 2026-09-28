@@ -130,22 +130,22 @@ admin_render_shell_open($username);
 admin_render_nav('exports');
 admin_render_page_intro('Xuất dữ liệu & biểu mẫu', 'fa-file-export', 'Các file CSV được mã hóa UTF-8 và mở trực tiếp bằng Microsoft Excel.');
 ?>
-<div class="admin-grid-4">
+<div class="admin-grid-4 admin-export-grid">
   <article class="admin-card">
     <div class="admin-card-head"><h2 class="admin-card-title"><i class="fas fa-chart-pie"></i> Thống kê</h2></div>
-    <div class="admin-card-body"><p class="admin-card-note">Tổng người dùng, thiết bị và trạng thái phiếu mượn.</p><a class="admin-btn admin-btn-primary" href="admin_export.php?type=stats"><i class="fas fa-file-excel"></i> Xuất Excel</a></div>
+    <div class="admin-card-body"><p class="admin-card-note">Tổng người dùng, thiết bị và trạng thái phiếu mượn.</p><div class="admin-export-actions"><a class="admin-btn admin-btn-primary" href="admin_export.php?type=stats"><i class="fas fa-file-excel"></i> Xuất Excel</a></div></div>
   </article>
   <article class="admin-card">
     <div class="admin-card-head"><h2 class="admin-card-title"><i class="fas fa-boxes-stacked"></i> Thiết bị</h2></div>
-    <div class="admin-card-body"><p class="admin-card-note">Danh sách thiết bị, số lượng, tình trạng và danh mục.</p><a class="admin-btn admin-btn-primary" href="admin_export.php?type=devices"><i class="fas fa-file-excel"></i> Xuất Excel</a></div>
+    <div class="admin-card-body"><p class="admin-card-note">Danh sách thiết bị, số lượng, tình trạng và danh mục.</p><div class="admin-export-actions"><a class="admin-btn admin-btn-primary" href="admin_export.php?type=devices"><i class="fas fa-file-excel"></i> Xuất Excel</a></div></div>
   </article>
   <article class="admin-card">
     <div class="admin-card-head"><h2 class="admin-card-title"><i class="fas fa-users"></i> Người dùng</h2></div>
-    <div class="admin-card-body"><p class="admin-card-note">Danh sách tài khoản và thông tin liên hệ.</p><a class="admin-btn admin-btn-primary" href="admin_export.php?type=users"><i class="fas fa-file-excel"></i> Xuất Excel</a></div>
+    <div class="admin-card-body"><p class="admin-card-note">Danh sách tài khoản và thông tin liên hệ.</p><div class="admin-export-actions"><a class="admin-btn admin-btn-primary" href="admin_export.php?type=users"><i class="fas fa-file-excel"></i> Xuất Excel</a></div></div>
   </article>
   <article class="admin-card">
     <div class="admin-card-head"><h2 class="admin-card-title"><i class="fas fa-clipboard-list"></i> Phiếu mượn</h2></div>
-    <div class="admin-card-body"><p class="admin-card-note">Toàn bộ lịch sử phiếu mượn và trạng thái xử lý.</p><a class="admin-btn admin-btn-primary" href="admin_export.php?type=borrows"><i class="fas fa-file-excel"></i> Xuất Excel</a></div>
+    <div class="admin-card-body"><p class="admin-card-note">Toàn bộ lịch sử phiếu mượn và trạng thái xử lý.</p><div class="admin-export-actions"><a class="admin-btn admin-btn-primary" href="admin_export.php?type=borrows"><i class="fas fa-file-excel"></i> Xuất Excel</a></div></div>
   </article>
 </div>
 
