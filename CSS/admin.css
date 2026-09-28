@@ -163,7 +163,7 @@ body.admin-theme {
   border-radius: 13px;
   background: transparent;
   color: #315a7d;
-  font-size: 18px;
+  font-size: 22px;
   transition: transform .18s ease, background-color .18s ease, color .18s ease, box-shadow .18s ease;
 }
 
@@ -925,7 +925,7 @@ body.admin-theme {
     width: 40px;
     min-width: 40px;
     height: 40px;
-    font-size: 16px;
+    font-size: 20px;
   }
 
   .admin-container .admin-nav-bar .nav-tab span { left: 50px; }
