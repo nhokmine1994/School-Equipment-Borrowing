@@ -113,17 +113,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action !== '') {
             $trangThai = trim((string) ($_POST['trang_thai'] ?? 'Hiển thị'));
             $nguonLink = trim((string) ($_POST['nguon_link'] ?? ''));
             $imageName = trim((string) ($_POST['hinh_anh_url'] ?? ''));
+            $imageError = '';
             if (!empty($_FILES['hinh_anh']['name'])) {
                 $upload = validate_and_upload_file($_FILES['hinh_anh'], ['jpg', 'jpeg', 'png', 'gif', 'webp']);
                 if (!$upload['success']) {
-                    $message = $upload['message'];
-                    $messageTone = 'danger';
+                    $imageError = $upload['message'];
                 } else {
                     $imageName = $upload['filename'];
                 }
             }
 
-            if (!in_array($loaiTin, $loaiHopsLe, true)) {
+            if ($imageError !== '') {
+                $message = $imageError;
+                $messageTone = 'danger';
+            } elseif (!in_array($loaiTin, $loaiHopsLe, true)) {
                 $message = "Loại tin không hợp lệ. Chọn một trong: " . implode(', ', $loaiHopsLe);
                 $messageTone = 'danger';
             } elseif ($tieuDe === '' || $noiDung === '') {
@@ -237,7 +240,17 @@ admin_render_page_intro(
           <label for="hinh_anh">Ảnh đại diện</label>
           <input class="admin-input" type="file" name="hinh_anh" id="hinh_anh" accept="image/jpeg,image/png,image/gif,image/webp">
         </div>
-        <div class="admin-field admin-col-6"><div id="newsImagePreview" style="display:none;"><img alt="Xem trước ảnh" style="max-width:220px;max-height:130px;border-radius:8px;object-fit:cover;"></div></div>
+        <div class="admin-field admin-col-6">
+          <label for="image_placement">Vị trí ảnh trong bài</label>
+          <select class="admin-input" id="image_placement" name="image_placement">
+            <option value="-1">Không chèn trong nội dung</option>
+          </select>
+          <small>Chọn đầu bài hoặc vị trí sau từng đoạn. Ảnh vẫn được dùng làm ảnh đại diện.</small>
+        </div>
+        <div class="admin-field admin-col-12">
+          <div id="newsImagePreview" class="news-compose-preview" style="display:none;"><img alt="Xem trước ảnh"><span></span></div>
+          <div id="newsLayoutPreview" class="news-layout-preview" aria-live="polite"></div>
+        </div>
       </div>
       <div class="admin-actions" style="margin-top: 14px;">
         <button type="submit" class="admin-btn admin-btn-primary"><i class="fas fa-paper-plane"></i> Đăng tin tức</button>
@@ -308,7 +321,32 @@ admin_render_page_intro(
   const category = document.querySelector('select[name="loai_tin"]');
   const image = document.getElementById('hinh_anh');
   const preview = document.getElementById('newsImagePreview');
+  const layoutPreview = document.getElementById('newsLayoutPreview');
+  const placement = document.getElementById('image_placement');
   const csrf = form?.querySelector('input[name="csrf_token"]')?.value || '';
+  const getParagraphs = () => content.value.split(/\n\s*\n/).map((item) => item.trim()).filter(Boolean);
+  const updatePlacementOptions = () => {
+    const current = placement.value;
+    const paragraphs = getParagraphs();
+    placement.innerHTML = '<option value="-1">Không chèn trong nội dung</option><option value="0">Đầu bài</option>'
+      + paragraphs.map((_, index) => `<option value="${index + 1}">Sau đoạn ${index + 1}</option>`).join('');
+    if ([...placement.options].some((option) => option.value === current)) placement.value = current;
+    renderPreview();
+  };
+  const renderPreview = () => {
+    const paragraphs = getParagraphs();
+    const imageSource = preview.querySelector('img')?.src || '';
+    const position = Number(placement.value);
+    let html = '';
+    if (position === 0 && imageSource) html += `<img src="${imageSource}" alt="Ảnh trong bài">`;
+    paragraphs.forEach((paragraph, index) => {
+      html += `<p>${paragraph.replace(/[&<>]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[char]))}</p>`;
+      if (position === index + 1 && imageSource) html += `<img src="${imageSource}" alt="Ảnh trong bài">`;
+    });
+    layoutPreview.innerHTML = html;
+  };
+  content.addEventListener('input', updatePlacementOptions);
+  placement.addEventListener('change', renderPreview);
   importButton?.addEventListener('click', async () => {
     if (!source.value.trim()) return;
     importButton.disabled = true;
@@ -325,7 +363,9 @@ admin_render_page_intro(
       if (data.imageUrl) {
         preview.style.display = 'block';
         preview.querySelector('img').src = data.imageUrl;
+        preview.querySelector('span').textContent = 'Ảnh lấy từ link nguồn';
       }
+      updatePlacementOptions();
     } catch (error) {
       window.alert(error.message || 'Không lấy được nội dung từ link.');
     } finally {
@@ -338,7 +378,22 @@ admin_render_page_intro(
     if (!file) return;
     preview.style.display = 'block';
     preview.querySelector('img').src = URL.createObjectURL(file);
+    preview.querySelector('span').textContent = file.name;
+    updatePlacementOptions();
   });
+  form?.addEventListener('submit', () => {
+    const imageSource = document.getElementById('hinh_anh_url').value || image.files?.length;
+    const paragraphs = getParagraphs();
+    const position = Number(placement.value);
+    if (!imageSource || position < 0) {
+      content.value = paragraphs.join('\n\n');
+      return;
+    }
+    const blocks = [...paragraphs];
+    blocks.splice(position, 0, '[[IMAGE]]');
+    content.value = blocks.join('\n\n');
+  });
+  updatePlacementOptions();
 })();
 </script>
 <?php admin_render_shell_close(); ?>

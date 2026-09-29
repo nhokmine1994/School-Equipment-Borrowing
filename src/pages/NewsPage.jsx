@@ -233,8 +233,9 @@ export default function NewsPage() {
       {activeArticle ? (
         (() => {
           const crumbIncome = badgeMeta[activeArticle.category]?.label ?? 'Tin tức';
-          const bodyText = String(activeArticle.content || activeArticle.excerpt || '');
-          const paragraphs = bodyText.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+           const bodyText = String(activeArticle.content || activeArticle.excerpt || '');
+           const contentBlocks = bodyText.split('[[IMAGE]]');
+           const renderText = (text) => text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
           const sideList = [
             ...(() => { try { return featured && featured.title !== activeArticle.title ? [featured] : []; } catch (e) { return []; } })(),
             ...(news.articles ?? []).filter((a) => a.title !== activeArticle.title).slice(0, 4),
@@ -264,11 +265,18 @@ export default function NewsPage() {
 
               <div className="news-detail-body" style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
                 <div style={{ flex: '1 1 480px', minWidth: 0 }}>
-                  {bodyText.trim() !== '' ? (
-                    paragraphs.map((pText, idx) => <p key={idx}>{pText}</p>)
-                  ) : (
-                    <p style={{ color: '#94a3b8' }}>Bài viết chưa có nội dung chi tiết.</p>
-                  )}
+                   {bodyText.trim() !== '' ? (
+                     contentBlocks.map((block, idx) => (
+                       <span key={idx}>
+                         {renderText(block).map((pText, paragraphIndex) => <p key={paragraphIndex}>{pText}</p>)}
+                         {idx < contentBlocks.length - 1 && activeArticle.image ? <img src={activeArticle.image} alt={activeArticle.title} style={{ width: '100%', maxHeight: 420, objectFit: 'cover', borderRadius: 10, margin: '12px 0' }} /> : null}
+                       </span>
+                     ))
+                   ) : (
+                     <p style={{ color: '#94a3b8' }}>Bài viết chưa có nội dung chi tiết.</p>
+                   )}
+
+                   {bodyText.indexOf('[[IMAGE]]') === -1 && activeArticle.image ? <img src={activeArticle.image} alt={activeArticle.title} style={{ width: '100%', maxHeight: 420, objectFit: 'cover', borderRadius: 10, margin: '12px 0' }} /> : null}
 
                   <button type="button" className="news-detail-back" onClick={() => setActiveArticle(null)}>
                     <i className="fas fa-arrow-left" /> Về danh sách tin

@@ -724,13 +724,14 @@ switch ($action) {
 
                     $noiDung = trim((string) ($row['NoiDung'] ?? ''));
                     $title = trim((string) ($row['TieuDe'] ?? ''));
+                    $plainContent = trim(str_replace('[[IMAGE]]', '', $noiDung));
                     $items[] = [
                         'id' => (int) ($row['MaThongBao'] ?? 0),
                         'category' => $key,
                         'categoryLabel' => $loai,
-                        'title' => $title !== '' ? $title : mb_substr($noiDung !== '' ? $noiDung : $loai, 0, 80),
+                        'title' => $title !== '' ? $title : mb_substr($plainContent !== '' ? $plainContent : $loai, 0, 80),
                         'content' => $noiDung,
-                        'excerpt' => mb_substr($noiDung !== '' ? $noiDung : $loai, 0, 120),
+                        'excerpt' => mb_substr($plainContent !== '' ? $plainContent : $loai, 0, 120),
                         'date' => $dateStr,
                         'readTime' => max(1, (int) ceil(mb_strlen($noiDung, 'UTF-8') / 300)) . ' phút',
                         'views' => '',
