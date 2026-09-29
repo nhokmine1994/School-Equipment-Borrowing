@@ -46,8 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
                 $mustChangePassword = 0;
-                $sql = "INSERT INTO TaiKhoan (TaiKhoan, MatKhau, LoaiTaiKhoan, HoVaTen, SoDienThoai, Email, BoMon, MustChangePassword) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-                $params = array(&$username, &$hash, &$role, &$fullname, &$phone, &$email, &$boMon, &$mustChangePassword);
+                $accountActive = 1;
+                $sql = "INSERT INTO TaiKhoan (TaiKhoan, MatKhau, LoaiTaiKhoan, HoVaTen, SoDienThoai, Email, BoMon, MustChangePassword, TaiKhoanActive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                $params = array(&$username, &$hash, &$role, &$fullname, &$phone, &$email, &$boMon, &$mustChangePassword, &$accountActive);
                 $stmt = sqlsrv_prepare($conn, $sql, $params);
                 if ($stmt && sqlsrv_execute($stmt)) {
                     $message = 'Tạo tài khoản thành công.';
@@ -99,6 +100,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($action === 'reset_password') {
           $message = 'Mật khẩu chỉ được cấp lại qua yêu cầu quên mật khẩu đã được xác minh.';
           $messageType = 'danger';
+        }
+
+        if ($action === 'toggle_active') {
+            $username = trim($_POST['username'] ?? '');
+            $active = ($_POST['active'] ?? '0') === '1' ? 1 : 0;
+            if ($username === 'admin') {
+                $message = 'Không thể vô hiệu hóa tài khoản admin gốc.';
+                $messageType = 'danger';
+            } else {
+                $stmt = sqlsrv_query($conn, 'UPDATE TaiKhoan SET TaiKhoanActive = ? WHERE TaiKhoan = ?', [$active, $username]);
+                $message = $stmt ? ($active ? 'Đã kích hoạt tài khoản.' : 'Đã vô hiệu hóa tài khoản.') : 'Cập nhật trạng thái tài khoản thất bại.';
+                $messageType = $stmt ? 'success' : 'danger';
+            }
         }
 
         if ($action === 'approve_reset' || $action === 'reject_reset') {
@@ -191,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($stmt && sqlsrv_execute($stmt)) {
                     $message = 'Xóa tài khoản thành công.';
                 } else {
-                    $message = 'Xóa thất bại.';
+                    $message = 'Không thể xóa tài khoản vì có dữ liệu liên quan (thường là lịch sử mượn). Hãy dùng Vô hiệu hóa.';
                     $messageType = 'danger';
                 }
             }
@@ -200,7 +214,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $users = [];
-$sql = "SELECT TaiKhoan, LoaiTaiKhoan, HoVaTen, SoDienThoai, Email, BoMon
+$sql = "SELECT TaiKhoan, LoaiTaiKhoan, HoVaTen, SoDienThoai, Email, BoMon, TaiKhoanActive
   FROM TaiKhoan
   ORDER BY CASE WHEN LOWER(LTRIM(RTRIM(LoaiTaiKhoan))) = 'pending' THEN 0 ELSE 1 END,
      CASE WHEN LOWER(LTRIM(RTRIM(LoaiTaiKhoan))) = 'rejected' THEN 2 ELSE 1 END,
@@ -410,7 +424,8 @@ admin_render_page_intro(
                     $phone = htmlspecialchars($u['SoDienThoai'] ?? '');
                     $email = htmlspecialchars($u['Email'] ?? '');
                     $subject = htmlspecialchars($u['BoMon'] ?? '');
-                    $role = strtolower(trim((string) ($u['LoaiTaiKhoan'] ?? 'user')));
+                     $role = strtolower(trim((string) ($u['LoaiTaiKhoan'] ?? 'user')));
+                     $accountActive = (int) ($u['TaiKhoanActive'] ?? 1) === 1;
                     $chipClass = 'admin-chip-primary';
                     if ($role === 'admin') {
                         $chipClass = 'admin-chip-danger';
@@ -439,7 +454,7 @@ admin_render_page_intro(
                     <td><?php echo $phone ?: '<span style="color:#7890a6">Chưa có</span>'; ?></td>
                     <td><?php echo $email ?: '<span style="color:#7890a6">Chưa có</span>'; ?></td>
                     <td><?php echo $subject ?: '<span style="color:#7890a6">Chưa có</span>'; ?></td>
-                    <td><span class="admin-chip <?php echo $chipClass; ?>"><?php echo htmlspecialchars($role); ?></span></td>
+                     <td><span class="admin-chip <?php echo $chipClass; ?>"><?php echo htmlspecialchars($role); ?></span><br><span class="admin-chip <?php echo $accountActive ? 'admin-chip-success' : 'admin-chip-danger'; ?>" style="margin-top:4px;"><?php echo $accountActive ? 'Hoạt động' : 'Vô hiệu hóa'; ?></span></td>
                     <td>
                       <button class="admin-btn admin-btn-soft" type="button" onclick="event.stopPropagation(); openUserEditModal(<?php echo $editPayloadJson; ?>)">Sửa</button>
                       <?php if ($role === 'pending'): ?>
@@ -456,7 +471,14 @@ admin_render_page_intro(
                           <button class="admin-btn admin-btn-danger" type="submit">Từ chối</button>
                         </form>
                       <?php endif; ?>
-                      <?php if ($username !== 'admin'): ?>
+                       <?php if ($username !== 'admin'): ?>
+                         <form method="post" style="display:inline-block;margin-left:8px;">
+                           <input type="hidden" name="action" value="toggle_active">
+                           <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                           <input type="hidden" name="username" value="<?php echo $username; ?>">
+                           <input type="hidden" name="active" value="<?php echo $accountActive ? '0' : '1'; ?>">
+                           <button class="admin-btn <?php echo $accountActive ? 'admin-btn-warning' : 'admin-btn-success'; ?>" type="submit"><?php echo $accountActive ? 'Vô hiệu hóa' : 'Kích hoạt'; ?></button>
+                         </form>
                         <form method="post" onsubmit="return confirm('Xóa tài khoản này?')" style="display:inline-block;margin-left:8px;">
                           <input type="hidden" name="action" value="delete">
                           <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">

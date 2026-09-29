@@ -988,6 +988,12 @@ body.admin-theme {
   }
 }
 
+.admin-btn-warning {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
 @media (max-width: 760px) {
   .admin-container .admin-nav-bar {
     top: 70px;

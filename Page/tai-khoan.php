@@ -82,6 +82,11 @@ if(isset($_POST['login']))
     }
 
     if ($isAuthenticated) {
+        if (array_key_exists('TaiKhoanActive', $row) && !$row['TaiKhoanActive']) {
+            http_response_code(403);
+            echo 'Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.';
+            exit;
+        }
         $roleValue = strtolower(trim((string) ($row['LoaiTaiKhoan'] ?? 'user')));
         if ($roleValue === 'pending' || $roleValue === 'rejected') {
             http_response_code(403);

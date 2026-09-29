@@ -128,6 +128,10 @@ switch ($action) {
             seb_json_response(['ok' => false, 'error' => 'Sai tài khoản hoặc mật khẩu'], 401);
         }
 
+        if (array_key_exists('TaiKhoanActive', $row) && !$row['TaiKhoanActive']) {
+            seb_json_response(['ok' => false, 'error' => 'Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.'], 403);
+        }
+
         $roleValue = strtolower(trim((string) ($row['LoaiTaiKhoan'] ?? 'user')));
         if ($roleValue === 'pending') {
             seb_json_response(['ok' => false, 'error' => 'Tài khoản của bạn đang chờ quản trị viên duyệt.'], 403);
