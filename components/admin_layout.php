@@ -82,7 +82,45 @@ function admin_render_nav(string $active = ''): void
 
     echo '<a class="nav-tab admin-nav-home" href="../index.php" title="Về trang chủ" aria-label="Về trang chủ"><i class="fas fa-house"></i><span>Về trang chủ</span></a>';
     echo '<a class="nav-tab admin-nav-logout" href="admin_login.php?action=logout" title="Đăng xuất" aria-label="Đăng xuất"><i class="fas fa-right-from-bracket"></i><span>Đăng xuất</span></a>';
-    echo '</div></nav>';
+    echo '</div><span class="admin-live-status" id="adminLiveStatus" title="Đang theo dõi cập nhật"><i class="fas fa-circle"></i><b>Live</b></span></nav>';
+    echo <<<'HTML'
+    <script>
+    (() => {
+      const apiUrl = '../api/seb_api.php?action=admin_poll';
+      const status = document.getElementById('adminLiveStatus');
+      let previous = null;
+      let timer = null;
+      const showNotice = (message, link) => {
+        const node = document.createElement('a');
+        node.className = 'admin-live-toast';
+        node.href = link;
+        node.innerHTML = '<i class="fas fa-bell"></i><span>' + message + '</span>';
+        document.body.appendChild(node);
+        setTimeout(() => node.remove(), 7000);
+      };
+      const poll = async () => {
+        try {
+          const response = await fetch(apiUrl, { credentials: 'same-origin', headers: { Accept: 'application/json' } });
+          const payload = await response.json();
+          if (!payload.ok) return;
+          const counts = payload.counts || {};
+          if (status) status.classList.add('is-online');
+          if (previous) {
+            if (counts.pending_resets > previous.pending_resets) showNotice('Có yêu cầu quên mật khẩu mới', 'admin_users.php');
+            else if (counts.pending_borrows > previous.pending_borrows) showNotice('Có yêu cầu mượn mới', 'admin_borrows.php');
+            else if (counts.pending_rooms > previous.pending_rooms) showNotice('Có đăng ký phòng mới', 'admin_dang_ky_phong.php');
+          }
+          previous = counts;
+        } catch (error) {
+          if (status) status.classList.remove('is-online');
+        }
+      };
+      poll();
+      timer = window.setInterval(poll, 15000);
+      window.addEventListener('beforeunload', () => window.clearInterval(timer), { once: true });
+    })();
+    </script>
+HTML;
 }
 
 function admin_render_page_intro(string $heading, string $icon = 'fa-user-shield', string $subtitle = ''): void

@@ -52,6 +52,8 @@ export default function RoomsPage() {
   useEffect(() => {
     setSelectedSlots([]);
     loadSchedule();
+    const timer = roomType && roomNumber ? window.setInterval(loadSchedule, 15000) : null;
+    return () => { if (timer) window.clearInterval(timer); };
   }, [roomType, roomNumber]);
 
   const occupied = useMemo(() => {

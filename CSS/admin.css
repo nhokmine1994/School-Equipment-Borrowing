@@ -239,6 +239,41 @@ body.admin-theme {
 .admin-container .admin-nav-bar .admin-nav-logout:hover,
 .admin-container .admin-nav-bar .admin-nav-logout:focus-visible { background: #fecaca; color: #7f1d1d; }
 
+.admin-live-status {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.admin-live-status i { font-size: 7px; }
+.admin-live-status.is-online { color: #16a34a; }
+.admin-live-toast {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 16000;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 12px 15px;
+  border-radius: 10px;
+  background: #123d63;
+  color: #fff;
+  box-shadow: 0 10px 28px rgba(15, 54, 89, .28);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
 .admin-container > .admin-section {
   width: calc(100% - 116px);
   max-width: calc(100% - 116px);

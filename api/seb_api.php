@@ -91,6 +91,27 @@ switch ($action) {
         }
         seb_json_response(['ok' => true, 'loggedIn' => true, 'user' => seb_api_resolve_user_payload($user)]);
 
+    case 'admin_poll':
+        $sessionUser = $_SESSION['user'] ?? null;
+        if (!is_array($sessionUser) || strtolower(trim((string) ($sessionUser['role'] ?? ''))) !== 'admin') {
+            seb_json_response(['ok' => false, 'error' => 'Không có quyền quản trị.'], 403);
+        }
+        $count = static function (string $sql, array $params = []) use ($conn): int {
+            $stmt = @sqlsrv_query($conn, $sql, $params);
+            $row = $stmt ? sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC) : null;
+            return (int) ($row['Total'] ?? 0);
+        };
+        $pendingBorrow = $count("SELECT COUNT(*) AS Total FROM PhieuMuon WHERE TinhTrangDuyetID = 3 OR LOWER(LTRIM(RTRIM(TinhTrangMuon))) IN (N'pending', N'chờ duyệt', N'đang chờ', N'3')");
+        $pendingReset = $count("SELECT COUNT(*) AS Total FROM MatKhauResetRequest WHERE TrangThai = N'pending'");
+        $pendingRooms = $count("SELECT COUNT(*) AS Total FROM DangKyPhong WHERE LOWER(LTRIM(RTRIM(TrangThai))) IN (N'chờ duyệt', N'pending')");
+        $unread = $count("SELECT COUNT(*) AS Total FROM ThongBaoAdmin WHERE TrangThai = 0");
+        seb_json_response(['ok' => true, 'counts' => [
+            'pending_borrows' => $pendingBorrow,
+            'pending_resets' => $pendingReset,
+            'pending_rooms' => $pendingRooms,
+            'unread_notifications' => $unread,
+        ], 'checkedAt' => date('c')]);
+
     case 'logout_user':
         $_SESSION['user'] = null;
         unset($_SESSION['user']);

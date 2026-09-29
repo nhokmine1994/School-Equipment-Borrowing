@@ -12,7 +12,7 @@ export default function BorrowPage() {
   const [requests, setRequests] = useState(fallback);
   useEffect(() => {
     let active = true;
-    api.getBorrowList().then((result) => {
+    const refresh = () => api.getBorrowList().then((result) => {
       if (active && result?.success && result.data?.length) {
         setRequests(result.data.map((item) => ({
           user: item.username || item.userNameLabel || item.user || 'Người dùng',
@@ -21,7 +21,9 @@ export default function BorrowPage() {
         })));
       }
     });
-    return () => { active = false; };
+    refresh();
+    const timer = window.setInterval(refresh, 15000);
+    return () => { active = false; window.clearInterval(timer); };
   }, []);
   return (
     <LegacyPageShell title="Lịch sử mượn / trả" icon="fas fa-clock-rotate-left">
