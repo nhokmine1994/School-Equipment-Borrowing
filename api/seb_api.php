@@ -691,7 +691,7 @@ switch ($action) {
         $items = [];
         $newsFromDb = false;
         if (!empty($conn) && function_exists('sqlsrv_query')) {
-            $newsSql = "SELECT MaThongBao, LoaiThongBao, NoiDung, NgayDang, NguoiDang
+            $newsSql = "SELECT MaThongBao, LoaiThongBao, TieuDe, NoiDung, HinhAnh, NguonLink, NgayDang, NguoiDang
                         FROM ThongBao
                         WHERE TrangThai IN (N'Hiển thị', N'Dang hien thi', N'Hiển thị ', N'Hiện thị')
                            OR TrangThai = 1
@@ -723,17 +723,20 @@ switch ($action) {
                     }
 
                     $noiDung = trim((string) ($row['NoiDung'] ?? ''));
+                    $title = trim((string) ($row['TieuDe'] ?? ''));
                     $items[] = [
                         'id' => (int) ($row['MaThongBao'] ?? 0),
                         'category' => $key,
                         'categoryLabel' => $loai,
-                        'title' => mb_substr($noiDung !== '' ? $noiDung : $loai, 0, 80),
+                        'title' => $title !== '' ? $title : mb_substr($noiDung !== '' ? $noiDung : $loai, 0, 80),
                         'content' => $noiDung,
                         'excerpt' => mb_substr($noiDung !== '' ? $noiDung : $loai, 0, 120),
                         'date' => $dateStr,
                         'readTime' => max(1, (int) ceil(mb_strlen($noiDung, 'UTF-8') / 300)) . ' phút',
                         'views' => '',
                         'author' => (string) ($row['NguoiDang'] ?? 'Quản trị'),
+                        'image' => (string) ($row['HinhAnh'] ?? ''),
+                        'sourceUrl' => (string) ($row['NguonLink'] ?? ''),
                         'gradient' => $gradient,
                         'icon' => $icon,
                     ];
@@ -754,6 +757,8 @@ switch ($action) {
                     'readTime' => $first['readTime'],
                     'views' => '',
                     'label' => 'Nổi bật',
+                    'image' => $first['image'] ?? '',
+                    'sourceUrl' => $first['sourceUrl'] ?? '',
                 ],
                 'articles' => $items,
             ]]);
