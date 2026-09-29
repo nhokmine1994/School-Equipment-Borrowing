@@ -321,13 +321,18 @@ admin_render_page_intro(
             <table class="admin-table">
               <thead><tr><th>Tài khoản</th><th>Họ tên</th><th>Số điện thoại</th><th>Email</th><th>Ngày gửi</th><th>Hành động</th></tr></thead>
               <tbody>
-              <?php foreach ($resetRequests as $request): ?>
+              <?php foreach ($resetRequests as $request):
+                $resetCreatedAt = $request['NgayTao'] ?? null;
+                $resetCreatedAtText = is_object($resetCreatedAt) && method_exists($resetCreatedAt, 'format')
+                  ? $resetCreatedAt->format('d/m/Y H:i')
+                  : (string) $resetCreatedAt;
+              ?>
                 <tr>
                   <td><?php echo htmlspecialchars((string) $request['TaiKhoan']); ?></td>
                   <td><?php echo htmlspecialchars((string) ($request['HoVaTen'] ?? '')); ?></td>
                   <td><?php echo htmlspecialchars((string) $request['SoDienThoai']); ?></td>
                   <td><?php echo htmlspecialchars((string) $request['EmailXacThuc']); ?></td>
-                  <td><?php echo htmlspecialchars((string) ($request['NgayTao'] ?? '')); ?></td>
+                  <td><?php echo htmlspecialchars($resetCreatedAtText, ENT_QUOTES, 'UTF-8'); ?></td>
                   <td>
                     <form method="post" class="reset-request-actions" style="display:flex;gap:8px;align-items:center;white-space:nowrap;min-width:230px;">
                       <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
