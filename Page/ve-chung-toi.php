@@ -430,18 +430,6 @@ $username = $is_logged_in ? (string) $_SESSION['user']['username'] : '';
           </button>
 
           <button class="member-card" type="button"
-            data-name="ĐẶNG BẮC NAM"
-            data-role="BUSINESS ANALYST"
-            data-phone="0378047778"
-            data-email="dangbacnamlhu@gmail.com"
-            data-image="../Images/nam.png"
-            data-note="Phân tích nghiệp vụ và chuẩn hóa quy trình mượn trả thiết bị.">
-            <span class="member-role">BUSINESS ANALYST</span>
-            <img class="member-photo" src="../Images/nam.png" alt="Đặng Bắc Nam">
-            <span class="member-name">ĐẶNG BẮC NAM</span>
-          </button>
-
-          <button class="member-card" type="button"
             data-name="LÒ VĂN DUẪN"
             data-role="SOFTWARE DEVELOPER"
             data-phone="0947478016"
@@ -451,18 +439,6 @@ $username = $is_logged_in ? (string) $_SESSION['user']['username'] : '';
             <span class="member-role">SOFTWARE DEVELOPER</span>
             <img class="member-photo" src="../Images/duan.png" alt="Lò Văn Duẫn">
             <span class="member-name">LÒ VĂN DUẪN</span>
-          </button>
-
-          <button class="member-card" type="button"
-            data-name="NGUYỄN THỊ BÍCH HẰNG"
-            data-role="UI/UX DESIGNER"
-            data-phone="0976543210"
-            data-email="hangbich045@gmail.com"
-            data-image="../Images/hang.png"
-            data-note="Thiết kế trải nghiệm và giao diện trực quan, thân thiện người dùng.">
-            <span class="member-role">UI/UX DESIGNER</span>
-            <img class="member-photo" src="../Images/hang.png" alt="Nguyễn Thị Bích Hằng">
-            <span class="member-name">NGUYỄN THỊ BÍCH HẰNG</span>
           </button>
 
           <button class="member-card add-member" type="button" data-add="true">
