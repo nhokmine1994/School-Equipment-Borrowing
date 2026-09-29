@@ -329,7 +329,7 @@ admin_render_page_intro(
                   <td><?php echo htmlspecialchars((string) $request['EmailXacThuc']); ?></td>
                   <td><?php echo htmlspecialchars((string) ($request['NgayTao'] ?? '')); ?></td>
                   <td>
-                    <form method="post" style="display:inline-flex;gap:6px;align-items:center;">
+                    <form method="post" class="reset-request-actions" style="display:flex;gap:8px;align-items:center;white-space:nowrap;min-width:230px;">
                       <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                       <input type="hidden" name="reset_request_id" value="<?php echo (int) $request['MaYeuCau']; ?>">
                       <button class="admin-btn admin-btn-success" type="submit" name="action" value="approve_reset">Duyệt &amp; gửi email</button>

@@ -581,6 +581,24 @@ body.admin-theme {
   background: var(--admin-surface-soft);
 }
 
+.admin-table tbody td .reset-request-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  min-width: 230px !important;
+  white-space: nowrap !important;
+}
+
+.admin-table tbody td .reset-request-actions .admin-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: auto !important;
+  min-width: 96px;
+  white-space: nowrap !important;
+}
+
 .admin-chip {
   display: inline-flex;
   align-items: center;
