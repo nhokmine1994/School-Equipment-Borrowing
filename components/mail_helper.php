@@ -1,6 +1,6 @@
 <?php
 
-function seb_send_password_reset_email(string $to, string $displayName, string $temporaryPassword): array
+function seb_send_password_reset_email(string $to, string $displayName, string $temporaryPassword, string $purpose = 'reset'): array
 {
     $required = [
         'SEB_SMTP_HOST' => getenv('SEB_SMTP_HOST'),
@@ -36,14 +36,15 @@ function seb_send_password_reset_email(string $to, string $displayName, string $
         $mail->setFrom(trim((string) $required['SEB_MAIL_FROM']), (string) (getenv('SEB_MAIL_FROM_NAME') ?: 'SEB'));
         $mail->addAddress($to, $displayName !== '' ? $displayName : $to);
         $mail->isHTML(true);
-        $mail->Subject = 'Mật khẩu tạm thời cho tài khoản SEB';
+        $isAccountCreation = $purpose === 'account';
+        $mail->Subject = $isAccountCreation ? 'Thông tin tài khoản SEB' : 'Mật khẩu tạm thời cho tài khoản SEB';
         $safeName = htmlspecialchars($displayName !== '' ? $displayName : 'bạn', ENT_QUOTES, 'UTF-8');
         $safePassword = htmlspecialchars($temporaryPassword, ENT_QUOTES, 'UTF-8');
         $mail->Body = '<p>Xin chào ' . $safeName . ',</p>'
-            . '<p>Yêu cầu quên mật khẩu của bạn đã được quản trị viên xác minh.</p>'
+            . ($isAccountCreation ? '<p>Tài khoản SEB của bạn đã được quản trị viên tạo.</p>' : '<p>Yêu cầu quên mật khẩu của bạn đã được quản trị viên xác minh.</p>')
             . '<p>Mật khẩu tạm thời: <strong>' . $safePassword . '</strong></p>'
-            . '<p>Vui lòng đăng nhập và liên hệ quản trị viên nếu cần đổi mật khẩu.</p>';
-        $mail->AltBody = "Mật khẩu tạm thời SEB: {$temporaryPassword}";
+            . '<p>Vui lòng đăng nhập và đổi mật khẩu ngay ở lần đầu sử dụng.</p>';
+        $mail->AltBody = ($isAccountCreation ? 'Thông tin tài khoản SEB. ' : '') . "Mật khẩu tạm thời SEB: {$temporaryPassword}";
         $mail->send();
         return ['ok' => true];
     } catch (Throwable $error) {

@@ -44,18 +44,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = 'Vai trò tài khoản không hợp lệ.';
                 $messageType = 'danger';
             } else {
-                $hash = password_hash($password, PASSWORD_DEFAULT);
-                $mustChangePassword = 0;
-                $accountActive = 1;
-                $sql = "INSERT INTO TaiKhoan (TaiKhoan, MatKhau, LoaiTaiKhoan, HoVaTen, SoDienThoai, Email, BoMon, MustChangePassword, TaiKhoanActive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                $params = array(&$username, &$hash, &$role, &$fullname, &$phone, &$email, &$boMon, &$mustChangePassword, &$accountActive);
-                $stmt = sqlsrv_prepare($conn, $sql, $params);
-                if ($stmt && sqlsrv_execute($stmt)) {
-                    $message = 'Tạo tài khoản thành công.';
-                    add_admin_notification($conn, 'new_user', 'Tài khoản mới', 'Đã tạo tài khoản ' . $username . ' (' . $role . ').', 'admin_users.php');
-                } else {
-                    $message = 'Tạo tài khoản thất bại (có thể username đã tồn tại).';
+                $mailResult = seb_send_password_reset_email($email, $fullname, $password, 'account');
+                if (empty($mailResult['ok'])) {
+                    $message = $mailResult['error'] ?? 'Không gửi được email thông tin tài khoản. Tài khoản chưa được tạo.';
                     $messageType = 'danger';
+                } else {
+                    $hash = password_hash($password, PASSWORD_DEFAULT);
+                    $mustChangePassword = 1;
+                    $accountActive = 1;
+                    sqlsrv_begin_transaction($conn);
+                    $sql = "INSERT INTO TaiKhoan (TaiKhoan, MatKhau, LoaiTaiKhoan, HoVaTen, SoDienThoai, Email, BoMon, MustChangePassword, TaiKhoanActive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    $params = array(&$username, &$hash, &$role, &$fullname, &$phone, &$email, &$boMon, &$mustChangePassword, &$accountActive);
+                    $stmt = sqlsrv_prepare($conn, $sql, $params);
+                    if ($stmt && sqlsrv_execute($stmt) && sqlsrv_commit($conn)) {
+                        $message = 'Tạo tài khoản và gửi thông tin đăng nhập qua email thành công.';
+                        add_admin_notification($conn, 'new_user', 'Tài khoản mới', 'Đã tạo tài khoản ' . $username . ' (' . $role . ').', 'admin_users.php');
+                    } else {
+                        sqlsrv_rollback($conn);
+                        $message = 'Tạo tài khoản thất bại (có thể username đã tồn tại).';
+                        $messageType = 'danger';
+                    }
                 }
             }
         }
