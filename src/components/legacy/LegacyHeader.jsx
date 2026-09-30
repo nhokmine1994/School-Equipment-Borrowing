@@ -4,14 +4,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { setAuthStatus, setUser } from '../../store/slices/appSlice';
 
-const avatarStyle = {
-  width: '100%',
-  height: '100%',
-  borderRadius: '50%',
-  objectFit: 'cover',
-};
-
 const appBase = window.location.pathname.startsWith('/SEB') ? '/SEB' : '';
+
+function getInitials(name) {
+  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+}
 
 export default function LegacyHeader() {
   const navigate = useNavigate();
@@ -65,9 +65,10 @@ export default function LegacyHeader() {
               className="icon-btn avatar-btn"
               id="avatarBtn"
               onClick={() => setMenuOpen((value) => !value)}
-            >
-              <img src={`${appBase}/Images/avatar-demo.png`} alt="Avatar" style={avatarStyle} />
+           >
+              <span className="avatar-initials" aria-hidden="true">{getInitials(displayName)}</span>
             </button>
+            <span className="user-profile-name" title={displayName}>{displayName}</span>
             {menuOpen ? (
               <div
                 className="dropdown-content"
