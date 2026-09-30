@@ -151,6 +151,15 @@ export const api = {
     }
   },
 
+  getUserNotifications: async () => {
+    try {
+      const payload = await requestJson('user_notifications');
+      return { success: true, data: payload ?? { counts: {}, items: [] } };
+    } catch {
+      return { success: false, data: { counts: {}, items: [] } };
+    }
+  },
+
   requestPasswordReset: async (phone, email) => {
     const response = await fetch(`${API_BASE}?action=password_reset_request`, {
       method: 'POST',

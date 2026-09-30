@@ -71,6 +71,7 @@ export default function HomePage() {
   const [recentVisibleCount, setRecentVisibleCount] = useState(5);
   const [activeRecent, setActiveRecent] = useState(null);
   const [maintenance, setMaintenance] = useState([]);
+  const [userNotifications, setUserNotifications] = useState({ counts: {}, items: [] });
   const [activeNotice, setActiveNotice] = useState(null);
   const [visibleCount, setVisibleCount] = useState(5);
   const [searchText, setSearchText] = useState('');
@@ -104,8 +105,26 @@ export default function HomePage() {
     return () => { active = false; };
   }, []);
 
+  useEffect(() => {
+    if (!user?.username) return undefined;
+    let active = true;
+    const refresh = () => api.getUserNotifications().then((result) => {
+      if (active && result?.success) setUserNotifications(result.data);
+    });
+    refresh();
+    const timer = window.setInterval(refresh, 15000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [user?.username]);
+
   return (
     <LegacyPageShell noHeading>
+      {Number(userNotifications.counts?.overdue || 0) > 0 ? (
+        <div className="home-overdue-alert" role="alert">
+          <i className="fas fa-triangle-exclamation" />
+          <strong>Bạn có {userNotifications.counts.overdue} phiếu đã quá hạn trả.</strong>
+          <button type="button" onClick={() => navigate('/borrow')}>Xem lịch sử mượn/trả</button>
+        </div>
+      ) : null}
       <div className="search-container">
         <div className="search-pill" role="search" onSubmit={(e) => e.preventDefault()}>
           <i className="fas fa-search search-icon-left" />

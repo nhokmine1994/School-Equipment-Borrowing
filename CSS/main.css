@@ -757,6 +757,59 @@ body {
   letter-spacing: 0.3px;
 }
 
+.avatar-btn { position: relative; }
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #dc2626;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+  border: 2px solid #fff;
+}
+
+.user-notification-list { border-bottom: 1px solid #e5e7eb; }
+.user-notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 12px;
+  color: #334155;
+  background: #fff;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.user-notification-item:hover { background: #f1f5f9; }
+.user-notification-item i { margin-top: 2px; color: #2563eb; }
+.user-notification-item.overdue i { color: #dc2626; }
+.user-notification-item.rejected i { color: #b91c1c; }
+
+.home-overdue-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 20px;
+  background: #fef2f2;
+  border-top: 1px solid #fecaca;
+  border-bottom: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: 14px;
+}
+.home-overdue-alert i { color: #dc2626; font-size: 17px; }
+.home-overdue-alert button { margin-left: auto; border: 0; border-radius: 999px; padding: 7px 13px; background: #dc2626; color: #fff; cursor: pointer; font-weight: 700; }
+@media (max-width: 560px) {
+  .home-overdue-alert { align-items: flex-start; flex-wrap: wrap; padding: 11px 14px; }
+  .home-overdue-alert button { margin-left: 27px; }
+}
+
 .user-profile-name {
   max-width: 150px;
   overflow: hidden;

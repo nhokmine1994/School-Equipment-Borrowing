@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
@@ -18,6 +18,7 @@ export default function LegacyHeader() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.app.user);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notifications, setNotifications] = useState({ counts: {}, items: [] });
 
   const displayName = useMemo(
     () => user?.name || user?.display_name || user?.username || '',
@@ -25,6 +26,19 @@ export default function LegacyHeader() {
   );
   const isLoggedIn = Boolean(user?.username);
   const userRole = String(user?.role || '').toLowerCase();
+
+  useEffect(() => {
+    if (!isLoggedIn) return undefined;
+    let active = true;
+    const refresh = () => api.getUserNotifications().then((result) => {
+      if (active && result?.success) setNotifications(result.data);
+    });
+    refresh();
+    const timer = window.setInterval(refresh, 15000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [isLoggedIn, user?.username]);
+
+  const notificationCount = Number(notifications.counts?.total || 0);
 
   const handleLogout = async () => {
     await api.logoutUser();
@@ -68,6 +82,7 @@ export default function LegacyHeader() {
               onClick={() => setMenuOpen((value) => !value)}
             >
               <span className="avatar-initials" aria-hidden="true">{getInitials(displayName)}</span>
+              {notificationCount > 0 ? <span className="notification-badge">{notificationCount > 99 ? '99+' : notificationCount}</span> : null}
             </button>
             {menuOpen ? (
               <div
@@ -100,6 +115,16 @@ export default function LegacyHeader() {
                 >
                   {displayName}
                 </div>
+                {notifications.items?.length ? (
+                  <div className="user-notification-list">
+                    {notifications.items.slice(0, 4).map((item, index) => (
+                      <Link key={`${item.type}-${item.borrowId}-${index}`} to="/borrow" className={`user-notification-item ${item.type}`} onClick={() => setMenuOpen(false)}>
+                        <i className={`fas ${item.type === 'overdue' ? 'fa-triangle-exclamation' : item.type === 'rejected' ? 'fa-xmark' : 'fa-bell'}`} />
+                        <span>{item.message}</span>
+                      </Link>
+                    ))}
+                  </div>
+                ) : null}
                 <Link to="/profile" className="dropdown-item" onClick={() => setMenuOpen(false)}>
                   <i className="fas fa-id-card" /> Thông tin cá nhân
                 </Link>
