@@ -18,6 +18,7 @@ export default function LegacyHeader() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.app.user);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const [notifications, setNotifications] = useState({ counts: {}, items: [] });
 
   const displayName = useMemo(
@@ -69,6 +70,7 @@ export default function LegacyHeader() {
             </button>
           </>
         ) : (
+          <>
           <div
             className="user-profile-menu"
             id="userProfileMenu"
@@ -82,7 +84,6 @@ export default function LegacyHeader() {
               onClick={() => setMenuOpen((value) => !value)}
             >
               <span className="avatar-initials" aria-hidden="true">{getInitials(displayName)}</span>
-              {notificationCount > 0 ? <span className="notification-badge">{notificationCount > 99 ? '99+' : notificationCount}</span> : null}
             </button>
             {menuOpen ? (
               <div
@@ -115,16 +116,6 @@ export default function LegacyHeader() {
                 >
                   {displayName}
                 </div>
-                {notifications.items?.length ? (
-                  <div className="user-notification-list">
-                    {notifications.items.slice(0, 4).map((item, index) => (
-                      <Link key={`${item.type}-${item.borrowId}-${index}`} to="/borrow" className={`user-notification-item ${item.type}`} onClick={() => setMenuOpen(false)}>
-                        <i className={`fas ${item.type === 'overdue' ? 'fa-triangle-exclamation' : item.type === 'rejected' ? 'fa-xmark' : 'fa-bell'}`} />
-                        <span>{item.message}</span>
-                      </Link>
-                    ))}
-                  </div>
-                ) : null}
                 <Link to="/profile" className="dropdown-item" onClick={() => setMenuOpen(false)}>
                   <i className="fas fa-id-card" /> Thông tin cá nhân
                 </Link>
@@ -152,6 +143,24 @@ export default function LegacyHeader() {
               </div>
             ) : null}
           </div>
+          <div className="notification-menu-wrap">
+            <button type="button" className="icon-btn notification-btn" aria-label="Thông báo" onClick={() => setNotificationOpen((value) => !value)}>
+              <i className="fas fa-bell" />
+              {notificationCount > 0 ? <span className="notification-badge">{notificationCount > 99 ? '99+' : notificationCount}</span> : null}
+            </button>
+            {notificationOpen ? (
+              <div className="notification-dropdown">
+                <div className="notification-dropdown-title"><i className="fas fa-bell" /> Thông báo</div>
+                {notifications.items?.length ? notifications.items.slice(0, 8).map((item, index) => (
+                  <Link key={`${item.type}-${item.borrowId}-${index}`} to="/borrow" className={`user-notification-item ${item.type}`} onClick={() => setNotificationOpen(false)}>
+                    <i className={`fas ${item.type === 'overdue' ? 'fa-triangle-exclamation' : item.type === 'rejected' ? 'fa-xmark' : 'fa-bell'}`} />
+                    <span>{item.message}</span>
+                  </Link>
+                )) : <div className="notification-empty">Chưa có thông báo mới.</div>}
+              </div>
+            ) : null}
+          </div>
+          </>
         )}
       </div>
     </header>
