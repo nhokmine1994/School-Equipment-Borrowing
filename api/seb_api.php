@@ -64,6 +64,9 @@ function seb_api_resolve_user_payload($user)
         'name' => $display,
         'display_name' => $display,
         'must_change_password' => !empty($user['must_change_password']),
+        'email' => (string) ($user['email'] ?? ''),
+        'phone' => (string) ($user['phone'] ?? ''),
+        'subject' => (string) ($user['subject'] ?? $user['boMon'] ?? ''),
     ];
 }
 
@@ -88,6 +91,23 @@ switch ($action) {
         $user = $_SESSION['user'] ?? null;
         if (!is_array($user) || trim((string) ($user['username'] ?? '')) === '') {
             seb_json_response(['ok' => true, 'loggedIn' => false, 'user' => null]);
+        }
+        $sessionUsername = trim((string) ($user['username'] ?? ''));
+        if ($sessionUsername !== '' && (!array_key_exists('subject', $user) || !array_key_exists('email', $user))) {
+            $profileStmt = @sqlsrv_query($conn, 'SELECT HoVaTen, Email, SoDienThoai, BoMon, MustChangePassword, TaiKhoanActive FROM TaiKhoan WHERE TaiKhoan = ?', [$sessionUsername]);
+            $profile = $profileStmt ? sqlsrv_fetch_array($profileStmt, SQLSRV_FETCH_ASSOC) : null;
+            if ($profile && array_key_exists('TaiKhoanActive', $profile) && !$profile['TaiKhoanActive']) {
+                unset($_SESSION['user']);
+                seb_json_response(['ok' => true, 'loggedIn' => false, 'user' => null]);
+            }
+            if ($profile) {
+                $user['display_name'] = (string) ($profile['HoVaTen'] ?? $user['display_name'] ?? $sessionUsername);
+                $user['email'] = (string) ($profile['Email'] ?? '');
+                $user['phone'] = (string) ($profile['SoDienThoai'] ?? '');
+                $user['subject'] = (string) ($profile['BoMon'] ?? '');
+                $user['must_change_password'] = (bool) ($profile['MustChangePassword'] ?? false);
+                $_SESSION['user'] = $user;
+            }
         }
         seb_json_response(['ok' => true, 'loggedIn' => true, 'user' => seb_api_resolve_user_payload($user)]);
 
@@ -177,6 +197,9 @@ switch ($action) {
             'type' => 'regular_user',
             'display_name' => $displayName,
             'must_change_password' => (bool) ($row['MustChangePassword'] ?? false),
+            'email' => (string) ($row['Email'] ?? ''),
+            'phone' => (string) ($row['SoDienThoai'] ?? ''),
+            'subject' => (string) ($row['BoMon'] ?? ''),
         ];
         $user = $_SESSION['user'];
 

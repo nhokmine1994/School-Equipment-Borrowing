@@ -119,6 +119,9 @@ if(isset($_POST['login']))
             'type' => 'regular_user',
             'display_name' => $displayName,
             'must_change_password' => !empty($row['MustChangePassword']),
+            'email' => (string) ($row['Email'] ?? ''),
+            'phone' => (string) ($row['SoDienThoai'] ?? ''),
+            'subject' => (string) ($row['BoMon'] ?? ''),
         ];
 
         $returnFromPost = isset($_POST['return']) ? $_POST['return'] : '';
