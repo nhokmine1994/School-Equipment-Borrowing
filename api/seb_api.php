@@ -139,19 +139,23 @@ switch ($action) {
         $username = seb_require_login_json();
         $stmt = @sqlsrv_query($conn, 'SELECT TOP 100 SoPhieuMuon, TenThietBi, HanTra, TinhTrangDuyetID, TinhTrangMuon FROM PhieuMuon WHERE TaiKhoan = ? ORDER BY NgayMuon DESC, SoPhieuMuon DESC', [$username]);
         $items = [];
-        $counts = ['total' => 0, 'approved' => 0, 'rejected' => 0, 'dueSoon' => 0, 'overdue' => 0];
+        $counts = ['total' => 0, 'pending' => 0, 'approved' => 0, 'rejected' => 0, 'dueSoon' => 0, 'overdue' => 0];
         $now = new DateTimeImmutable('today');
         while ($stmt && ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC))) {
             $status = mb_strtolower(trim((string) seb_resolve_borrow_status_label($conn, $row['TinhTrangDuyetID'] ?? $row['TinhTrangMuon'] ?? '')), 'UTF-8');
             $isApproved = in_array($status, ['đã duyệt', 'da duyet', 'approved', 'đang mượn', 'dang muon'], true);
             $isRejected = in_array($status, ['từ chối', 'tu choi', 'rejected', 'bị từ chối'], true);
+            $isPending = in_array($status, ['chờ duyệt', 'đang chờ', 'pending', 'waiting'], true);
             $due = $row['HanTra'] ?? null;
             $dueDate = null;
             if ($due instanceof DateTimeInterface) $dueDate = DateTimeImmutable::createFromInterface($due);
             elseif ($due) $dueDate = new DateTimeImmutable((string) $due);
             $type = '';
             $message = '';
-            if ($isRejected) {
+            if ($isPending) {
+                $type = 'pending'; $counts['pending']++;
+                $message = 'Yêu cầu đang chờ duyệt: ' . (string) ($row['TenThietBi'] ?? 'Thiết bị');
+            } elseif ($isRejected) {
                 $type = 'rejected'; $counts['rejected']++;
                 $message = 'Yêu cầu mượn bị từ chối: ' . (string) ($row['TenThietBi'] ?? 'Thiết bị');
             } elseif ($isApproved) {
