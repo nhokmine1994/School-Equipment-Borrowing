@@ -122,6 +122,9 @@ if(isset($_POST['login']))
             'email' => (string) ($row['Email'] ?? ''),
             'phone' => (string) ($row['SoDienThoai'] ?? ''),
             'subject' => (string) ($row['BoMon'] ?? ''),
+            'cccd' => (string) ($row['SoCCCD'] ?? ''),
+            'teacher_code' => (string) ($row['MaSoGiaoVien'] ?? ''),
+            'education_code' => (string) ($row['MaSoBoGDDT'] ?? ''),
         ];
 
         $returnFromPost = isset($_POST['return']) ? $_POST['return'] : '';

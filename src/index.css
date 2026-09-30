@@ -188,6 +188,13 @@ button, input {
 .legacy-page .profile-details-grid > div { display: grid; gap: 5px; padding: 13px 14px; border: 1px solid #e1edf7; border-radius: 10px; background: #fbfdff; }
 .legacy-page .profile-details-grid span { color: #64748b; font-size: 12px; font-weight: 600; }
 .legacy-page .profile-details-grid strong { color: #1e293b; overflow-wrap: anywhere; }
+.legacy-page .profile-details-grid input,
+.legacy-page .profile-details-grid select { width: 100%; padding: 8px 10px; border: 1px solid #93c5fd; border-radius: 7px; color: #1e293b; background: #fff; font: inherit; }
+.legacy-page .profile-edit-button { border: 0; padding: 2px 4px; color: #1265a5; background: transparent; cursor: pointer; }
+.legacy-page .profile-edit-button:hover { color: #0f5faa; transform: scale(1.08); }
+.legacy-page .profile-locked { margin-left: 4px; color: #94a3b8; font-size: 11px; }
+.legacy-page .profile-edit-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+.legacy-page .profile-edit-actions .admin-btn-soft { border: 1px solid #93c5fd; border-radius: 8px; padding: 9px 14px; color: #1265a5; background: #eaf5ff; cursor: pointer; font: inherit; font-weight: 700; }
 .legacy-page .profile-status { color: #0f766e !important; }
 .legacy-page .profile-note { display: flex; gap: 10px; align-items: flex-start; margin-top: 16px; padding: 13px 15px; border-radius: 10px; background: #f0f8ff; color: #315a7d; }
 .legacy-page .profile-note > i { margin-top: 3px; color: #1265a5; }

@@ -179,6 +179,27 @@ export const api = {
     return { success: true, message: payload?.message || 'Đổi mật khẩu thành công.' };
   },
 
+  getSubjects: async () => {
+    try {
+      const payload = await requestJson('subjects');
+      return { success: true, data: payload?.subjects ?? [] };
+    } catch {
+      return { success: false, data: [] };
+    }
+  },
+
+  updateProfile: async (profile) => {
+    const response = await fetch(`${API_BASE}?action=profile_update`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(profile),
+    });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) return { success: false, error: payload?.error || 'Không cập nhật được hồ sơ.' };
+    return { success: true, data: payload?.user ?? null, message: payload?.message || '' };
+  },
+
   createBorrowRequest: async (body) => {
     try {
       const response = await fetch(`${API_BASE}?action=borrow_request`, {

@@ -67,6 +67,9 @@ function seb_api_resolve_user_payload($user)
         'email' => (string) ($user['email'] ?? ''),
         'phone' => (string) ($user['phone'] ?? ''),
         'subject' => (string) ($user['subject'] ?? $user['boMon'] ?? ''),
+        'cccd' => (string) ($user['cccd'] ?? ''),
+        'teacher_code' => (string) ($user['teacher_code'] ?? ''),
+        'education_code' => (string) ($user['education_code'] ?? ''),
     ];
 }
 
@@ -200,6 +203,9 @@ switch ($action) {
             'email' => (string) ($row['Email'] ?? ''),
             'phone' => (string) ($row['SoDienThoai'] ?? ''),
             'subject' => (string) ($row['BoMon'] ?? ''),
+            'cccd' => (string) ($row['SoCCCD'] ?? ''),
+            'teacher_code' => (string) ($row['MaSoGiaoVien'] ?? ''),
+            'education_code' => (string) ($row['MaSoBoGDDT'] ?? ''),
         ];
         $user = $_SESSION['user'];
 
@@ -227,6 +233,36 @@ switch ($action) {
         }
         $_SESSION['user']['must_change_password'] = false;
         seb_json_response(['ok' => true, 'message' => 'Đổi mật khẩu thành công.']);
+
+    case 'profile_update':
+        if ($method !== 'POST') {
+            seb_json_response(['ok' => false, 'error' => 'Method not allowed'], 405);
+        }
+        $username = seb_require_login_json();
+        $body = array_merge($_POST, seb_read_json_body());
+        $fullName = trim((string) ($body['fullName'] ?? ''));
+        $email = trim((string) ($body['email'] ?? ''));
+        $subject = trim((string) ($body['subject'] ?? ''));
+        $cccd = trim((string) ($body['cccd'] ?? ''));
+        $teacherCode = trim((string) ($body['teacherCode'] ?? ''));
+        $educationCode = trim((string) ($body['educationCode'] ?? ''));
+        if ($fullName === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            seb_json_response(['ok' => false, 'error' => 'Họ tên và email hợp lệ là bắt buộc.'], 400);
+        }
+        if ($cccd !== '' && !preg_match('/^\d{9,12}$/', $cccd)) {
+            seb_json_response(['ok' => false, 'error' => 'Số CCCD phải gồm 9 đến 12 chữ số.'], 400);
+        }
+        $stmt = sqlsrv_query($conn, 'UPDATE TaiKhoan SET HoVaTen = ?, Email = ?, BoMon = ?, SoCCCD = ?, MaSoGiaoVien = ?, MaSoBoGDDT = ? WHERE TaiKhoan = ?', [$fullName, $email, $subject, $cccd, $teacherCode, $educationCode, $username]);
+        if (!$stmt) {
+            seb_json_response(['ok' => false, 'error' => seb_sql_error_message('Không cập nhật được hồ sơ.')], 500);
+        }
+        $_SESSION['user']['display_name'] = $fullName;
+        $_SESSION['user']['email'] = $email;
+        $_SESSION['user']['subject'] = $subject;
+        $_SESSION['user']['cccd'] = $cccd;
+        $_SESSION['user']['teacher_code'] = $teacherCode;
+        $_SESSION['user']['education_code'] = $educationCode;
+        seb_json_response(['ok' => true, 'message' => 'Đã cập nhật thông tin hồ sơ.', 'user' => seb_api_resolve_user_payload($_SESSION['user'])]);
 
     case 'dashboard_summary':
         $stats = function_exists('seb_load_index_dashboard_stats') ? seb_load_index_dashboard_stats($conn) : [];
