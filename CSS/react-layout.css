@@ -98,3 +98,46 @@ body {
     font-size: 19px;
   }
 }
+
+.borrow-feedback-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 15000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(15, 23, 42, .48);
+  backdrop-filter: blur(3px);
+}
+
+.borrow-feedback-dialog {
+  position: relative;
+  width: min(420px, 100%);
+  overflow: hidden;
+  padding: 28px 24px 24px;
+  border-radius: 16px;
+  background: #fff;
+  text-align: center;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, .28);
+}
+
+.borrow-feedback-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  border: 0;
+  background: transparent;
+  color: #64748b;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.borrow-feedback-icon { font-size: 46px; color: #16a34a; }
+.borrow-feedback-overlay.error .borrow-feedback-icon { color: #dc2626; }
+.borrow-feedback-dialog h2 { margin: 10px 0 6px; color: #123d63; font-size: 20px; }
+.borrow-feedback-dialog p { margin: 0; color: #475569; line-height: 1.55; }
+.borrow-feedback-progress { height: 4px; margin: 22px -24px -24px; background: #16a34a; animation: borrowFeedbackCountdown 6s linear forwards; transform-origin: left; }
+.borrow-feedback-overlay.error .borrow-feedback-progress { background: #dc2626; }
+
+@keyframes borrowFeedbackCountdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }

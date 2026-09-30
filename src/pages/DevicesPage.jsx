@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
-import LegacyPageShell, { PageNotice } from '../components/legacy/LegacyPageShell';
+import LegacyPageShell from '../components/legacy/LegacyPageShell';
 import { api } from '../services/api';
 import { assetPath } from '../utils/assetPath';
 
@@ -25,6 +25,7 @@ export default function DevicesPage() {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [feedbackVisible, setFeedbackVisible] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -43,6 +44,19 @@ export default function DevicesPage() {
     });
     return () => { active = false; };
   }, []);
+
+  useEffect(() => {
+    if (!message && !error) return undefined;
+    setFeedbackVisible(true);
+    const timer = window.setTimeout(() => setFeedbackVisible(false), 6000);
+    return () => window.clearTimeout(timer);
+  }, [message, error]);
+
+  const closeFeedback = () => {
+    setFeedbackVisible(false);
+    setMessage('');
+    setError('');
+  };
 
   const categories = useMemo(() => [...new Set(devices.map((item) => item.category).filter(Boolean))], [devices]);
   const subjects = useMemo(() => [...new Set(devices.map((item) => item.subject).filter(Boolean))], [devices]);
@@ -145,9 +159,6 @@ export default function DevicesPage() {
               aria-label="Tìm kiếm thiết bị"
             />
           </div>
-          {message ? <PageNotice tone="success">{message}</PageNotice> : null}
-          {error ? <PageNotice tone="error">{error}</PageNotice> : null}
-
           <div className="equipment-grid" id="equipment-grid">
             {visible.map((device) => {
               const unavailable = isUnavailable(device);
@@ -250,6 +261,17 @@ export default function DevicesPage() {
               <button type="button" className="modal-btn-cancel" onClick={() => setSelectedDevice(null)}>Hủy</button>
               <button type="button" className="modal-btn-confirm" disabled={!borrowDate || !returnDate || returnDate < borrowDate} onClick={() => borrow(selectedDevice, borrowQuantity, borrowDate, returnDate)}>Gửi yêu cầu mượn</button>
             </div>
+          </div>
+        </div>
+      ) : null}
+      {feedbackVisible && (message || error) ? (
+        <div className={`borrow-feedback-overlay ${error ? 'error' : 'success'}`} role="alertdialog" aria-live="assertive">
+          <div className="borrow-feedback-dialog">
+            <button type="button" className="borrow-feedback-close" aria-label="Đóng" onClick={closeFeedback}>&times;</button>
+            <div className="borrow-feedback-icon"><i className={`fas ${error ? 'fa-circle-exclamation' : 'fa-circle-check'}`} /></div>
+            <h2>{error ? 'Không thể thực hiện' : 'Đã gửi yêu cầu'}</h2>
+            <p>{error || message}</p>
+            <div className="borrow-feedback-progress" />
           </div>
         </div>
       ) : null}
