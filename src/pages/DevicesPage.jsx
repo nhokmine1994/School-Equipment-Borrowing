@@ -1,4 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import LegacyPageShell from '../components/legacy/LegacyPageShell';
 import { api } from '../services/api';
 import { assetPath } from '../utils/assetPath';
@@ -264,7 +265,7 @@ export default function DevicesPage() {
           </div>
         </div>
       ) : null}
-      {feedbackVisible && (message || error) ? (
+      {feedbackVisible && (message || error) ? createPortal((
         <div className={`borrow-feedback-overlay ${error ? 'error' : 'success'}`} role="alertdialog" aria-live="assertive">
           <div className="borrow-feedback-dialog">
             <button type="button" className="borrow-feedback-close" aria-label="Đóng" onClick={closeFeedback}>&times;</button>
@@ -274,7 +275,7 @@ export default function DevicesPage() {
             <div className="borrow-feedback-progress" />
           </div>
         </div>
-      ) : null}
+      ), document.body) : null}
     </LegacyPageShell>
   );
 }
