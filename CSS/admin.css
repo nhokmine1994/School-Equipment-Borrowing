@@ -126,7 +126,7 @@ body.admin-theme {
 /* Admin navigation: compact left rail with labels revealed on hover. */
 .admin-container .admin-nav-bar {
   position: fixed !important;
-  top: 90px;
+  top: 128px;
   left: 0;
   bottom: 0;
   z-index: 1100;
@@ -1119,7 +1119,7 @@ body.admin-theme {
 
 @media (max-width: 760px) {
   .admin-container .admin-nav-bar {
-    top: 70px;
+    top: 108px;
     width: 60px;
     padding: 10px 6px;
   }
