@@ -144,7 +144,7 @@ $username = $is_logged_in ? (string) $_SESSION['user']['username'] : '';
         </footer>
     </div>
 
-    <script src="../Javascript/toast.js?v=20260522"></script>
+    <script src="../Javascript/toast.js?v=20260930_popup"></script>
     <script src="../Javascript/Java.js?v=20260520"></script>
     <script src="../Javascript/seb_api.js?v=20260520"></script>
     <script src="../Javascript/device_modal.js?v=20260519_2"></script>

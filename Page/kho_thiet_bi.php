@@ -251,7 +251,7 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         window.__user_role = <?php echo json_encode($userRole); ?>;
         window.__username = <?php echo json_encode($username); ?>;
     </script>
-    <script src="../Javascript/toast.js?v=20260522"></script>
+    <script src="../Javascript/toast.js?v=20260930_popup"></script>
     <script src="../Javascript/Java.js?v=20260520"></script>
     <script src="../Javascript/seb_api.js?v=20260521_statusid"></script>
     <script src="../Javascript/device_modal.js?v=20260521_request"></script>

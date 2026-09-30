@@ -625,7 +625,7 @@ admin_render_page_intro(
       </div>
     </div>
 
-    <script src="../Javascript/toast.js?v=20260522"></script>
+    <script src="../Javascript/toast.js?v=20260930_popup"></script>
     <script src="../Javascript/seb_api.js?v=20260520"></script>
     <script src="../Javascript/Java.js?v=20260520"></script>
 
