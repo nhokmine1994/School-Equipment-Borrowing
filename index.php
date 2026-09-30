@@ -342,10 +342,10 @@ if (!empty($conn) && function_exists('sqlsrv_query')) {
         
         <!-- User Profile Dropdown (Hidden initially) -->
         <div class="user-profile-menu" id="userProfileMenu" style="<?php echo $is_logged_in ? 'display: flex' : 'display: none'; ?>; position: relative;">
+          <span class="user-profile-name" title="<?php echo htmlspecialchars($displayNameRaw, ENT_QUOTES, 'UTF-8'); ?>"><?php echo $displayName; ?></span>
           <button class="icon-btn avatar-btn" id="avatarBtn">
             <span class="avatar-initials" aria-hidden="true"><?php echo htmlspecialchars($displayInitials ?: '?', ENT_QUOTES, 'UTF-8'); ?></span>
           </button>
-          <span class="user-profile-name" title="<?php echo htmlspecialchars($displayNameRaw, ENT_QUOTES, 'UTF-8'); ?>"><?php echo $displayName; ?></span>
           <div class="dropdown-content" id="avatarDropdown" style="display: none; position: absolute; right: 0; top: 120%; min-width: 220px; background-color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.15); border-radius: 8px; z-index: 100; overflow: hidden; border: 1px solid #e0e0e0; flex-direction: column; text-align: left;">
             <div style="padding: 10px 16px; background: #f5f5f5; border-bottom: 1px solid #e0e0e0; font-weight: 600; color: #333;">
               <?php echo $displayName; ?>

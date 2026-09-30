@@ -58,17 +58,17 @@ export default function LegacyHeader() {
           <div
             className="user-profile-menu"
             id="userProfileMenu"
-            style={{ display: 'flex', position: 'relative' }}
-          >
+           style={{ display: 'flex', position: 'relative' }}
+           >
+            <span className="user-profile-name" title={displayName}>{displayName}</span>
             <button
               type="button"
               className="icon-btn avatar-btn"
               id="avatarBtn"
               onClick={() => setMenuOpen((value) => !value)}
-           >
+            >
               <span className="avatar-initials" aria-hidden="true">{getInitials(displayName)}</span>
             </button>
-            <span className="user-profile-name" title={displayName}>{displayName}</span>
             {menuOpen ? (
               <div
                 className="dropdown-content"
