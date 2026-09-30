@@ -733,7 +733,7 @@ body {
 }
 
 .avatar-btn {
-  overflow: hidden;
+  overflow: visible;
 }
 
 .user-profile-menu {
@@ -760,8 +760,9 @@ body {
 .avatar-btn { position: relative; }
 .notification-badge {
   position: absolute;
-  top: -5px;
-  right: -5px;
+  top: -8px;
+  right: -8px;
+  z-index: 4;
   min-width: 18px;
   height: 18px;
   padding: 0 4px;
