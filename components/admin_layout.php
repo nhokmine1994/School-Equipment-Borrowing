@@ -82,7 +82,7 @@ function admin_render_nav(string $active = ''): void
 
     echo '<a class="nav-tab admin-nav-home" href="../index.php" title="Về trang chủ" aria-label="Về trang chủ"><i class="fas fa-house"></i><span>Về trang chủ</span></a>';
     echo '<a class="nav-tab admin-nav-logout" href="admin_login.php?action=logout" title="Đăng xuất" aria-label="Đăng xuất"><i class="fas fa-right-from-bracket"></i><span>Đăng xuất</span></a>';
-    echo '</div><span class="admin-live-status" id="adminLiveStatus" title="Đang theo dõi cập nhật"><i class="fas fa-circle"></i><b>Live</b></span></nav>';
+    echo '</div></nav>';
     echo <<<'HTML'
     <script>
     (() => {
