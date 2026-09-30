@@ -57,27 +57,38 @@ HTML;
 
 function admin_render_nav(string $active = ''): void
 {
-    $items = [
-        'panel' => ['admin_panel.php', 'Tổng quan', 'fa-gauge-high'],
-        'devices' => ['admin_thiet_bi.php', 'Thiết bị', 'fa-boxes-stacked'],
-        'users' => ['admin_users.php', 'Người dùng', 'fa-users'],
-        'borrows' => ['admin_borrows.php', 'Duyệt mượn', 'fa-clipboard-check'],
-        'rooms' => ['admin_dang_ky_phong.php', 'Duyệt phòng', 'fa-calendar-check'],
-        'maintenance' => ['admin_bao_tri.php', 'Bảo trì', 'fa-screwdriver-wrench'],
-        'stats' => ['admin_thong_ke.php', 'Thống kê', 'fa-chart-pie'],
-        'news' => ['admin_tin_tuc.php', 'Tin tức', 'fa-newspaper'],
-        'exports' => ['admin_export.php', 'Xuất file', 'fa-file-export'],
+    $groups = [
+        ['label' => 'Điều hành', 'items' => [
+            'panel' => ['admin_panel.php', 'Tổng quan', 'fa-gauge-high'],
+            'stats' => ['admin_thong_ke.php', 'Thống kê', 'fa-chart-pie'],
+        ]],
+        ['label' => 'Quản lý', 'items' => [
+            'devices' => ['admin_thiet_bi.php', 'Thiết bị', 'fa-boxes-stacked'],
+            'users' => ['admin_users.php', 'Người dùng', 'fa-users'],
+            'maintenance' => ['admin_bao_tri.php', 'Bảo trì', 'fa-screwdriver-wrench'],
+            'news' => ['admin_tin_tuc.php', 'Tin tức', 'fa-newspaper'],
+        ]],
+        ['label' => 'Duyệt yêu cầu', 'items' => [
+            'borrows' => ['admin_borrows.php', 'Duyệt mượn', 'fa-clipboard-check'],
+            'rooms' => ['admin_dang_ky_phong.php', 'Duyệt phòng', 'fa-calendar-check'],
+            'exports' => ['admin_export.php', 'Xuất file', 'fa-file-export'],
+        ]],
     ];
 
     echo '<nav class="nav-bar admin-nav-bar" aria-label="Menu quản trị">';
     echo '<div class="nav-links">';
 
-    foreach ($items as $key => $item) {
+    foreach ($groups as $group) {
+        $groupLabel = htmlspecialchars($group['label'], ENT_QUOTES, 'UTF-8');
+        echo "<div class=\"admin-nav-group\"><span class=\"admin-nav-group-label\">{$groupLabel}</span>";
+        foreach ($group['items'] as $key => $item) {
         $href = htmlspecialchars($item[0], ENT_QUOTES, 'UTF-8');
         $label = htmlspecialchars($item[1], ENT_QUOTES, 'UTF-8');
         $icon = htmlspecialchars($item[2], ENT_QUOTES, 'UTF-8');
         $class = 'nav-tab' . ($active === $key ? ' active' : '');
         echo "<a class=\"{$class}\" href=\"{$href}\" title=\"{$label}\" aria-label=\"{$label}\"><i class=\"fas {$icon}\" aria-hidden=\"true\"></i><span>{$label}</span></a>";
+        }
+        echo '</div>';
     }
 
     echo '<a class="nav-tab admin-nav-home" href="../index.php" title="Về trang chủ" aria-label="Về trang chủ"><i class="fas fa-house"></i><span>Về trang chủ</span></a>';
