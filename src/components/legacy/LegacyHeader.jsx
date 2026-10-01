@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
@@ -19,6 +19,7 @@ export default function LegacyHeader() {
   const user = useSelector((state) => state.app.user);
   const [menuOpen, setMenuOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const headerRightRef = useRef(null);
   const [notifications, setNotifications] = useState({ counts: {}, items: [] });
 
   const displayName = useMemo(
@@ -38,6 +39,17 @@ export default function LegacyHeader() {
     const timer = window.setInterval(refresh, 15000);
     return () => { active = false; window.clearInterval(timer); };
   }, [isLoggedIn, user?.username]);
+
+  useEffect(() => {
+    const closeOnOutsideClick = (event) => {
+      if (headerRightRef.current && !headerRightRef.current.contains(event.target)) {
+        setNotificationOpen(false);
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', closeOnOutsideClick);
+    return () => document.removeEventListener('mousedown', closeOnOutsideClick);
+  }, []);
 
   const notificationCount = Number(notifications.counts?.total || 0);
 
@@ -59,7 +71,7 @@ export default function LegacyHeader() {
         <h2>TRƯỜNG TRUNG HỌC CƠ SỞ LỘC AN</h2>
         <h1>HỆ THỐNG MƯỢN/TRẢ THIẾT BỊ ( SEB )</h1>
       </div>
-      <div className="header-right">
+      <div className="header-right" ref={headerRightRef}>
         {!isLoggedIn ? (
           <>
             <button type="button" className="icon-btn" aria-label="Đăng nhập" onClick={() => navigate('/login')}>
