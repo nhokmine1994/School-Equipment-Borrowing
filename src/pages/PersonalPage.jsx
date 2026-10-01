@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import LegacyPageShell, { PageNotice } from '../components/legacy/LegacyPageShell';
+import LegacyPageShell from '../components/legacy/LegacyPageShell';
+import FeedbackPopup from '../components/FeedbackPopup';
 import { api } from '../services/api';
 import { assetPath } from '../utils/assetPath';
 
@@ -77,7 +78,7 @@ export default function PersonalPage() {
 
   return (
     <LegacyPageShell title="Kho cá nhân" icon="fas fa-user-check" extraCss={['/CSS/kho.css', '/CSS/kho-pages.css']}>
-      {message ? <PageNotice tone="success">{message}</PageNotice> : null}{error ? <PageNotice tone="error">{error}</PageNotice> : null}
+      <FeedbackPopup message={message} error={error} onClose={() => { setMessage(''); setError(''); }} />
       <div className="personal-kho-layout">
         <aside className="sidebar personal-history"><h3>Lịch sử mượn gần đây</h3>{history.length ? history.slice(0, 5).map((item, index) => <div className="history-item" key={`${item.id || item.borrowId || index}-${item.name}`}><img src={assetPath(item.image) || placeholder('TB')} alt="" /><div><strong>{item.name || item.item || 'Thiết bị'}</strong><small>{item.borrowDate ? new Date(item.borrowDate).toLocaleString('vi-VN') : 'Chưa có thời gian'}</small></div></div>) : <p className="borrow-empty">Chưa có lịch sử mượn.</p>}</aside>
         <main className="content">

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import LegacyPageShell, { PageNotice } from '../components/legacy/LegacyPageShell';
+import LegacyPageShell from '../components/legacy/LegacyPageShell';
+import FeedbackPopup from '../components/FeedbackPopup';
 import { api } from '../services/api';
 
 const periods = [
@@ -59,6 +60,8 @@ export default function RoomsPage() {
   const occupied = useMemo(() => {
     const result = new Map();
     schedule.forEach((booking) => {
+      const bookingStatus = String(booking.status || '').toLowerCase().trim();
+      if (['rejected', 'đã từ chối', 'từ chối', 'cancelled', 'cancel'].includes(bookingStatus)) return;
       const mine = String(booking.createdBy || '').toLowerCase() === String(user?.username || '').toLowerCase();
       (booking.slots || []).forEach((slot) => {
         const key = slot.slotKey || `${slot.dayLabel}__${slot.timeLabel}`;
@@ -90,8 +93,7 @@ export default function RoomsPage() {
 
   return (
     <LegacyPageShell title="Đăng ký phòng học" icon="fas fa-calendar-check" extraCss={['/CSS/dang-ky-phong.css']}>
-      {message ? <PageNotice tone="success">{message}</PageNotice> : null}
-      {error ? <PageNotice tone="error">{error}</PageNotice> : null}
+       <FeedbackPopup message={message} error={error} onClose={() => { setMessage(''); setError(''); }} />
       <div className="booking-container">
         <div className="booking-header">
           <div className="booking-title">CHỌN PHÒNG HỌC</div>

@@ -514,8 +514,9 @@ switch ($action) {
                     'roomType' => (string) ($row['LoaiPhong'] ?? ''),
                     'roomNumber' => (string) ($row['SoPhong'] ?? ''),
                     'createdBy' => (string) ($row['Username'] ?? ''),
-                    'userNameLabel' => (string) ($row['TenHienThi'] ?? ''),
-                    'purpose' => (string) ($row['MucDich'] ?? ''),
+                        'userNameLabel' => (string) ($row['TenHienThi'] ?? ''),
+                        'purpose' => (string) ($row['MucDich'] ?? ''),
+                    'status' => (string) ($row['TrangThai'] ?? 'pending'),
                     'createdAt' => seb_datetime_iso($row['NgayTao'] ?? null),
                     'slots' => $slots,
                 ];
