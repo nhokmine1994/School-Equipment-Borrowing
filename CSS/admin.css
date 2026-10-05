@@ -801,9 +801,9 @@ body.admin-theme {
 .admin-media-list { gap: 10px; }
 
 /* Compact device cards use the same visual language as the public inventory cards. */
-.admin-media-list { grid-template-columns: repeat(auto-fill, minmax(200px, 240px)); justify-content: start; align-items: stretch; }
+.admin-media-list { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); justify-content: stretch; align-items: stretch; }
 .admin-device-card-mini { padding: 0; min-height: 320px; }
-.admin-container .admin-media-list .admin-device-card-mini { width: 230px; max-width: 230px; }
+.admin-container .admin-media-list .admin-device-card-mini { width: 100%; max-width: none; }
 .admin-device-card-mini .admin-device-cover { display: flex; height: auto; aspect-ratio: 16 / 10; }
 .admin-device-card-mini .admin-device-body { padding: 12px; }
 
@@ -857,7 +857,7 @@ body.admin-theme {
 }
 
 @media (min-width: 900px) {
-  .admin-media-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-media-list { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
   .admin-device-card-mini { padding: 14px 16px; }
 }
 
@@ -1124,8 +1124,8 @@ body.admin-theme {
 /* Keep admin inventory cards compact even when the surrounding admin layout stacks. */
 @media (max-width: 1180px) {
   .admin-container .admin-media-list {
-    grid-template-columns: repeat(auto-fill, 230px) !important;
-    justify-content: start;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)) !important;
+    justify-content: stretch;
   }
 }
 
