@@ -92,6 +92,11 @@ if ($type === 'borrows') {
     admin_export_csv('seb_phieu_muon_' . $date . '.csv', ['Số phiếu', 'Mã thiết bị', 'Tên thiết bị', 'Tài khoản', 'Số lượng', 'Ngày mượn', 'Hạn trả', 'Trạng thái chữ', 'Trạng thái mã'], admin_export_rows($rows, ['SoPhieuMuon', 'MaThietBi', 'TenThietBi', 'TaiKhoan', 'SoLuong', 'NgayMuon', 'HanTra', 'TinhTrangMuon', 'TinhTrangDuyetID']));
 }
 
+if ($type === 'bug_reports') {
+    $rows = admin_export_fetch_all(sqlsrv_query($conn, 'SELECT MaBaoCao, TaiKhoan, UrlTrang, TieuDe, NoiDung, MucDo, TrangThai, NgayTao FROM BaoCaoLoi ORDER BY NgayTao DESC'));
+    admin_export_csv('seb_bao_loi_' . $date . '.csv', ['Mã', 'Tài khoản', 'Trang', 'Tiêu đề', 'Nội dung', 'Mức độ', 'Trạng thái', 'Ngày tạo'], admin_export_rows($rows, ['MaBaoCao', 'TaiKhoan', 'UrlTrang', 'TieuDe', 'NoiDung', 'MucDo', 'TrangThai', 'NgayTao']));
+}
+
 if ($type === 'stats') {
     $stats = [];
     $userRow = sqlsrv_fetch_array(sqlsrv_query($conn, 'SELECT COUNT(*) AS Total FROM TaiKhoan'), SQLSRV_FETCH_ASSOC);
@@ -146,6 +151,10 @@ admin_render_page_intro('Xuất dữ liệu & biểu mẫu', 'fa-file-export', '
   <article class="admin-card">
     <div class="admin-card-head"><h2 class="admin-card-title"><i class="fas fa-clipboard-list"></i> Phiếu mượn</h2></div>
     <div class="admin-card-body"><p class="admin-card-note">Toàn bộ lịch sử phiếu mượn và trạng thái xử lý.</p><div class="admin-export-actions"><a class="admin-btn admin-btn-primary" href="admin_export.php?type=borrows"><i class="fas fa-file-excel"></i> Xuất Excel</a></div></div>
+  </article>
+  <article class="admin-card">
+    <div class="admin-card-head"><h2 class="admin-card-title"><i class="fas fa-bug"></i> Báo lỗi</h2></div>
+    <div class="admin-card-body"><p class="admin-card-note">Danh sách lỗi/góp ý người dùng gửi từ các trang.</p><div class="admin-export-actions"><a class="admin-btn admin-btn-primary" href="admin_export.php?type=bug_reports"><i class="fas fa-file-excel"></i> Xuất báo lỗi</a></div></div>
   </article>
 </div>
 

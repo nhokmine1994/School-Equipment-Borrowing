@@ -160,6 +160,12 @@ export const api = {
     }
   },
 
+  reportBug: async ({ title, details, url }) => {
+    const response = await fetch(`${API_BASE}?action=bug_report`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ title, details, url }) });
+    const payload = await response.json().catch(() => null);
+    return response.ok ? { success: true, message: payload?.message } : { success: false, error: payload?.error || 'Không gửi được báo lỗi.' };
+  },
+
   requestPasswordReset: async (phone, email) => {
     const response = await fetch(`${API_BASE}?action=password_reset_request`, {
       method: 'POST',

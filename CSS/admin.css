@@ -137,7 +137,8 @@ body.admin-theme {
   border-right: 1px solid #c5dff4 !important;
   background: #f8fbff !important;
   box-shadow: 5px 0 18px rgba(30, 64, 175, 0.1);
-  overflow: visible;
+  overflow-y: auto;
+  overflow-x: visible;
 }
 
 .admin-container .admin-nav-bar .nav-links {
@@ -146,9 +147,11 @@ body.admin-theme {
   align-items: center;
   gap: 9px;
   width: 100%;
-  height: 100%;
+  height: auto;
+  min-height: 100%;
   padding: 0;
-  overflow: visible;
+  overflow-y: auto;
+  overflow-x: visible;
 }
 
 .admin-container .admin-nav-bar .nav-tab {
@@ -796,6 +799,11 @@ body.admin-theme {
   font-size: 12px;
 }
 .admin-media-list { gap: 10px; }
+
+/* Compact device cards use the same visual language as the public inventory cards. */
+.admin-media-list { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.admin-device-card-mini .admin-device-cover { display: flex; height: 128px; }
+.admin-device-card-mini .admin-device-body { padding: 12px; }
 
 /* Inactive device visuals */
 .admin-device-card.inactive {

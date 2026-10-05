@@ -947,3 +947,10 @@
 
     .device-info { margin-top: 6px !important; }
 }
+
+.device-card .device-description {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}

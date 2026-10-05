@@ -56,7 +56,7 @@ export default function LegacyHeader() {
     return () => document.removeEventListener('mousedown', closeOnOutsideClick);
   }, []);
 
-  const notificationKey = (item) => `${item.type}:${item.borrowId}:${item.dueDate || ''}`;
+  const notificationKey = (item) => `${item.borrowId || item.message}`;
   const visibleNotifications = (notifications.items || []).filter((item) => !seenNotifications.has(notificationKey(item)));
   const notificationCount = visibleNotifications.length;
   const markNotificationSeen = (item) => {
@@ -92,9 +92,6 @@ export default function LegacyHeader() {
           <>
             <button type="button" className="icon-btn" aria-label="Đăng nhập" onClick={() => navigate('/login')}>
               <i className="far fa-user" />
-            </button>
-            <button type="button" className="icon-btn" aria-label="Đăng ký" onClick={() => navigate('/login')}>
-              <i className="fas fa-pencil-alt" />
             </button>
           </>
         ) : (

@@ -193,7 +193,7 @@ export default function DevicesPage() {
                     <p><strong>ID thiết bị:</strong> {device.id}</p>
                     <p><strong>Số lượng:</strong> {device.quantity || '---'}</p>
                     <p><strong>Môn học:</strong> {device.subject || 'Chung'}</p>
-                    {device.description ? <p><strong>Thông tin:</strong> {device.description}</p> : null}
+                     {device.description ? <p className="device-description"><strong>Thông tin:</strong> {device.description}</p> : null}
                     <p>
                       <strong>Trạng thái:</strong>{' '}
                       <span className={`status ${unavailable ? 'unavailable' : 'available'}`}>{device.status}</span>

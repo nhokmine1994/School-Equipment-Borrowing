@@ -172,6 +172,17 @@ switch ($action) {
         $counts['total'] = count($items);
         seb_json_response(['ok' => true, 'counts' => $counts, 'items' => array_slice($items, 0, 8)]);
 
+    case 'bug_report':
+        if ($method !== 'POST') seb_json_response(['ok' => false, 'error' => 'Method not allowed'], 405);
+        $body = array_merge($_POST, seb_read_json_body());
+        $title = trim((string) ($body['title'] ?? ''));
+        $details = trim((string) ($body['details'] ?? ''));
+        if ($title === '' || $details === '') seb_json_response(['ok' => false, 'error' => 'Vui lòng nhập tiêu đề và mô tả lỗi.'], 400);
+        $sessionUser = $_SESSION['user']['username'] ?? null;
+        $stmt = sqlsrv_query($conn, 'INSERT INTO BaoCaoLoi (TaiKhoan, UrlTrang, TieuDe, NoiDung, MucDo, TrangThai) VALUES (?, ?, ?, ?, ?, N\'mới\')', [$sessionUser, trim((string) ($body['url'] ?? '')), $title, $details, 'normal']);
+        if (!$stmt) seb_json_response(['ok' => false, 'error' => seb_sql_error_message('Không lưu được báo lỗi.')], 500);
+        seb_json_response(['ok' => true, 'message' => 'Đã gửi báo lỗi.']);
+
     case 'logout_user':
         $_SESSION['user'] = null;
         unset($_SESSION['user']);
@@ -817,7 +828,11 @@ switch ($action) {
         $items = [];
         $newsFromDb = false;
         if (!empty($conn) && function_exists('sqlsrv_query')) {
-            $newsSql = "SELECT MaThongBao, LoaiThongBao, TieuDe, NoiDung, HinhAnh, NguonLink, NgayDang, NguoiDang
+            $newsColumns = seb_get_table_columns_info($conn, 'ThongBao');
+            $newsTitle = isset($newsColumns['tieude']) ? 'TieuDe' : "'' AS TieuDe";
+            $newsImage = isset($newsColumns['hinhanh']) ? 'HinhAnh' : "'' AS HinhAnh";
+            $newsSource = isset($newsColumns['nguonlink']) ? 'NguonLink' : "'' AS NguonLink";
+            $newsSql = "SELECT MaThongBao, LoaiThongBao, {$newsTitle}, NoiDung, {$newsImage}, {$newsSource}, NgayDang, NguoiDang
                         FROM ThongBao
                         WHERE TrangThai IN (N'Hiển thị', N'Dang hien thi', N'Hiển thị ', N'Hiện thị')
                            OR TrangThai = 1
@@ -868,7 +883,7 @@ switch ($action) {
                         'icon' => $icon,
                     ];
                 }
-                $newsFromDb = count($items) > 0;
+                $newsFromDb = true;
             }
         }
 

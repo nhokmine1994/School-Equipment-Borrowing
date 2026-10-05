@@ -105,6 +105,15 @@ function admin_device_image_filename(string $deviceName, string $uploadedFilenam
   return ($safe !== '' ? $safe : 'device') . '.' . ($extension ?: 'jpg');
 }
 
+function admin_device_image_url(string $image): string
+{
+  $image = trim($image);
+  if ($image === '') return '';
+  if (preg_match('/^(https?:\/\/|\/|\.\.\/)/i', $image)) return $image;
+  if (stripos($image, 'Images/') === 0) return '../' . $image;
+  return '../Images/devices/' . ltrim($image, '/\\');
+}
+
 $message = '';
 $messageType = 'success';
 $csrf_token = generate_csrf_token();
@@ -498,6 +507,10 @@ admin_render_page_intro(
 
     <?php if ($message): ?>
       <div class="admin-flash <?php echo $messageType === 'danger' ? 'admin-flash-danger' : ''; ?>"><?php echo htmlspecialchars($message); ?></div>
+      <?php if ($messageType !== 'danger'): ?>
+        <script src="../Javascript/toast.js?v=20260930_popup"></script>
+        <script>window.addEventListener('DOMContentLoaded',function(){window.scrollTo({top:0,behavior:'smooth'});if(window.sebShowMessage)window.sebShowMessage(<?php echo json_encode($message, JSON_UNESCAPED_UNICODE); ?>,'success');});</script>
+      <?php endif; ?>
     <?php endif; ?>
 
     <section class="admin-card" style="margin-top:16px;">
@@ -540,7 +553,7 @@ admin_render_page_intro(
               $selectedCategory = seb_resolve_category_display($d, $categoryMap)['code'];
               $detailRowId = 'device-' . md5((string) ($d['ID'] ?? $d['IDThietBi'] ?? $ma) . ':' . (string) ($d['MaThietBi'] ?? $d['ID'] ?? ''));
               $img = htmlspecialchars($d['HinhAnh'] ?? $d['Anh'] ?? '');
-              $imgPath = $img ? ('../Images/devices/' . $img) : '';
+              $imgPath = admin_device_image_url((string) ($d['HinhAnh'] ?? $d['Anh'] ?? ''));
               $editPayload = [
                 'id' => (string) ($d['ID'] ?? $d['IDThietBi'] ?? ''),
                 'ma' => (string) ($d['MaThietBi'] ?? $d['ID'] ?? ''),
