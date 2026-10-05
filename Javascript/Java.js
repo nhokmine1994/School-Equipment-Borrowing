@@ -43,6 +43,44 @@ document.addEventListener("DOMContentLoaded", () => {
         return String(window.__username || '').trim();
     }
 
+    function ensureBugReportButton() {
+        if (document.getElementById('sebBugReportButton')) return;
+        const apiPath = isPageSubRoute() ? '../api/seb_api.php?action=bug_report' : 'api/seb_api.php?action=bug_report';
+        const style = document.createElement('style');
+        style.textContent = '.seb-bug-fab{position:fixed;right:18px;bottom:18px;z-index:12000;border:0;border-radius:999px;padding:10px 14px;background:#123d63;color:#fff;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(15,54,89,.25)}.seb-bug-overlay{position:fixed;inset:0;z-index:16000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.48)}.seb-bug-dialog{position:relative;width:min(520px,100%);display:grid;gap:12px;padding:24px;border-radius:14px;background:#fff;box-shadow:0 25px 70px rgba(15,23,42,.3)}.seb-bug-dialog h2{margin:0;color:#123d63}.seb-bug-dialog label{display:grid;gap:5px;color:#334155;font-weight:700;font-size:13px}.seb-bug-dialog input,.seb-bug-dialog textarea{box-sizing:border-box;width:100%;padding:9px 11px;border:1px solid #bfdbfe;border-radius:7px;font:inherit}.seb-bug-close{position:absolute;top:7px;right:12px;border:0;background:transparent;color:#64748b;font-size:25px;cursor:pointer}.seb-bug-message{padding:9px;border-radius:7px;background:#ecfdf5;color:#166534;font-size:13px}';
+        document.head.appendChild(style);
+        const button = document.createElement('button');
+        button.id = 'sebBugReportButton';
+        button.type = 'button';
+        button.className = 'seb-bug-fab';
+        button.innerHTML = '<i class="fas fa-bug"></i> Báo lỗi';
+        const overlay = document.createElement('div');
+        overlay.className = 'seb-bug-overlay';
+        overlay.style.display = 'none';
+        overlay.innerHTML = '<form class="seb-bug-dialog"><button type="button" class="seb-bug-close">&times;</button><h2><i class="fas fa-bug"></i> Báo lỗi / góp ý</h2><label>Tiêu đề<input name="title" required maxlength="200"></label><label>Mô tả<textarea name="details" required rows="5"></textarea></label><div class="seb-bug-message" style="display:none"></div><button class="submit-btn auth-submit" type="submit">Gửi báo lỗi</button></form>';
+        document.body.append(button, overlay);
+        const form = overlay.querySelector('form');
+        const close = () => { overlay.style.display = 'none'; };
+        button.addEventListener('click', () => { overlay.style.display = 'flex'; });
+        overlay.querySelector('.seb-bug-close').addEventListener('click', close);
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const message = overlay.querySelector('.seb-bug-message');
+            const submit = form.querySelector('button[type="submit"]');
+            submit.disabled = true;
+            try {
+                const response = await fetch(apiPath, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ title: form.title.value, details: form.details.value, url: window.location.href }) });
+                const payload = await response.json();
+                message.style.display = 'block';
+                message.textContent = payload.message || payload.error || 'Đã gửi báo lỗi.';
+                if (payload.ok) { form.reset(); window.setTimeout(close, 1200); }
+            } catch (error) {
+                message.style.display = 'block';
+                message.textContent = 'Không kết nối được máy chủ.';
+            } finally { submit.disabled = false; }
+        });
+    }
+
     function isProtectedCurrentPage() {
         return PROTECTED_PAGE_PATTERN.test(window.location.pathname);
     }
@@ -981,4 +1019,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    ensureBugReportButton();
 });
