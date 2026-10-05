@@ -801,8 +801,8 @@ body.admin-theme {
 .admin-media-list { gap: 10px; }
 
 /* Compact device cards use the same visual language as the public inventory cards. */
-.admin-media-list { grid-template-columns: repeat(auto-fill, minmax(260px, 300px)); justify-content: start; align-items: stretch; }
-.admin-device-card-mini { padding: 0; min-height: 360px; }
+.admin-media-list { grid-template-columns: repeat(auto-fill, minmax(200px, 240px)); justify-content: start; align-items: stretch; }
+.admin-device-card-mini { padding: 0; min-height: 320px; }
 .admin-device-card-mini .admin-device-cover { display: flex; height: auto; aspect-ratio: 16 / 10; }
 .admin-device-card-mini .admin-device-body { padding: 12px; }
 
