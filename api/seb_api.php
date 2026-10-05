@@ -631,11 +631,15 @@ switch ($action) {
             seb_json_response(['ok' => false, 'error' => 'Thiếu mã đặt chỗ.'], 400);
         }
 
-        sqlsrv_query(
+        $deleteStmt = sqlsrv_query(
             $conn,
             "DELETE FROM DangKyPhong WHERE MaDatCho = ? AND Username = ?",
             [$bookingId, $username]
         );
+        if ($deleteStmt === false) {
+            seb_json_response(['ok' => false, 'error' => 'Không hủy được đăng ký phòng.'], 500);
+        }
+        @sqlsrv_query($conn, "INSERT INTO ThongBaoAdmin (LoaiThongBao, TieuDe, LoiNhan, Link, ThoiGianTao, TrangThai) VALUES (N'room', ?, ?, 'admin_dang_ky_phong.php', GETDATE(), 0)", ['Đăng ký phòng đã hủy', $username . ' đã hủy đăng ký phòng #' . $bookingId . '.']);
         seb_json_response(['ok' => true]);
 
     case 'subjects':

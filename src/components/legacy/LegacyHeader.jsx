@@ -21,6 +21,7 @@ export default function LegacyHeader() {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const headerRightRef = useRef(null);
   const [notifications, setNotifications] = useState({ counts: {}, items: [] });
+  const [seenNotifications, setSeenNotifications] = useState(() => new Set());
 
   const displayName = useMemo(
     () => user?.name || user?.display_name || user?.username || '',
@@ -31,6 +32,10 @@ export default function LegacyHeader() {
 
   useEffect(() => {
     if (!isLoggedIn) return undefined;
+    try {
+      const stored = JSON.parse(localStorage.getItem(`seb_seen_notifications_${user?.username}`) || '[]');
+      setSeenNotifications(new Set(stored));
+    } catch { setSeenNotifications(new Set()); }
     let active = true;
     const refresh = () => api.getUserNotifications().then((result) => {
       if (active && result?.success) setNotifications(result.data);
@@ -51,7 +56,18 @@ export default function LegacyHeader() {
     return () => document.removeEventListener('mousedown', closeOnOutsideClick);
   }, []);
 
-  const notificationCount = Number(notifications.counts?.total || 0);
+  const notificationKey = (item) => `${item.type}:${item.borrowId}:${item.dueDate || ''}`;
+  const visibleNotifications = (notifications.items || []).filter((item) => !seenNotifications.has(notificationKey(item)));
+  const notificationCount = visibleNotifications.length;
+  const markNotificationSeen = (item) => {
+    const key = notificationKey(item);
+    setSeenNotifications((current) => {
+      const next = new Set(current);
+      next.add(key);
+      localStorage.setItem(`seb_seen_notifications_${user?.username}`, JSON.stringify([...next]));
+      return next;
+    });
+  };
 
   const handleLogout = async () => {
     await api.logoutUser();
@@ -163,8 +179,8 @@ export default function LegacyHeader() {
             {notificationOpen ? (
               <div className="notification-dropdown">
                 <div className="notification-dropdown-title"><i className="fas fa-bell" /> Thông báo</div>
-                {notifications.items?.length ? notifications.items.slice(0, 8).map((item, index) => (
-                  <Link key={`${item.type}-${item.borrowId}-${index}`} to="/borrow" className={`user-notification-item ${item.type}`} onClick={() => setNotificationOpen(false)}>
+                {visibleNotifications.length ? visibleNotifications.slice(0, 8).map((item, index) => (
+                  <Link key={`${item.type}-${item.borrowId}-${index}`} to="/borrow" className={`user-notification-item ${item.type}`} onClick={() => { markNotificationSeen(item); setNotificationOpen(false); }}>
                     <i className={`fas ${item.type === 'overdue' ? 'fa-triangle-exclamation' : item.type === 'rejected' ? 'fa-xmark' : 'fa-bell'}`} />
                     <span>{item.message}</span>
                   </Link>

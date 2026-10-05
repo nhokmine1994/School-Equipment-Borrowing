@@ -95,6 +95,16 @@ function admin_upload_device_image($fieldName, $currentFilename = '')
   return ['success' => true, 'filename' => $result['filename'], 'message' => $result['message']];
 }
 
+function admin_device_image_filename(string $deviceName, string $uploadedFilename): string
+{
+  $extension = strtolower(pathinfo($uploadedFilename, PATHINFO_EXTENSION));
+  $safe = function_exists('iconv') ? iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $deviceName) : $deviceName;
+  $safe = strtolower((string) $safe);
+  $safe = preg_replace('/[^a-z0-9]+/', '-', $safe);
+  $safe = trim((string) $safe, '-');
+  return ($safe !== '' ? $safe : 'device') . '.' . ($extension ?: 'jpg');
+}
+
 $message = '';
 $messageType = 'success';
 $csrf_token = generate_csrf_token();
@@ -112,10 +122,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $danhmuc = trim($_POST['DanhMuc'] ?? '');
     $thongtin = trim($_POST['ThongTin'] ?? '');
     $phukien = trim($_POST['PhuKien'] ?? '');
+    if ($sl <= 0) $tinhtrang = 'Hết';
+    elseif (mb_stripos($tinhtrang, 'bảo trì', 0, 'UTF-8') !== false || mb_stripos($tinhtrang, 'bao tri', 0, 'UTF-8') !== false || $tinhtrang === 'Đang bảo trì') $tinhtrang = 'Bảo trì';
+    elseif ($tinhtrang !== 'Hết') $tinhtrang = 'Sẵn sàng';
     $ma = admin_generate_device_code($conn, $danhmuc);
     $deviceId = trim($_POST['ID'] ?? '');
     $imageUpload = admin_upload_device_image('HinhAnhFile');
     $hinh = $imageUpload['filename'];
+    if ($imageUpload['success'] && $hinh !== '' && !empty($_FILES['HinhAnhFile']['tmp_name'])) {
+      $newName = admin_device_image_filename($ten, $hinh);
+      $oldPath = __DIR__ . '/../Images/devices/' . $hinh;
+      $newPath = __DIR__ . '/../Images/devices/' . $newName;
+      if ($oldPath !== $newPath && is_file($oldPath)) { @rename($oldPath, $newPath); $hinh = $newName; }
+    }
 
     if ($ma === '' || $ten === '') {
       $message = 'Danh mục và tên thiết bị là bắt buộc.';
@@ -167,8 +186,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $currentHinh = trim($_POST['HinhAnhCurrent'] ?? '');
     $thongtin = trim($_POST['ThongTin'] ?? '');
     $phukien = trim($_POST['PhuKien'] ?? '');
+    if ($sl <= 0) {
+      $tinhtrang = 'Hết';
+    } elseif (mb_stripos($tinhtrang, 'bảo trì', 0, 'UTF-8') !== false || mb_stripos($tinhtrang, 'bao tri', 0, 'UTF-8') !== false || $tinhtrang === 'Đang bảo trì') {
+      $tinhtrang = 'Bảo trì';
+    } elseif ($tinhtrang !== 'Hết') {
+      $tinhtrang = 'Sẵn sàng';
+    }
     $imageUpload = admin_upload_device_image('HinhAnhFile', $currentHinh);
     $hinh = $imageUpload['filename'];
+    if ($imageUpload['success'] && $hinh !== '' && !empty($_FILES['HinhAnhFile']['tmp_name'])) {
+      $newName = admin_device_image_filename($ten, $hinh);
+      $oldPath = __DIR__ . '/../Images/devices/' . $hinh;
+      $newPath = __DIR__ . '/../Images/devices/' . $newName;
+      if ($oldPath !== $newPath && is_file($oldPath)) { @rename($oldPath, $newPath); $hinh = $newName; }
+    }
 
     if ($ma === '' || $ten === '') {
       $message = 'Mã và tên thiết bị là bắt buộc.';
@@ -232,6 +264,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $result = validate_and_upload_file($_FILES['image']);
                 if ($result['success']) {
                     $filename = $result['filename'];
+                    $nameStmt = sqlsrv_query($conn, 'SELECT TenThietBi FROM Kho WHERE [' . ($id !== '' ? 'ID' : 'MaThietBi') . '] = ?', [$id !== '' ? $id : $ma]);
+                    $nameRow = $nameStmt ? sqlsrv_fetch_array($nameStmt, SQLSRV_FETCH_ASSOC) : null;
+                    $newName = admin_device_image_filename((string) ($nameRow['TenThietBi'] ?? $ma), $filename);
+                    $oldPath = __DIR__ . '/../Images/devices/' . $filename;
+                    $newPath = __DIR__ . '/../Images/devices/' . $newName;
+                    if ($oldPath !== $newPath && is_file($oldPath)) { @rename($oldPath, $newPath); $filename = $newName; }
                   $whereColumn = $id !== '' ? 'ID' : 'MaThietBi';
                   $whereValue = $id !== '' ? $id : $ma;
                   $sql = "UPDATE Kho SET HinhAnh = ? WHERE [{$whereColumn}] = ?";
@@ -318,7 +356,7 @@ $categoryMap = seb_load_category_map($conn);
 // Standardize device status options to three canonical values
 $deviceStatusOptions = array(
   'Sẵn sàng',
-  'Đang bảo trì',
+  'Bảo trì',
   'Hết'
 );
 
@@ -327,7 +365,7 @@ $status_map = array(
   // Sẵn sàng variants
   'sẵn sàng' => 'Sẵn sàng', 'san sang' => 'Sẵn sàng', 'sang' => 'Sẵn sàng', 'available' => 'Sẵn sàng',
   // Đang bảo trì variants
-  'đang bảo trì' => 'Đang bảo trì', 'bao tri' => 'Đang bảo trì', 'bảo trì' => 'Đang bảo trì', 'baotri' => 'Đang bảo trì',
+  'đang bảo trì' => 'Bảo trì', 'bao tri' => 'Bảo trì', 'bảo trì' => 'Bảo trì', 'baotri' => 'Bảo trì',
   // Hết / hỏng variants map to canonical 'Hết'
   'hỏng' => 'Hết', 'hong' => 'Hết', 'het' => 'Hết', 'hết' => 'Hết', 'hết hàng' => 'Hết', 'het hang' => 'Hết', 'broken' => 'Hết'
 );

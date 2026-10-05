@@ -164,7 +164,9 @@ admin_render_page_intro(
               </div>
             <?php endif; ?>
           </div>
-          <div style="display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap;">
+          <div style="display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; align-items:center;">
+            <?php $isPending = trim((string) ($b['TrangThai'] ?? '')) === '' || trim((string) $b['TrangThai']) === 'Chờ duyệt'; ?>
+            <?php if ($isPending): ?>
             <form method="POST" style="margin: 0;">
               <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
               <input type="hidden" name="action" value="approve">
@@ -177,6 +179,9 @@ admin_render_page_intro(
               <input type="hidden" name="ma_dang_ky" value="<?php echo $id; ?>">
               <button type="submit" class="admin-btn admin-btn-danger" title="Từ chối"><i class="fas fa-xmark"></i></button>
             </form>
+            <?php else: ?>
+              <span class="admin-chip <?php echo $statusMeta['class']; ?>"><i class="fas <?php echo $statusMeta['icon']; ?>"></i> <?php echo htmlspecialchars($b['TrangThai'] ?: 'Chờ duyệt'); ?></span>
+            <?php endif; ?>
             <form method="POST" style="margin: 0;">
               <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
               <input type="hidden" name="action" value="cancel">
