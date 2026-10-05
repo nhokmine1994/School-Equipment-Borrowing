@@ -1120,6 +1120,14 @@ body.admin-theme {
   }
 }
 
+/* Keep admin inventory cards compact even when the surrounding admin layout stacks. */
+@media (max-width: 1180px) {
+  .admin-container .admin-media-list {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 240px)) !important;
+    justify-content: start;
+  }
+}
+
 .admin-btn-warning {
   background: #fef3c7;
   color: #92400e;
