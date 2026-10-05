@@ -2,6 +2,7 @@ import LegacyFooter from './LegacyFooter';
 import LegacyHeader from './LegacyHeader';
 import LegacyNav from './LegacyNav';
 import useLegacyCss from './useLegacyCss';
+import BugReportButton from '../BugReportButton';
 
 export default function LegacyPageShell({ title, icon, children, className = '', extraCss = [], noHeading = false }) {
   useLegacyCss(extraCss);
@@ -22,6 +23,7 @@ export default function LegacyPageShell({ title, icon, children, className = '',
         </section>
       )}
       <LegacyFooter />
+      <BugReportButton />
     </div>
   );
 }
