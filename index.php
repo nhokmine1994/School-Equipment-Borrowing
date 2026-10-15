@@ -338,7 +338,6 @@ if (!empty($conn) && function_exists('sqlsrv_query')) {
       </div>
       <div class="header-right">
         <button type="button" class="icon-btn" id="loginBtn" onclick="window.sebOpenAuthModal && window.sebOpenAuthModal('login')" <?php echo $is_logged_in ? 'style="display:none"' : ''; ?>><i class="far fa-user"></i></button>
-        <button type="button" class="icon-btn" id="registerBtn" onclick="window.sebOpenAuthModal && window.sebOpenAuthModal('register')" <?php echo $is_logged_in ? 'style="display:none"' : ''; ?>><i class="fas fa-pencil-alt"></i></button>
         
         <!-- User Profile Dropdown (Hidden initially) -->
         <div class="user-profile-menu" id="userProfileMenu" style="<?php echo $is_logged_in ? 'display: flex' : 'display: none'; ?>; position: relative;">

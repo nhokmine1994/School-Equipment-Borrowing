@@ -594,6 +594,10 @@ if (!function_exists('seb_resolve_device_image')) {
             return $image;
         }
 
+        if (stripos($image, 'Images/') === 0) {
+            return '../' . $image;
+        }
+
         return '../Images/devices/' . ltrim($image, "/\\");
     }
 }
