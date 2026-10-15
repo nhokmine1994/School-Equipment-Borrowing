@@ -59,19 +59,20 @@ function admin_render_nav(string $active = ''): void
 {
     $groups = [
         ['label' => 'Điều hành', 'items' => [
-            'panel' => ['admin_panel.php', 'Tổng quan', 'fa-gauge-high'],
-            'stats' => ['admin_thong_ke.php', 'Thống kê', 'fa-chart-pie'],
+            'panel' => ['admin_panel.php', 'Tổng quan', 'fa-gauge-high', 'unread_notifications'],
+            'stats' => ['admin_thong_ke.php', 'Thống kê', 'fa-chart-pie', ''],
         ]],
         ['label' => 'Quản lý', 'items' => [
-            'devices' => ['admin_thiet_bi.php', 'Thiết bị', 'fa-boxes-stacked'],
-            'users' => ['admin_users.php', 'Người dùng', 'fa-users'],
-            'maintenance' => ['admin_bao_tri.php', 'Bảo trì', 'fa-screwdriver-wrench'],
-            'news' => ['admin_tin_tuc.php', 'Tin tức', 'fa-newspaper'],
+            'devices' => ['admin_thiet_bi.php', 'Thiết bị', 'fa-boxes-stacked', ''],
+            'users' => ['admin_users.php', 'Người dùng', 'fa-users', 'pending_resets'],
+            'maintenance' => ['admin_bao_tri.php', 'Bảo trì', 'fa-screwdriver-wrench', ''],
+            'news' => ['admin_tin_tuc.php', 'Tin tức', 'fa-newspaper', ''],
         ]],
         ['label' => 'Duyệt yêu cầu', 'items' => [
-            'borrows' => ['admin_borrows.php', 'Duyệt mượn', 'fa-clipboard-check'],
-            'rooms' => ['admin_dang_ky_phong.php', 'Duyệt phòng', 'fa-calendar-check'],
-            'exports' => ['admin_export.php', 'Xuất file', 'fa-file-export'],
+            'borrows' => ['admin_borrows.php', 'Duyệt mượn', 'fa-clipboard-check', 'pending_borrows'],
+            'rooms' => ['admin_dang_ky_phong.php', 'Duyệt phòng', 'fa-calendar-check', 'pending_rooms'],
+            'bug_reports' => ['admin_bug_reports.php', 'Báo lỗi', 'fa-bug', 'pending_bug_reports'],
+            'exports' => ['admin_export.php', 'Xuất file', 'fa-file-export', ''],
         ]],
     ];
 
@@ -85,8 +86,10 @@ function admin_render_nav(string $active = ''): void
         $href = htmlspecialchars($item[0], ENT_QUOTES, 'UTF-8');
         $label = htmlspecialchars($item[1], ENT_QUOTES, 'UTF-8');
         $icon = htmlspecialchars($item[2], ENT_QUOTES, 'UTF-8');
+        $countKey = htmlspecialchars($item[3], ENT_QUOTES, 'UTF-8');
         $class = 'nav-tab' . ($active === $key ? ' active' : '');
-        echo "<a class=\"{$class}\" href=\"{$href}\" title=\"{$label}\" aria-label=\"{$label}\"><i class=\"fas {$icon}\" aria-hidden=\"true\"></i><span>{$label}</span></a>";
+        $badgeHtml = $countKey !== '' ? "<em class=\"nav-badge\" data-count-key=\"{$countKey}\" style=\"display:none\"></em>" : '';
+        echo "<a class=\"{$class}\" href=\"{$href}\" title=\"{$label}\" aria-label=\"{$label}\"><i class=\"fas {$icon}\" aria-hidden=\"true\"></i><span>{$label}</span>{$badgeHtml}</a>";
         }
         echo '</div>';
     }
@@ -98,9 +101,17 @@ function admin_render_nav(string $active = ''): void
     <script>
     (() => {
       const apiUrl = '../api/seb_api.php?action=admin_poll';
-      const status = document.getElementById('adminLiveStatus');
       let previous = null;
       let timer = null;
+      const badges = () => document.querySelectorAll('.nav-badge[data-count-key]');
+      const updateBadges = (counts) => {
+        badges().forEach((el) => {
+          const key = el.getAttribute('data-count-key');
+          const n = Number(counts[key] || 0);
+          if (n > 0) { el.textContent = n > 99 ? '99+' : String(n); el.style.display = 'inline-flex'; }
+          else { el.textContent = ''; el.style.display = 'none'; }
+        });
+      };
       const showNotice = (message, link) => {
         const node = document.createElement('a');
         node.className = 'admin-live-toast';
@@ -115,23 +126,22 @@ function admin_render_nav(string $active = ''): void
           const payload = await response.json();
           if (!payload.ok) return;
           const counts = payload.counts || {};
-          if (status) status.classList.add('is-online');
+          updateBadges(counts);
           if (previous) {
             if (counts.pending_resets > previous.pending_resets) showNotice('Có yêu cầu quên mật khẩu mới', 'admin_users.php');
             else if (counts.pending_borrows > previous.pending_borrows) showNotice('Có yêu cầu mượn mới', 'admin_borrows.php');
             else if (counts.pending_rooms > previous.pending_rooms) showNotice('Có đăng ký phòng mới', 'admin_dang_ky_phong.php');
+            else if (counts.pending_bug_reports > previous.pending_bug_reports) showNotice('Có báo lỗi mới', 'admin_bug_reports.php');
           }
           previous = counts;
-        } catch (error) {
-          if (status) status.classList.remove('is-online');
-        }
+        } catch (error) { /* offline */ }
       };
       poll();
       timer = window.setInterval(poll, 15000);
       window.addEventListener('beforeunload', () => window.clearInterval(timer), { once: true });
     })();
     </script>
-HTML;
+    HTML;
 }
 
 function admin_render_page_intro(string $heading, string $icon = 'fa-user-shield', string $subtitle = ''): void

@@ -242,6 +242,42 @@ body.admin-theme {
 .admin-container .admin-nav-bar .admin-nav-logout:hover,
 .admin-container .admin-nav-bar .admin-nav-logout:focus-visible { background: #fecaca; color: #7f1d1d; }
 
+/* Sidebar notification badges — red dot with count, like social media apps. */
+.admin-container .admin-nav-bar .nav-tab { position: relative; }
+.admin-container .admin-nav-bar .nav-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: #dc2626;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  font-style: normal;
+  line-height: 16px;
+  text-align: center;
+  border: 2px solid #fff;
+  box-sizing: content-box;
+  pointer-events: none;
+  z-index: 5;
+  display: none;
+}
+.admin-container .admin-nav-bar:hover .nav-badge,
+.admin-container .admin-nav-bar:focus-within .nav-badge {
+  position: static;
+  border: 0;
+  line-height: 1.4;
+  font-size: 11px;
+  padding: 1px 6px;
+  margin-left: auto;
+  background: #dc2626;
+  color: #fff;
+  border-radius: 999px;
+}
+
 .admin-nav-group {
   display: flex;
   flex-direction: column;

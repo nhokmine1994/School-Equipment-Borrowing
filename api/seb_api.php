@@ -128,11 +128,13 @@ switch ($action) {
         $pendingReset = $count("SELECT COUNT(*) AS Total FROM MatKhauResetRequest WHERE TrangThai = N'pending'");
         $pendingRooms = $count("SELECT COUNT(*) AS Total FROM DangKyPhong WHERE LOWER(LTRIM(RTRIM(TrangThai))) IN (N'chờ duyệt', N'pending')");
         $unread = $count("SELECT COUNT(*) AS Total FROM ThongBaoAdmin WHERE TrangThai = 0");
+        $pendingBugs = $count("SELECT COUNT(*) AS Total FROM BaoCaoLoi WHERE LOWER(LTRIM(RTRIM(TrangThai))) IN (N'mới', N'moi', N'new')");
         seb_json_response(['ok' => true, 'counts' => [
             'pending_borrows' => $pendingBorrow,
             'pending_resets' => $pendingReset,
             'pending_rooms' => $pendingRooms,
             'unread_notifications' => $unread,
+            'pending_bug_reports' => $pendingBugs,
         ], 'checkedAt' => date('c')]);
 
     case 'user_notifications':
@@ -834,8 +836,8 @@ switch ($action) {
             $newsSource = isset($newsColumns['nguonlink']) ? 'NguonLink' : "'' AS NguonLink";
             $newsSql = "SELECT MaThongBao, LoaiThongBao, {$newsTitle}, NoiDung, {$newsImage}, {$newsSource}, NgayDang, NguoiDang
                         FROM ThongBao
-                        WHERE TrangThai IN (N'Hiển thị', N'Dang hien thi', N'Hiển thị ', N'Hiện thị')
-                           OR TrangThai = 1
+                        WHERE LOWER(LTRIM(RTRIM(CAST(TrangThai AS NVARCHAR(MAX))))) IN (N'hiển thị', N'hiện thị', N'dang hien thi', N'hiển thị ', N'hiện thị ', N'hiển thị\t', N'hiện thị\t')
+                           OR CAST(TrangThai AS NVARCHAR(MAX)) = N'1'
                         ORDER BY NgayDang DESC, MaThongBao DESC";
             $newsStmt = @sqlsrv_query($conn, $newsSql);
             if ($newsStmt) {
