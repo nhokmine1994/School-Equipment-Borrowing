@@ -162,7 +162,7 @@ if ($userStmt) {
     }
 }
 
-$dbNotifications = fetch_admin_notifications($conn, 6);
+$dbNotifications = fetch_admin_notifications($conn, 10);
 $feed = [];
 
 foreach ($dbNotifications as $item) {
@@ -175,6 +175,26 @@ foreach ($dbNotifications as $item) {
     'link' => $item['Link'] ?? '',
     'read' => (int) ($item['TrangThai'] ?? 0),
     ];
+}
+
+$bugReportStmt = sqlsrv_query($conn, "SELECT TOP 10 MaBaoCao, TaiKhoan, UrlTrang, TieuDe, NoiDung, MucDo, TrangThai, NgayTao FROM BaoCaoLoi WHERE LOWER(LTRIM(RTRIM(TrangThai))) IN (N'mới', N'moi', N'new') ORDER BY NgayTao DESC, MaBaoCao DESC");
+if ($bugReportStmt) {
+    while ($row = sqlsrv_fetch_array($bugReportStmt, SQLSRV_FETCH_ASSOC)) {
+        $title = trim((string) ($row['TieuDe'] ?? 'Báo lỗi'));
+        $message = trim((string) ($row['NoiDung'] ?? ''));
+        if ($message === '') {
+            $message = trim((string) ($row['UrlTrang'] ?? ''));
+        }
+        $feed[] = [
+            'type' => 'danger',
+            'title' => 'Báo lỗi',
+            'message' => ($title !== '' ? $title : 'Báo lỗi') . ($message !== '' ? ' - ' . $message : '') . (isset($row['TaiKhoan']) && trim((string) $row['TaiKhoan']) !== '' ? ' (' . trim((string) $row['TaiKhoan']) . ')' : ''),
+            'time' => admin_human_date($row['NgayTao'] ?? null),
+            'timestamp' => admin_timestamp($row['NgayTao'] ?? null),
+            'link' => 'admin_bug_reports.php',
+            'read' => 0,
+        ];
+    }
 }
 
 foreach (array_slice($borrows, 0, 5) as $item) {
@@ -211,7 +231,7 @@ usort($feed, function ($a, $b) {
     return ($b['timestamp'] ?? 0) <=> ($a['timestamp'] ?? 0);
 });
 
-$feed = array_slice($feed, 0, 8);
+$feed = array_values(array_slice($feed, 0, 8));
 
 require_once __DIR__ . '/../components/admin_layout.php';
 admin_render_head('Bảng điều khiển quản trị');
