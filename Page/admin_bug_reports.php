@@ -2,7 +2,7 @@
 include '../connect.php';
 require_once 'admin_auth.php';
 require_admin();
-seb_require_admin_connection($conn, 'Báo lỗi người dùng');
+seb_require_admin_connection($conn, 'Bao loi nguoi dung');
 require_once __DIR__ . '/../components/admin_layout.php';
 
 $username = $_SESSION['user']['username'] ?? '';
@@ -12,21 +12,21 @@ $csrf_token = generate_csrf_token();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
-        $message = 'CSRF token không hợp lệ.';
+        $message = 'CSRF token khong hop le.';
         $messageTone = 'danger';
     } else {
         $action = $_POST['action'];
         $id = (int) ($_POST['ma_bao_cao'] ?? 0);
         if ($id <= 0) {
-            $message = 'Mã báo cáo không hợp lệ.';
+            $message = 'Ma bao cao khong hop le.';
             $messageTone = 'danger';
         } elseif ($action === 'resolve') {
-            $s = sqlsrv_query($conn, "UPDATE BaoCaoLoi SET TrangThai = N'đã xử lý' WHERE MaBaoCao = ?", [$id]);
-            $message = $s ? 'Đã đánh dấu đã xử lý.' : 'Cập nhật thất bại.';
+            $s = sqlsrv_query($conn, "UPDATE BaoCaoLoi SET TrangThai = N'da xu ly' WHERE MaBaoCao = ?", [$id]);
+            $message = $s ? 'Da danh dau da xu ly.' : 'Cap nhat that bai.';
             $messageTone = $s ? 'success' : 'danger';
         } elseif ($action === 'delete') {
             $s = sqlsrv_query($conn, "DELETE FROM BaoCaoLoi WHERE MaBaoCao = ?", [$id]);
-            $message = $s ? 'Đã xóa báo cáo.' : 'Xóa thất bại.';
+            $message = $s ? 'Da xoa bao cao.' : 'Xoa that bai.';
             $messageTone = $s ? 'success' : 'danger';
         }
     }
@@ -34,11 +34,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
 $reports = [];
 $pendingCount = 0;
-$stmt = sqlsrv_query($conn, 'SELECT MaBaoCao, TaiKhoan, UrlTrang, TieuDe, NoiDung, MucDo, TrangThai, NgayTao FROM BaoCaoLoi ORDER BY CASE WHEN LOWER(LTRIM(RTRIM(TrangThai))) = N\'mới\' THEN 0 ELSE 1 END, NgayTao DESC');
+$stmt = sqlsrv_query($conn, "SELECT MaBaoCao, TaiKhoan, UrlTrang, TieuDe, NoiDung, MucDo, TrangThai, NgayTao FROM BaoCaoLoi ORDER BY NgayTao DESC");
 if ($stmt) {
     while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         $reports[] = $row;
-        if (in_array(mb_strtolower(trim((string) ($row['TrangThai'] ?? '')), ['mới', 'moi'], true)) {
+        $st = mb_strtolower(trim((string) ($row['TrangThai'] ?? '')), 'UTF-8');
+        if ($st === 'mới' || $st === 'moi' || $st === 'new') {
             $pendingCount++;
         }
     }
@@ -55,46 +56,46 @@ admin_render_page_intro('Báo lỗi người dùng', 'fa-bug', 'Danh sách lỗi
 
 <section class="admin-grid-4">
   <article class="admin-card admin-stat">
-    <p class="admin-stat-label">Tổng báo cáo</p>
+    <p class="admin-stat-label">Tong bao cao</p>
     <p class="admin-stat-value"><?php echo count($reports); ?></p>
-    <p class="admin-stat-desc">Toàn bộ báo cáo đã nhận.</p>
+    <p class="admin-stat-desc">Toan bo bao cao da nhan.</p>
   </article>
   <article class="admin-card admin-stat">
-    <p class="admin-stat-label">Chờ xử lý</p>
+    <p class="admin-stat-label">Cho xu ly</p>
     <p class="admin-stat-value"><?php echo $pendingCount; ?></p>
-    <p class="admin-stat-desc">Báo cáo mới chưa xử lý.</p>
+    <p class="admin-stat-desc">Bao cao moi chua xu ly.</p>
   </article>
   <article class="admin-card admin-stat">
-    <p class="admin-stat-label">Đã xử lý</p>
+    <p class="admin-stat-label">Da xu ly</p>
     <p class="admin-stat-value"><?php echo count($reports) - $pendingCount; ?></p>
-    <p class="admin-stat-desc">Báo cáo đã hoàn tất.</p>
+    <p class="admin-stat-desc">Bao cao da hoan tat.</p>
   </article>
   <article class="admin-card admin-stat">
-    <p class="admin-stat-label">Xuất Excel</p>
-    <p class="admin-stat-value"><a href="admin_export.php?type=bug_reports" class="admin-btn admin-btn-primary" style="text-decoration:none;font-size:16px;padding:8px 14px;"><i class="fas fa-file-excel"></i> Tải báo cáo</a></p>
-    <p class="admin-stat-desc">Xuất toàn bộ ra file CSV.</p>
+    <p class="admin-stat-label">Xuat Excel</p>
+    <p class="admin-stat-value"><a href="admin_export.php?type=bug_reports" class="admin-btn admin-btn-primary" style="text-decoration:none;font-size:16px;padding:8px 14px;"><i class="fas fa-file-excel"></i> Tai bao cao</a></p>
+    <p class="admin-stat-desc">Xuat toan bo ra file CSV.</p>
   </article>
 </section>
 
 <section class="admin-card" style="margin-top:16px;">
   <div class="admin-card-head">
     <div>
-      <h2 class="admin-card-title"><i class="fas fa-inbox"></i> Danh sách báo cáo (<?php echo count($reports); ?>)</h2>
-      <p class="admin-card-note">Báo cáo mới hiển thị trước. Có thể đánh dấu đã xử lý hoặc xóa báo cáo.</p>
+      <h2 class="admin-card-title"><i class="fas fa-inbox"></i> Danh sach bao cao (<?php echo count($reports); ?>)</h2>
+      <p class="admin-card-note">Bao cao moi hien thi truoc. Co the danh dau da xu ly hoac xoa bao cao.</p>
     </div>
     <div style="display:flex;gap:8px;">
-      <span class="admin-chip admin-chip-warning"><?php echo $pendingCount; ?> chờ xử lý</span>
+      <span class="admin-chip admin-chip-warning"><?php echo $pendingCount; ?> cho xu ly</span>
     </div>
   </div>
   <div class="admin-card-body">
     <?php if (empty($reports)): ?>
-      <div class="admin-empty"><i class="fas fa-inbox" style="font-size:30px;display:block;margin-bottom:10px;color:#94a3b8;"></i>Chưa có báo cáo nào.</div>
+      <div class="admin-empty"><i class="fas fa-inbox" style="font-size:30px;display:block;margin-bottom:10px;color:#94a3b8;"></i>Chua co bao cao nao.</div>
     <?php else: ?>
       <div class="admin-notification-feed">
       <?php foreach ($reports as $r):
         $rid = (int) $r['MaBaoCao'];
-        $status = trim((string) ($r['TrangThai'] ?? 'mới'));
-        $isNew = mb_strtolower($status, 'UTF-8') === 'mới' || mb_strtolower($status, 'UTF-8') === 'moi';
+        $st = trim((string) ($r['TrangThai'] ?? 'moi'));
+        $isNew = in_array(mb_strtolower($st, 'UTF-8'), ['mới', 'moi', 'new'], true);
         $date = is_object($r['NgayTao']) ? $r['NgayTao']->format('d/m/Y H:i') : (string) ($r['NgayTao'] ?? '');
         $user = trim((string) ($r['TaiKhoan'] ?? ''));
         $url = trim((string) ($r['UrlTrang'] ?? ''));
@@ -111,15 +112,15 @@ admin_render_page_intro('Báo lỗi người dùng', 'fa-bug', 'Danh sách lỗi
               <?php echo htmlspecialchars($title); ?>
               <span class="admin-chip <?php echo $isNew ? 'admin-chip-danger' : 'admin-chip-success'; ?>" style="margin-left:8px;padding:2px 8px;">
                 <i class="fas <?php echo $isNew ? 'fa-exclamation-triangle' : 'fa-check'; ?>"></i>
-                <?php echo htmlspecialchars($status); ?>
+                <?php echo htmlspecialchars($st); ?>
               </span>
               <?php if ($priority !== 'normal'): ?>
                 <span class="admin-chip admin-chip-warning" style="margin-left:4px;padding:2px 8px;"><i class="fas fa-flag"></i> <?php echo htmlspecialchars($priority); ?></span>
               <?php endif; ?>
             </p>
             <p class="admin-notification-text">
-              <?php if ($user !== ''): ?><strong>Người gửi:</strong> <?php echo htmlspecialchars($user); ?> · <?php endif; ?>
-              <?php if ($url !== ''): ?><span style="font-family:monospace;font-size:12px;color:#64748b;"><?php echo htmlspecialchars($url); ?></span> · <?php endif; ?>
+              <?php if ($user !== ''): ?><strong>NGUOI GUI:</strong> <?php echo htmlspecialchars($user); ?> | <?php endif; ?>
+              <?php if ($url !== ''): ?><span style="font-family:monospace;font-size:12px;color:#64748b;"><?php echo htmlspecialchars($url); ?></span> | <?php endif; ?>
               <small style="color:#64748b;"><?php echo htmlspecialchars($date); ?></small>
             </p>
             <?php if ($content !== ''): ?>
@@ -134,14 +135,14 @@ admin_render_page_intro('Báo lỗi người dùng', 'fa-bug', 'Danh sách lỗi
               <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
               <input type="hidden" name="action" value="resolve">
               <input type="hidden" name="ma_bao_cao" value="<?php echo $rid; ?>">
-              <button type="submit" class="admin-btn admin-btn-success" title="Đánh dấu đã xử lý"><i class="fas fa-check"></i> Đã xử lý</button>
+              <button type="submit" class="admin-btn admin-btn-success" title="Danh dau da xu ly"><i class="fas fa-check"></i> Da xu ly</button>
             </form>
             <?php endif; ?>
-            <form method="POST" style="margin:0;" onsubmit="return confirm('Xóa báo cáo này?');">
+            <form method="POST" style="margin:0;" onsubmit="return confirm('Xoa bao cao nay?');">
               <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
               <input type="hidden" name="action" value="delete">
               <input type="hidden" name="ma_bao_cao" value="<?php echo $rid; ?>">
-              <button type="submit" class="admin-btn admin-btn-danger" title="Xóa"><i class="fas fa-trash"></i></button>
+              <button type="submit" class="admin-btn admin-btn-danger" title="Xoa"><i class="fas fa-trash"></i></button>
             </form>
           </div>
         </article>
