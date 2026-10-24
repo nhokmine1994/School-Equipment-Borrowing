@@ -160,8 +160,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action !== '') {
                 $message = 'ID tin không hợp lệ!';
                 $messageTone = 'danger';
             } else {
-                // Đảo trạng thái: Hiển thị <-> Ẩn
-                $stmt = @sqlsrv_query($conn, "UPDATE ThongBao SET TrangThai = CASE WHEN LOWER(TrangThai) = N'hiển thị' THEN N'Ẩn' ELSE N'Hiển thị' END WHERE MaThongBao = ?", [$maTin]);
+                // Chuẩn hóa trạng thái hiển thị/ẩn để tránh mismatch khi có dấu cách, chữ hoa hoặc biến thể viết hoa/tiếng Việt.
+                $stmt = @sqlsrv_query($conn, "UPDATE ThongBao SET TrangThai = CASE WHEN LOWER(LTRIM(RTRIM(TrangThai))) IN (N'hiển thị', N'hiện thị', N'dang hien thi', N'hiện thị ', N'hiển thị ') THEN N'Ẩn' ELSE N'Hiển thị' END WHERE MaThongBao = ?", [$maTin]);
                 $message = $stmt ? 'Đổi trạng thái thành công.' : 'Cập nhật thất bại.';
                 $messageTone = $stmt ? 'success' : 'danger';
             }

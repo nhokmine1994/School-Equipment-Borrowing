@@ -9,11 +9,21 @@ export default function BugReportButton() {
   const [busy, setBusy] = useState(false);
 
   const submit = async (event) => {
-    event.preventDefault(); setBusy(true); setMessage('');
+    event.preventDefault();
+    setBusy(true);
+    setMessage('');
+
     const result = await api.reportBug({ title, details, url: window.location.href });
     setBusy(false);
-    if (!result.success) { setMessage(result.error); return; }
-    setMessage('Đã gửi báo lỗi. Cảm ơn bạn!'); setTitle(''); setDetails();
+
+    if (!result.success) {
+      setMessage(result.error);
+      return;
+    }
+
+    setMessage('Đã gửi báo lỗi. Cảm ơn bạn!');
+    setTitle('');
+    setDetails('');
     window.setTimeout(() => setOpen(false), 1200);
   };
 

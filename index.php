@@ -374,7 +374,7 @@ if (!empty($conn) && function_exists('sqlsrv_query')) {
         <a href="Page/kho_thiet_bi.php" class="nav-tab">Kho thiết bị</a>
         <a href="Page/dang-ky-phong-hoc.php" class="nav-tab">Đăng ký phòng học</a>
         <a href="Page/kho-ca-nhan.php" class="nav-tab">Kho cá nhân</a>
-        <a href="Page/news.php" class="nav-tab">Tin tức</a>
+        <a href="news" class="nav-tab">Tin tức</a>
         <a href="Page/about.php" class="nav-tab">Liên hệ</a>
       </div>
     </nav>

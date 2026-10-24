@@ -174,6 +174,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             add_admin_notification($conn, 'borrow', 'Đã trả thiết bị', 'Đơn mượn #' . $borrow_id . ' đã được đánh dấu đã trả.', 'admin_borrows.php');
           }
         }
+
+        if ($action === 'bulk_returned') {
+          $borrow_ids = $_POST['borrow_ids'] ?? [];
+          if (empty($borrow_ids) || !is_array($borrow_ids)) {
+            $message = 'Vui lòng chọn ít nhất một phiếu mượn.';
+            $messageType = 'danger';
+          } else {
+            $successCount = 0;
+            $failCount = 0;
+            $errors = [];
+            foreach ($borrow_ids as $bid) {
+              $bid = trim((string) $bid);
+              if ($bid === '') continue;
+              $result = admin_borrow_set_status($conn, $bid, 'returned', null);
+              if (!empty($result['ok'])) {
+                $successCount++;
+                add_admin_notification($conn, 'borrow', 'Đã trả thiết bị', 'Đơn mượn #' . $bid . ' đã được đánh dấu đã trả.', 'admin_borrows.php');
+              } else {
+                $failCount++;
+                $errors[] = '#' . $bid . ': ' . ($result['error'] ?? 'Lỗi không xác định');
+              }
+            }
+            if ($failCount === 0) {
+              $message = "Đã đánh dấu trả thành công {$successCount} phiếu mượn.";
+              $messageType = 'success';
+            } else {
+              $message = "Trả thành công {$successCount}, thất bại {$failCount}. " . implode('; ', $errors);
+              $messageType = 'danger';
+            }
+          }
+        }
     }
 }
 
@@ -493,10 +524,18 @@ admin_render_page_intro(
             <?php endif; ?>
           </select>
         </div>
+        <div id="bulkActionBar" style="display:none;margin-bottom:12px;padding:10px 14px;background:#e8f4fd;border:1px solid #b3d9f2;border-radius:8px;">
+          <span id="selectedCount" style="font-weight:600;margin-right:12px;">0 phiếu đã chọn</span>
+          <button type="button" class="admin-btn admin-btn-primary" onclick="bulkReturn()" style="margin-right:8px;">
+            <i class="fa-solid fa-rotate-left"></i> Trả tất cả đã chọn
+          </button>
+          <button type="button" class="admin-btn admin-btn-soft" onclick="clearSelection()">Bỏ chọn</button>
+        </div>
         <div class="admin-table-wrap">
           <table class="admin-table">
             <thead>
               <tr>
+                <th style="width:40px;"><input type="checkbox" id="selectAll" title="Chọn tất cả phiếu đang mượn" onchange="toggleSelectAll(this)"></th>
                 <th>ID</th>
                 <th>ID thiết bị</th>
                 <th>Tên thiết bị</th>
@@ -523,8 +562,14 @@ admin_render_page_intro(
                 $statusLabel = seb_resolve_borrow_status_label($conn, $statusRaw);
                 $status = htmlspecialchars($statusLabel);
                 $chipClass = admin_borrow_chip($statusRaw);
+                $isApproved = in_array($statusKey, ['approved','đã duyệt','da duyet','1'], true);
               ?>
               <tr>
+                <td data-label="">
+                  <?php if ($isApproved): ?>
+                    <input type="checkbox" class="borrow-checkbox" value="<?php echo $id; ?>" onchange="updateBulkButton()">
+                  <?php endif; ?>
+                </td>
                 <td data-label="ID"><?php echo $id; ?></td>
                 <td data-label="ID THIẾT BỊ"><?php echo $ma; ?></td>
                 <td data-label="TÊN THIẾT BỊ"><?php echo $ten; ?></td>
@@ -762,5 +807,68 @@ admin_render_page_intro(
         closeModal();
       }
     });
+
+    // Bulk return functions
+    function toggleSelectAll(masterCheckbox) {
+      const checkboxes = document.querySelectorAll('.borrow-checkbox');
+      checkboxes.forEach(cb => {
+        // Chỉ chọn các checkbox đang hiển thị (không bị filter ẩn)
+        const row = cb.closest('tr');
+        if (row && row.style.display !== 'none') {
+          cb.checked = masterCheckbox.checked;
+        }
+      });
+      updateBulkButton();
+    }
+
+    function updateBulkButton() {
+      const checked = document.querySelectorAll('.borrow-checkbox:checked');
+      const bulkBar = document.getElementById('bulkActionBar');
+      const countSpan = document.getElementById('selectedCount');
+      if (checked.length > 0) {
+        bulkBar.style.display = 'flex';
+        countSpan.textContent = checked.length + ' phiếu đã chọn';
+      } else {
+        bulkBar.style.display = 'none';
+      }
+    }
+
+    function clearSelection() {
+      document.querySelectorAll('.borrow-checkbox').forEach(cb => cb.checked = false);
+      document.getElementById('selectAll').checked = false;
+      updateBulkButton();
+    }
+
+    async function bulkReturn() {
+      const checked = document.querySelectorAll('.borrow-checkbox:checked');
+      if (checked.length === 0) return;
+
+      const ids = Array.from(checked).map(cb => cb.value);
+      const message = 'Xác nhận đánh dấu đã trả ' + ids.length + ' phiếu mượn đã chọn?';
+      
+      let accepted = false;
+      if (typeof window.sebConfirm === 'function') {
+        try {
+          accepted = await window.sebConfirm(message, 'Xác nhận trả nhiều');
+        } catch (e) {
+          accepted = false;
+        }
+      } else {
+        accepted = confirm(message);
+      }
+
+      if (accepted) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        let html = '<input name="action" value="bulk_returned">'
+          + '<input name="csrf_token" value="' + csrfToken + '">';
+        ids.forEach(id => {
+          html += '<input name="borrow_ids[]" value="' + id + '">';
+        });
+        form.innerHTML = html;
+        document.body.appendChild(form);
+        form.submit();
+      }
+    }
   </script>
 <?php admin_render_shell_close(); ?>

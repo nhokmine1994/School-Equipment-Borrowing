@@ -21,7 +21,7 @@
   <a href="../Page/kho_thiet_bi.php">Kho thiết bị</a>
   <a href="../Page/dang-ky-phong-hoc.php">Đăng ký phòng học</a>
   <a href="../Page/kho-ca-nhan.php">Kho cá nhân</a>
-  <a href="../Page/news.php">Tin tức</a>
+  <a href="../news">Tin tức</a>
   <a href="../Page/about.php">Liên hệ</a>
 </nav>
 <script>

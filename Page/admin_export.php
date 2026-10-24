@@ -93,7 +93,7 @@ if ($type === 'borrows') {
 }
 
 if ($type === 'bug_reports') {
-    $rows = admin_export_fetch_all(sqlsrv_query($conn, 'SELECT MaBaoCao, TaiKhoan, UrlTrang, TieuDe, NoiDung, MucDo, TrangThai, NgayTao FROM BaoCaoLoi ORDER BY NgayTao DESC'));
+    $rows = admin_export_fetch_all(sqlsrv_query($conn, 'SELECT MaBaoCao, TaiKhoan, UrlTrang, TieuDe, NoiDung, MucDo, TrangThai, NgayTao FROM BaoCaoLoi ORDER BY NgayTao DESC, MaBaoCao DESC'));
     admin_export_csv('seb_bao_loi_' . $date . '.csv', ['Mã', 'Tài khoản', 'Trang', 'Tiêu đề', 'Nội dung', 'Mức độ', 'Trạng thái', 'Ngày tạo'], admin_export_rows($rows, ['MaBaoCao', 'TaiKhoan', 'UrlTrang', 'TieuDe', 'NoiDung', 'MucDo', 'TrangThai', 'NgayTao']));
 }
 
@@ -154,7 +154,7 @@ admin_render_page_intro('Xuất dữ liệu & biểu mẫu', 'fa-file-export', '
   </article>
   <article class="admin-card">
     <div class="admin-card-head"><h2 class="admin-card-title"><i class="fas fa-bug"></i> Báo lỗi</h2></div>
-    <div class="admin-card-body"><p class="admin-card-note">Danh sách lỗi/góp ý người dùng gửi từ các trang.</p><div class="admin-export-actions"><a class="admin-btn admin-btn-primary" href="admin_export.php?type=bug_reports"><i class="fas fa-file-excel"></i> Xuất báo lỗi</a></div></div>
+    <div class="admin-card-body"><p class="admin-card-note">Danh sách lỗi/góp ý người dùng gửi từ các trang.</p><div class="admin-export-actions"><a class="admin-btn admin-btn-soft" href="admin_bug_reports.php"><i class="fas fa-eye"></i> Xem báo lỗi</a><a class="admin-btn admin-btn-primary" href="admin_export.php?type=bug_reports"><i class="fas fa-file-excel"></i> Xuất báo lỗi</a></div></div>
   </article>
 </div>
 

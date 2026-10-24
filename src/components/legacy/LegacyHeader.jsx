@@ -48,8 +48,7 @@ export default function LegacyHeader() {
   useEffect(() => {
     const closeOnOutsideClick = (event) => {
       if (headerRightRef.current && !headerRightRef.current.contains(event.target)) {
-        setNotificationOpen(false);
-        setMenuOpen(false);
+        closeAllDropdowns();
       }
     };
     document.addEventListener('mousedown', closeOnOutsideClick);
@@ -59,12 +58,52 @@ export default function LegacyHeader() {
   const notificationKey = (item) => `${item.borrowId || item.message}`;
   const visibleNotifications = (notifications.items || []).filter((item) => !seenNotifications.has(notificationKey(item)));
   const notificationCount = visibleNotifications.length;
-  const markNotificationSeen = (item) => {
-    const key = notificationKey(item);
+
+  const persistSeenNotifications = (keys) => {
+    if (!user?.username || !keys.length) return;
     setSeenNotifications((current) => {
       const next = new Set(current);
-      next.add(key);
-      localStorage.setItem(`seb_seen_notifications_${user?.username}`, JSON.stringify([...next]));
+      keys.forEach((key) => next.add(key));
+      localStorage.setItem(`seb_seen_notifications_${user.username}`, JSON.stringify([...next]));
+      return next;
+    });
+  };
+
+  const markNotificationSeen = (item) => {
+    const key = notificationKey(item);
+    if (!key) return;
+    persistSeenNotifications([key]);
+  };
+
+  const markAllVisibleNotificationsSeen = () => {
+    const keys = (notifications.items || [])
+      .map((item) => notificationKey(item))
+      .filter((key) => key && !seenNotifications.has(key));
+    if (keys.length) {
+      persistSeenNotifications(keys);
+    }
+  };
+
+  const closeAllDropdowns = () => {
+    setMenuOpen(false);
+    setNotificationOpen(false);
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen((current) => {
+      const next = !current;
+      if (next) setNotificationOpen(false);
+      return next;
+    });
+  };
+
+  const toggleNotifications = () => {
+    setNotificationOpen((current) => {
+      const next = !current;
+      if (next) {
+        markAllVisibleNotificationsSeen();
+        setMenuOpen(false);
+      }
       return next;
     });
   };
@@ -106,7 +145,7 @@ export default function LegacyHeader() {
               type="button"
               className="icon-btn avatar-btn"
               id="avatarBtn"
-              onClick={() => setMenuOpen((value) => !value)}
+              onClick={toggleMenu}
             >
               <span className="avatar-initials" aria-hidden="true">{getInitials(displayName)}</span>
             </button>
@@ -169,7 +208,12 @@ export default function LegacyHeader() {
             ) : null}
           </div>
           <div className="notification-menu-wrap">
-            <button type="button" className="icon-btn notification-btn" aria-label="Thông báo" onClick={() => setNotificationOpen((value) => !value)}>
+            <button
+              type="button"
+              className="icon-btn notification-btn"
+              aria-label="Thông báo"
+              onClick={toggleNotifications}
+            >
               <i className="fas fa-bell" />
               {notificationCount > 0 ? <span className="notification-badge">{notificationCount > 99 ? '99+' : notificationCount}</span> : null}
             </button>

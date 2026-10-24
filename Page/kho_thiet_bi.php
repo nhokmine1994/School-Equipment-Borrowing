@@ -114,7 +114,7 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                 <a href="kho_thiet_bi.php" class="nav-tab active">Kho thiết bị</a>
                 <a href="dang-ky-phong-hoc.php" class="nav-tab">Đăng ký phòng học</a>
                 <a href="kho-ca-nhan.php" class="nav-tab">Kho cá nhân</a>
-                <a href="news.php" class="nav-tab">Tin tức</a>
+                <a href="../news" class="nav-tab">Tin tức</a>
                 <a href="about.php" class="nav-tab">Liên hệ</a>
             </div>
         </nav>

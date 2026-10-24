@@ -1,5 +1,9 @@
 <?php
 session_start();
+if (!headers_sent()) {
+    header('Location: ../news', true, 302);
+    exit;
+}
 $is_logged_in = !empty($_SESSION['user']) && !empty($_SESSION['user']['username']);
 $username = $is_logged_in ? (string) $_SESSION['user']['username'] : '';
 ?>
@@ -57,7 +61,7 @@ $username = $is_logged_in ? (string) $_SESSION['user']['username'] : '';
         <a href="kho_thiet_bi.php" class="nav-tab">Kho thiết bị</a>
         <a href="dang-ky-phong-hoc.php" class="nav-tab">Đăng ký phòng học</a>
         <a href="kho-ca-nhan.php" class="nav-tab">Kho cá nhân</a>
-        <a href="news.php" class="nav-tab active">Tin tức</a>
+        <a href="../news" class="nav-tab active">Tin tức</a>
         <a href="about.php" class="nav-tab">Liên hệ</a>
       </div>
     </nav>
