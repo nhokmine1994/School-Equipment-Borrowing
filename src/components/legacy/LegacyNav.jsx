@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
 const navItems = [
-  { label: 'Trang chủ', to: '/', end: true },
-  { label: 'Kho thiết bị', to: '/devices' },
-  { label: 'Đăng ký phòng học', to: '/rooms' },
-  { label: 'Kho cá nhân', to: '/personal' },
-  { label: 'Tin tức', to: '/news' },
-  { label: 'Liên hệ', to: '/about' },
+  { label: 'Trang chủ', to: '/', icon: 'fas fa-house', end: true },
+  { label: 'Kho thiết bị', to: '/devices', icon: 'fas fa-boxes-stacked' },
+  { label: 'Đăng ký phòng học', to: '/rooms', icon: 'fas fa-calendar-check' },
+  { label: 'Kho cá nhân', to: '/personal', icon: 'fas fa-briefcase' },
+  { label: 'Tin tức', to: '/news', icon: 'fas fa-newspaper' },
+  { label: 'Liên hệ', to: '/about', icon: 'fas fa-address-book' },
 ];
 
 export default function LegacyNav() {
@@ -36,7 +36,8 @@ export default function LegacyNav() {
             className={({ isActive }) => `nav-tab${isActive ? ' active' : ''}`}
             onClick={() => setOpen(false)}
           >
-            {item.label}
+            <i className={item.icon} style={{ fontSize: '0.9em', opacity: 0.9 }} />
+            <span>{item.label}</span>
           </NavLink>
         ))}
       </div>

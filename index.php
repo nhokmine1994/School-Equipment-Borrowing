@@ -359,18 +359,18 @@ if (!empty($conn) && function_exists('sqlsrv_query')) {
 
     <!-- 2. Navigation -->
     <nav class="nav-bar" id="mainNav">
-      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Má»Ÿ menu">
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Mở menu">
         <span></span>
         <span></span>
         <span></span>
       </button>
       <div class="nav-links" id="navLinks">
-        <a href="index.php" class="nav-tab active">Trang chủ</a>
-        <a href="Page/kho_thiet_bi.php" class="nav-tab">Kho thiết bị</a>
-        <a href="Page/dang-ky-phong-hoc.php" class="nav-tab">Đăng ký phòng học</a>
-        <a href="Page/kho-ca-nhan.php" class="nav-tab">Kho cá nhân</a>
-        <a href="Page/news.php" class="nav-tab">Tin tức</a>
-        <a href="Page/about.php" class="nav-tab">Liên hệ</a>
+        <a href="index.php" class="nav-tab active"><i class="fas fa-house" style="font-size:0.9em;opacity:0.9;"></i> <span>Trang chủ</span></a>
+        <a href="Page/kho_thiet_bi.php" class="nav-tab"><i class="fas fa-boxes-stacked" style="font-size:0.9em;opacity:0.9;"></i> <span>Kho thiết bị</span></a>
+        <a href="Page/dang-ky-phong-hoc.php" class="nav-tab"><i class="fas fa-calendar-check" style="font-size:0.9em;opacity:0.9;"></i> <span>Đăng ký phòng học</span></a>
+        <a href="Page/kho-ca-nhan.php" class="nav-tab"><i class="fas fa-briefcase" style="font-size:0.9em;opacity:0.9;"></i> <span>Kho cá nhân</span></a>
+        <a href="Page/news.php" class="nav-tab"><i class="fas fa-newspaper" style="font-size:0.9em;opacity:0.9;"></i> <span>Tin tức</span></a>
+        <a href="Page/about.php" class="nav-tab"><i class="fas fa-address-book" style="font-size:0.9em;opacity:0.9;"></i> <span>Liên hệ</span></a>
       </div>
     </nav>
 
@@ -491,16 +491,16 @@ if (!empty($conn) && function_exists('sqlsrv_query')) {
     <section class="section-wrapper">
       <div class="section-heading">
         <i class="fas fa-bullhorn"></i>
-        Tin văn & Thành tựu
+        Tin vắn & Thành tựu
       </div>
       <div class="maintenance-content">
         <div class="highlight-grid">
           <article class="highlight-card">
-            <h4><i class="fas fa-newspaper"></i> Tin văn</h4>
+            <h4><i class="fas fa-newspaper"></i> Tin vắn</h4>
             <ul class="highlight-list">
-              <li>SEB hoàn tất tới ưu giao diện mobile, cải thiện trải nghiệm mượn/trả trên điện thoại.</li>
-              <li>Thêm bộ lọc theo trằng thái thiết bị để tra cứu nhanh trong giờ lên lớp.</li>
-              <li>Hoàn thiện trang Về dự án và Về chúng tôi với lượng điều hướng trực tiếp.</li>
+              <li>SEB hoàn tất tối ưu giao diện mobile, cải thiện trải nghiệm mượn/trả trên điện thoại.</li>
+              <li>Thêm bộ lọc theo trạng thái thiết bị để tra cứu nhanh trong giờ lên lớp.</li>
+              <li>Hoàn thiện trang Về dự án và Về chúng tôi với luồng điều hướng trực tiếp.</li>
             </ul>
           </article>
 

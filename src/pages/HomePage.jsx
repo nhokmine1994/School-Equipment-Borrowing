@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import LegacyPageShell from '../components/legacy/LegacyPageShell';
@@ -32,12 +32,12 @@ const partnerLogos = [
 
 const highlightBlocks = [
   {
-    title: 'Tin văn',
+    title: 'Tin vắn',
     icon: 'fas fa-newspaper',
     items: [
-      'SEB hoàn tất tới ưu giao diện mobile, cải thiện trải nghiệm mượn/trả trên điện thoại.',
-      'Thêm bộ lọc theo trằng thái thiết bị để tra cứu nhanh trong giờ lên lớp.',
-      'Hoàn thiện trang Về dự án và Về chúng tôi với lượng điều hướng trực tiếp.',
+      'SEB hoàn tất tối ưu giao diện mobile, cải thiện trải nghiệm mượn/trả trên điện thoại.',
+      'Thêm bộ lọc theo trạng thái thiết bị để tra cứu nhanh trong giờ lên lớp.',
+      'Hoàn thiện trang Về dự án và Về chúng tôi với luồng điều hướng trực tiếp.',
     ],
   },
   {
@@ -225,7 +225,7 @@ export default function HomePage() {
       <section className="section-wrapper">
         <div className="section-heading">
           <i className="fas fa-bullhorn" />
-          Tin văn &amp; Thành tựu
+          Tin vắn &amp; Thành tựu
         </div>
         <div className="maintenance-content">
           <div className="highlight-grid">
